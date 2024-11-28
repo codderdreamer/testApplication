@@ -241,10 +241,12 @@ const WebSocketComponent = () => {
           break
         case "WaitDeviceResult":
           console.log(jsonData);
+          console.log("socket",socket)
           if (jsonData.Data) {
             handleAddItem("Test cihazı hazır.", true)
             send_connect_ac_charger_request()
             handleAddItem("AC Charger'a bağlanılıyor...", true)
+            console.log("socket",socket)
           }
           
       }
