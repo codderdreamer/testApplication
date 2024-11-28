@@ -83,6 +83,7 @@ const WebSocketComponent = () => {
   };
 
   const sendBarcode = (command: string) => {
+    console.log(socket)
     if (socket) {
       if (socket.readyState === socket.OPEN) {
         socket.send(
@@ -182,7 +183,6 @@ const WebSocketComponent = () => {
 
     newSocket.onmessage = (message) => {
       const jsonData = JSON.parse(message.data.toString());
-      console.log("socket",socket)
       switch (jsonData.Command) {
         case "USBList":
           setUSBList(jsonData.Data)
@@ -247,7 +247,6 @@ const WebSocketComponent = () => {
             handleAddItem("Test cihazı hazır.", true)
             send_connect_ac_charger_request()
             handleAddItem("AC Charger'a bağlanılıyor...", true)
-            console.log("socket",socket)
           }
           
       }
