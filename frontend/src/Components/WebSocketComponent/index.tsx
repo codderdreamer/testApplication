@@ -44,10 +44,10 @@ const WebSocketComponent = () => {
   } = useMessage();
 
   useEffect(() => {
-    console.log("change socket --------------",socket)
+    console.log("change socket --------------", socket)
   }, [socket]);
 
-  const send_connect_ac_charger_request = () => {
+  const send_test = () => {
     if (socket) {
       if (socket.readyState === socket.OPEN) {
         socket.send(
@@ -245,13 +245,13 @@ const WebSocketComponent = () => {
           break
         case "WaitDeviceResult":
           console.log(jsonData);
-          
-          if (jsonData.Data) {
-            handleAddItem("Test cihazı hazır.", true)
-            send_connect_ac_charger_request()
-            handleAddItem("AC Charger'a bağlanılıyor...", true)
-          }
-          
+          handleAddItem("Test cihazı hazır.", true)
+          send_test()
+          handleAddItem("AC Charger'a bağlanılıyor...", null)
+          break
+        case "Test2":
+
+
       }
     };
 
