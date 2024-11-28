@@ -5,7 +5,7 @@ from src.modbusModule import *
 from src.findEthernet import *
 from src.sap import *
 from src.deviceModel import *
-from frontendWebsocketModule import *
+from src.frontendWebsocketModule import *
 from acdeviceWebsocketModule import *
 from src.configModule import *
 
