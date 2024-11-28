@@ -5,7 +5,7 @@ import json
 import sys
 import time
 
-class WebSocketModule():
+class FrontendWebsocketModule():
     def __init__(self, application) -> None:
         self.application = application
         self.websocket = websocket_server.WebsocketServer('0.0.0.0', 4000)
@@ -97,7 +97,8 @@ class WebSocketModule():
                     self.send_frontend_wait_device()
                     Thread(target=self.application.modbusModule.wait_test_device,daemon=True).start()
                 elif Command == "ACChargerConnectRequest":
-                    Thread(target=self.application.websocketACDevice.wait_ac_charger_connection,daemon=True).start()
+                    Thread(target=self.application.acdeviceWebsocket.wait_ac_charger_connection,daemon=True).start()
+                    
                 elif Command == "CancelTest":
                     self.application.config.cancel_test = True
         except Exception as e:

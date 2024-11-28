@@ -5,8 +5,8 @@ from src.modbusModule import *
 from src.findEthernet import *
 from src.sap import *
 from src.deviceModel import *
-from src.websocketModule import *
-from src.websocketACDevice import *
+from frontendWebsocketModule import *
+from acdeviceWebsocketModule import *
 from src.configModule import *
 
 class Application():
@@ -21,8 +21,8 @@ class Application():
         self.flaskServer = FlaskServer(self)
         self.modbusModule = ModbusModule(self)
         self.findEthernet = FindEthernet(self)
-        self.websocketModule = WebSocketModule(self)
-        self.websocketACDevice = WebSocketACDevice(self)
+        self.frontendWebsocket = FrontendWebsocketModule(self)
+        self.acdeviceWebsocket = AcdeviceWebsocketModule(self)
         self.sap = SAP(self)
 
     def run(self):

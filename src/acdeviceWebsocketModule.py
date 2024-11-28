@@ -4,7 +4,7 @@ import websocket
 import time
 import json
 
-class WebSocketACDevice():
+class AcdeviceWebsocketModule():
     def __init__(self, application) -> None:
         self.application = application
         self.__connection = False
@@ -62,15 +62,37 @@ class WebSocketACDevice():
                     print("Test iptal edildi!")
                     break
                 if time.time() - time_start > self.wait_timeout:
-                    self.application.websocketModule.websocket.send_message_to_all(json.dumps({
+                    self.application.frontendWebsocket.websocket.send_message_to_all(json.dumps({
                             "Command": "ACChargerConnectResult",
                             "Data": False
                         }))
                     break
                 if self.connection:
-                    self.application.websocketModule.websocket.send_message_to_all(json.dumps({
+                    self.application.frontendWebsocket.websocket.send_message_to_all(json.dumps({
                             "Command": "ACChargerConnectResult",
                             "Data": True
+                        }))
+                    break
+            except Exception as e:
+                print("wait_ac_charger_connection Exception:",e)
+            time.sleep(3)
+
+    def send_save_config(self):
+        while True:
+            time_start = time.time()
+            try:
+                if self.application.config.cancel_test:
+                    print("Test iptal edildi!")
+                    break
+                if time.time() - time_start > self.wait_timeout:
+                    print("5dk bounca bağlanamadı Config bilgisi gönderilemedi!")
+                    break
+                if self.connection:
+                    self.websocket.send(json.dumps({
+                            "Command": "SaveConfig",
+                            "Data": {
+
+                            }
                         }))
                     break
             except Exception as e:

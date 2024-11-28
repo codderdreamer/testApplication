@@ -139,7 +139,7 @@ class ModbusModule():
             else:
                 if self.IS_DEVICE_READY == 1:
                     print("Cihaz hazır.")
-                    self.application.websocketModule.websocket.send_message_to_all(json.dumps({
+                    self.application.frontendWebsocket.websocket.send_message_to_all(json.dumps({
                             "Command": "WaitDeviceResult",
                             "Data": True
                         }))

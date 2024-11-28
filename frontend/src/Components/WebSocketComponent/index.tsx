@@ -112,7 +112,7 @@ const WebSocketComponent = () => {
         console.log("AC Charger bağlantı isteği gönderildi.");
     } else {
         toast.error("WebSocket bağlantısı hazır değil. Tekrar bağlanıyor...");
-        setTimeout(() => send_connect_ac_charger_request(), 1000);
+        // setTimeout(() => send_connect_ac_charger_request(), 1000);
     }
 };
 
@@ -246,7 +246,7 @@ const WebSocketComponent = () => {
             send_connect_ac_charger_request()
             handleAddItem("AC Charger'a bağlanılıyor...", true)
           }
-          break
+          
       }
     };
 
