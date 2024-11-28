@@ -238,11 +238,13 @@ const WebSocketComponent = () => {
           }
           break
         case "ChargePointIdRequest":
+          send_connect_ac_charger_request()
           console.log(jsonData);
           setBarcode("")
           setExpectedBarcodeType("chargePointId")
           handleAddItem("Lütfen cihazın Charge Point Id barkodunu okutunuz!", null);
           setWaitingForBarcode(true);
+          send_connect_ac_charger_request()
           break
         case "WaitDevice":
           console.log(jsonData);
