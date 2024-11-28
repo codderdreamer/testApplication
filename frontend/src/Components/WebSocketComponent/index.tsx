@@ -47,6 +47,22 @@ const WebSocketComponent = () => {
     console.log("change socket --------------",socket)
   }, [socket]);
 
+  const send_connect_ac_charger_request = () => {
+    if (socket) {
+      if (socket.readyState === socket.OPEN) {
+        socket.send(
+          JSON.stringify({
+            Command: "ACChargerConnectRequest",
+            Data: "",
+          })
+        );
+      } else {
+        toast.error("Server'a bağlanılamıyor!");
+      }
+    } else {
+      toast.error("Server'a bağlanılamıyor!");
+    }
+  };
 
   const handleAddItem = (message: string, isSuccess: boolean | null) => {
     setItems((prevItems: Item[]) => [
@@ -88,7 +104,6 @@ const WebSocketComponent = () => {
   };
 
   const sendBarcode = (command: string) => {
-    console.log(socket)
     if (socket) {
       if (socket.readyState === socket.OPEN) {
         socket.send(
@@ -104,27 +119,6 @@ const WebSocketComponent = () => {
       toast.error("Server'a bağlanılamıyor!");
     }
   };
-
-
-  const send_connect_ac_charger_request = () => {
-    console.log("send_connect_ac_charger_request",socket)
-    // connectWebSocket();
-    // console.log(socket)
-    // console.log("Socket state:", socket);
-    // if (socket && socket.readyState === socket.OPEN) {
-    //     socket.send(
-    //         JSON.stringify({
-    //             Command: "ACChargerConnectRequest",
-    //             Data: "",
-    //         })
-    //     );
-    //     console.log("AC Charger bağlantı isteği gönderildi.");
-    // } else {
-    //     toast.error("WebSocket bağlantısı hazır değil. Tekrar bağlanıyor...");
-    //     // setTimeout(() => send_connect_ac_charger_request(), 1000);
-    // }
-};
-
 
   const processBarcode = () => {
     console.log("processBarcode aşaması")
@@ -176,6 +170,7 @@ const WebSocketComponent = () => {
   const Tick = () => {
     return <img className="tick" src="/assets/img/tik.png" alt="" />
   };
+
 
   const connectWebSocket = () => {
     console.log("Web", isConnecting)
@@ -238,17 +233,14 @@ const WebSocketComponent = () => {
           }
           break
         case "ChargePointIdRequest":
-          send_connect_ac_charger_request()
           console.log(jsonData);
           setBarcode("")
           setExpectedBarcodeType("chargePointId")
           handleAddItem("Lütfen cihazın Charge Point Id barkodunu okutunuz!", null);
           setWaitingForBarcode(true);
-          send_connect_ac_charger_request()
           break
         case "WaitDevice":
           console.log(jsonData);
-          send_connect_ac_charger_request()
           handleAddItem("Test cihazının hazır olması bekleniyor...", null)
           break
         case "WaitDeviceResult":
