@@ -6,7 +6,7 @@ from src.findEthernet import *
 from src.sap import *
 from src.deviceModel import *
 from src.frontendWebsocketModule import *
-from acdeviceWebsocketModule import *
+from src.acdeviceWebsocketModule import *
 from src.configModule import *
 
 class Application():
