@@ -182,6 +182,7 @@ const WebSocketComponent = () => {
 
     newSocket.onmessage = (message) => {
       const jsonData = JSON.parse(message.data.toString());
+      console.log("socket",socket)
       switch (jsonData.Command) {
         case "USBList":
           setUSBList(jsonData.Data)
@@ -241,7 +242,7 @@ const WebSocketComponent = () => {
           break
         case "WaitDeviceResult":
           console.log(jsonData);
-          console.log("socket",socket)
+          
           if (jsonData.Data) {
             handleAddItem("Test cihazı hazır.", true)
             send_connect_ac_charger_request()
