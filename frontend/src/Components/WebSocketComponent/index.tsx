@@ -102,19 +102,20 @@ const WebSocketComponent = () => {
 
 
   const send_connect_ac_charger_request = () => {
-    console.log("Socket state:", socket);
-    if (socket && socket.readyState === socket.OPEN) {
-        socket.send(
-            JSON.stringify({
-                Command: "ACChargerConnectRequest",
-                Data: "",
-            })
-        );
-        console.log("AC Charger bağlantı isteği gönderildi.");
-    } else {
-        toast.error("WebSocket bağlantısı hazır değil. Tekrar bağlanıyor...");
-        // setTimeout(() => send_connect_ac_charger_request(), 1000);
-    }
+    console.log(socket)
+    // console.log("Socket state:", socket);
+    // if (socket && socket.readyState === socket.OPEN) {
+    //     socket.send(
+    //         JSON.stringify({
+    //             Command: "ACChargerConnectRequest",
+    //             Data: "",
+    //         })
+    //     );
+    //     console.log("AC Charger bağlantı isteği gönderildi.");
+    // } else {
+    //     toast.error("WebSocket bağlantısı hazır değil. Tekrar bağlanıyor...");
+    //     // setTimeout(() => send_connect_ac_charger_request(), 1000);
+    // }
 };
 
 
@@ -182,6 +183,7 @@ const WebSocketComponent = () => {
     };
 
     newSocket.onmessage = (message) => {
+      setSocket(newSocket);
       const jsonData = JSON.parse(message.data.toString());
       switch (jsonData.Command) {
         case "USBList":
@@ -253,6 +255,7 @@ const WebSocketComponent = () => {
     };
 
     newSocket.onerror = (error) => {
+      setSocket(newSocket);
       console.error("WebSocket hatası:------------------------------------------------------", error);
     };
 
