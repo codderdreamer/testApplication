@@ -48,6 +48,10 @@ const WebSocketComponent = () => {
   }, [socket]);
 
   const send_test = () => {
+    send_ac_charger_connect_request()
+  };
+
+  const send_ac_charger_connect_request = () => {
     if (socket) {
       if (socket.readyState === socket.OPEN) {
         socket.send(
@@ -62,7 +66,7 @@ const WebSocketComponent = () => {
     } else {
       toast.error("Server'a bağlanılamıyor!");
     }
-  };
+  }
 
   const handleAddItem = (message: string, isSuccess: boolean | null) => {
     setItems((prevItems: Item[]) => [
