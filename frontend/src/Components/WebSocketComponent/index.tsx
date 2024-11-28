@@ -44,11 +44,7 @@ const WebSocketComponent = () => {
   } = useMessage();
 
   useEffect(() => {
-    console.log("socket----------------------------",socket)
-    if(socket==null){
-      connectWebSocket();
-    }
-
+    console.log("change socket --------------",socket)
   }, [socket]);
 
 
@@ -194,7 +190,6 @@ const WebSocketComponent = () => {
     };
 
     newSocket.onmessage = (message) => {
-      setSocket(newSocket);
       const jsonData = JSON.parse(message.data.toString());
       switch (jsonData.Command) {
         case "USBList":
@@ -272,7 +267,7 @@ const WebSocketComponent = () => {
 
     newSocket.onclose = () => {
       console.log("WebSocket bağlantısı kapatıldı.--------------------------------------------------------------");
-      setSocket(null);
+      setSocket(newSocket);
       setIsConnecting(false);
 
       setTimeout(() => {
