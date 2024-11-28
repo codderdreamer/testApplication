@@ -103,6 +103,8 @@ const WebSocketComponent = () => {
 
   const send_connect_ac_charger_request = () => {
     console.log(socket)
+    connectWebSocket();
+    console.log(socket)
     // console.log("Socket state:", socket);
     // if (socket && socket.readyState === socket.OPEN) {
     //     socket.send(
