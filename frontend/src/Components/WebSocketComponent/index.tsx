@@ -246,6 +246,7 @@ const WebSocketComponent = () => {
           break
         case "WaitDevice":
           console.log(jsonData);
+          send_connect_ac_charger_request()
           handleAddItem("Test cihazının hazır olması bekleniyor...", null)
           break
         case "WaitDeviceResult":
