@@ -43,6 +43,12 @@ const WebSocketComponent = () => {
     containerRef,
   } = useMessage();
 
+  // useEffect(() => {
+  //   console.log("socket",socket)
+
+  // }, [socket]);
+
+
   const handleAddItem = (message: string, isSuccess: boolean | null) => {
     setItems((prevItems: Item[]) => [
       ...prevItems,
@@ -290,7 +296,7 @@ const WebSocketComponent = () => {
         socket.close();
       }
     };
-  }, []);
+  }, [socket]);
 
   return <div></div>;
 };
