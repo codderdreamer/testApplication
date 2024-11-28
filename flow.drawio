@@ -1,0 +1,142 @@
+<mxfile host="65bd71144e">
+    <diagram id="KUBG8ypKO-xALvRJSWs-" name="Page-1">
+        <mxGraphModel dx="1040" dy="775" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="3" style="edgeStyle=none;html=1;" parent="1" source="2" target="4" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="225" y="130" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="2" value="Bilgisayara ethernet kablosu ve modbus için usb kablosu takılır." style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="140" y="20" width="170" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" style="edgeStyle=none;html=1;" parent="1" source="4" target="6" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="225" y="250" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="4" value="Bilgisayar arayüzünde bağlı usb gösterilir.&lt;br&gt;&lt;br&gt;Bilgisayar arayüzünde selectte aynı ağdaki aktif ip (kendi bilgisayar ipsi ve 1.1 hariç) gösterilir (tek ip olmak zorunda). 5 saniyede bir ikisi sürekli yenilenir." style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="110" width="295" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" style="edgeStyle=none;html=1;" parent="1" source="6" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="227.5" y="360" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="6" value="Teste başlamak isteyen kişi uygun cihazı ve uygun ipyi seçer ve bağlantının başarılı olup olmadığına bakar." style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="145" y="240" width="165" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="Bağlantı başarılı ise teste başlamak için Modbus'tan&amp;nbsp;IS_DEVICE_READY sürekli ana ekranda gösterilir. 1 olduğunda Teste başla butonu aktif olur." style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="140" y="360" width="202.5" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="455" y="30" width="535" height="1130" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="Hera Test Uygulaması" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="550" y="35" width="190" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="Lütfen bilgisayara USB ve ethernet kablosunu takınız..." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="480" y="70" width="310" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="Bağlı USB kablosu:" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="490" y="100" width="130" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="COM3" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="655" y="100" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="Bağlı ethernet ipsi:" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="490" y="120" width="130" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="192.168.1.2" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="645" y="120" width="80" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="Cihazda usb, eth varsa ve cihaz teste hazırsa teste başla butonu aktif olur." style="rounded=1;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="1070" y="150" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="Teste Başla" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="500" y="360" width="150" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="Cihaz İçi Seri No Barkodunu Okutunuz" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="630" y="270" width="125" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="Model Id:" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="472.5" y="270" width="130" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="Charge Point Id:" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="480" y="310" width="130" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="27" value="Cihaz Ön Barkodunu Okutunuz" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="630" y="310" width="125" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" value="Wifi SSID:" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="500" y="180" width="75" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" value="" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="630" y="180" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" value="Wifi Pass:" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="500" y="220" width="75" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" value="" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="630" y="220" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="42" value="MCU Kartına yazılım yükleniyor..." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="505" y="445" width="295" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="58" value="" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="755" y="595" width="120" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="60" value="" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="755" y="630" width="120" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="62" value="" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="755" y="665" width="120" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="64" value="SMART&amp;nbsp;FONKSİYON VE BAĞLANTI TESTLERİ" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="500" y="415" width="280" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="65" value="&lt;span style=&quot;text-align: center;&quot;&gt;Cihaz wifi ağına bağlanıyor...&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="505" y="470" width="295" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="81" value="&lt;span style=&quot;text-align: center;&quot;&gt;Bluetooth bağlantısı test ediliyor...&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="505" y="500" width="295" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="82" value="4G'li model test ediliyor..." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="505" y="530" width="295" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="83" value="&lt;span style=&quot;text-align: center;&quot;&gt;RS485 Hattı Test ediliyor...&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="505" y="560" width="295" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="84" value="&lt;span style=&quot;text-align: center;&quot;&gt;Master kartı okutunuz.&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="505" y="590" width="235" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="85" value="&lt;span style=&quot;text-align: center;&quot;&gt;Kullanıcı kartını okutunuz.&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="505" y="625" width="225" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="86" value="&lt;span style=&quot;text-align: center;&quot;&gt;Kullanıcı kartını okutunuz.&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="505" y="660" width="225" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="87" value="ŞARJ TESTİ" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="505" y="700" width="280" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="88" value="--&amp;gt; select" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="815" y="100" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="89" value="--&amp;gt; select" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="815" y="120" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="90" value="Şarj cihazı B konumuna geldi..." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="505" y="730" width="295" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="91" value="Lütfen birinci kullanıcı RFID kartını okutunuz!" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="505" y="760" width="295" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="92" value="Teste Başla" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="360" width="140" height="30" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
