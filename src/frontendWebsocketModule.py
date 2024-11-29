@@ -89,20 +89,34 @@ class FrontendWebsocketModule():
                     self.send_frontend_connect_usb()
                 elif Command == "SeriNoBarcode":
                     self.application.config.seriNo = Data
-                    result = self.application.sap.get_serialNumberDetails(self.application.config.seriNo)
-                    self.send_frontend_sap_seri_no_knowledge(result)
-                    self.send_frontend_charge_point_id_request(result)
+                    if self.application.simu_test == False:
+                        result = self.application.sap.get_serialNumberDetails(self.application.config.seriNo)
+                    else:
+                        result = True
+                        self.send_frontend_sap_seri_no_knowledge(result)
+                        self.send_frontend_charge_point_id_request(result)
                 elif Command == "ChargePointIdBarcode":
                     self.application.config.chargePointId = Data
                     self.send_frontend_wait_device()
                     Thread(target=self.application.modbusModule.wait_test_device,daemon=True).start()
+                    if self.application.simu_test:
+                        self.application.modbusModule.IS_DEVICE_READY = 1
                 elif Command == "ACChargerConnectRequest":
                     Thread(target=self.application.acdeviceWebsocket.wait_ac_charger_connection,daemon=True).start()
-                    
+
                 elif Command == "CancelTest":
                     self.application.config.cancel_test = True
         except Exception as e:
             print("MessageReceivedws Exception",e)
+
+    def send_ac_charger_connect_result(self,result):
+        try:
+            self.websocket.send_message_to_all(json.dumps({
+                            "Command": "ACChargerConnectResult",
+                            "Data": result
+                        }))
+        except Exception as e:
+            print("send_ac_charger_connect_result Exception:",e)
 
 
     def save_config(self,Data):
@@ -116,7 +130,8 @@ class FrontendWebsocketModule():
             self.application.config.fourG_pin = Data["fourG_pin"]
 
             self.application.config.selectedUSB = Data["selectedUSB"]
-            self.application.config.sap = Data["sap"]
+            self.application.config.sap_save_device = Data["sap"]
+            
             self.application.config.write_config_json()
             print("Bilgiler kayıt edildi.")
         except Exception as e:
@@ -124,39 +139,61 @@ class FrontendWebsocketModule():
 
     def send_frontend_connect_usb(self):
         try:
-            usb_connected = self.application.modbusModule.connect_modbus(self.application.config.selectedUSB)
-            print("usb_connected",usb_connected)
+            if self.application.simu_test == False:
+                usb_connected = self.application.modbusModule.connect_modbus(self.application.config.selectedUSB)
+                print("usb_connected",usb_connected)
 
-            self.websocket.send_message_to_all(json.dumps({
-                    "Command": "USBControl",
-                    "Data": usb_connected
-                }))
+                self.websocket.send_message_to_all(json.dumps({
+                        "Command": "USBControl",
+                        "Data": usb_connected
+                    }))
+            else:
+                self.websocket.send_message_to_all(json.dumps({
+                        "Command": "USBControl",
+                        "Data": True
+                    }))
         except Exception as e:
             print("send_frontend_connect_usb Exception:",e)
 
     def send_frontend_sap_seri_no_knowledge(self,result):
         try:
-            if result:
-                self.websocket.send_message_to_all(json.dumps({
-                        "Command": "SeriNoBarcodeResult",
-                        "Data": {
-                            "result" : result,
-                            "ItemCode" : self.application.deviceModel.ItemCode,
-                            "emergencyButton" : self.application.deviceModel.emergencyButton.name,
-                            "midMeter" : self.application.deviceModel.midMeter.name,
-                            "system" : self.application.deviceModel.system.name,
-                            "bodyColor" : self.application.deviceModel.bodyColor.name,
-                            "connectorType" : self.application.deviceModel.connectorType.name,
-                            "caseType" : self.application.deviceModel.caseType.name,
-                        }
-                    }))
+            if self.application.simu_test == False:
+                if result:
+                    self.websocket.send_message_to_all(json.dumps({
+                            "Command": "SeriNoBarcodeResult",
+                            "Data": {
+                                "result" : result,
+                                "ItemCode" : self.application.deviceModel.ItemCode,
+                                "emergencyButton" : self.application.deviceModel.emergencyButton.name,
+                                "midMeter" : self.application.deviceModel.midMeter.name,
+                                "system" : self.application.deviceModel.system.name,
+                                "bodyColor" : self.application.deviceModel.bodyColor.name,
+                                "connectorType" : self.application.deviceModel.connectorType.name,
+                                "caseType" : self.application.deviceModel.caseType.name,
+                            }
+                        }))
+                else:
+                    self.websocket.send_message_to_all(json.dumps({
+                            "Command": "SeriNoBarcodeResult",
+                            "Data": {
+                                "result" : result
+                            }
+                        }))
             else:
+                self.application.deviceModel.find("HC022304312")
                 self.websocket.send_message_to_all(json.dumps({
-                        "Command": "SeriNoBarcodeResult",
-                        "Data": {
-                            "result" : result
-                        }
-                    }))
+                            "Command": "SeriNoBarcodeResult",
+                            "Data": {
+                                "result" : True,
+                                "ItemCode" : self.application.deviceModel.ItemCode,
+                                "emergencyButton" : self.application.deviceModel.emergencyButton.name,
+                                "midMeter" : self.application.deviceModel.midMeter.name,
+                                "system" : self.application.deviceModel.system.name,
+                                "bodyColor" : self.application.deviceModel.bodyColor.name,
+                                "connectorType" : self.application.deviceModel.connectorType.name,
+                                "caseType" : self.application.deviceModel.caseType.name,
+                            }
+                        }))
         except Exception as e:
             print("send_frontend_sap_knowledge Exception:",e)
 

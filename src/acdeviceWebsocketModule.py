@@ -10,7 +10,8 @@ class AcdeviceWebsocketModule():
         self.__connection = False
         self.websocket = None
         self.wait_timeout = 60*5 # 5dk
-        Thread(target=self.websocket_thread,daemon=True).start()
+        if self.application.simu_test == False:
+            Thread(target=self.websocket_thread,daemon=True).start()
 
     @property
     def connection(self):
@@ -62,16 +63,13 @@ class AcdeviceWebsocketModule():
                     print("Test iptal edildi!")
                     break
                 if time.time() - time_start > self.wait_timeout:
-                    self.application.frontendWebsocket.websocket.send_message_to_all(json.dumps({
-                            "Command": "ACChargerConnectResult",
-                            "Data": False
-                        }))
+                    self.application.frontendWebsocket.send_ac_charger_connect_result(False)
                     break
                 if self.connection:
-                    self.application.frontendWebsocket.websocket.send_message_to_all(json.dumps({
-                            "Command": "ACChargerConnectResult",
-                            "Data": True
-                        }))
+                    self.application.frontendWebsocket.send_ac_charger_connect_result(True)
+                    break
+                if self.application.simu_test:
+                    self.application.frontendWebsocket.send_ac_charger_connect_result(True)
                     break
             except Exception as e:
                 print("wait_ac_charger_connection Exception:",e)
@@ -91,6 +89,24 @@ class AcdeviceWebsocketModule():
                     self.websocket.send(json.dumps({
                             "Command": "SaveConfig",
                             "Data": {
+                                "wifiSSID" : self.application.config.wifiSSID,
+                                "wifiPassword" : self.application.config.wifiPassword,
+                                "fourG_apn" : self.application.config.fourG_apn,
+                                "fourG_user" : self.application.config.fourG_user,
+                                "fourG_password" : self.application.config.fourG_password,
+                                "fourG_pin" : self.application.config.fourG_pin,
+                                "seriNo" : self.application.config.seriNo,
+                                "chargePointId" : self.application.config.chargePointId,
+                                "connectorType" : self.application.deviceModel.connectorType.name,
+                                "fourg" : self.application.deviceModel.system.name == "RFID_Wifi_Ethernet_Bluetooth_4G",
+                                "midMeter" : self.application.deviceModel.midMeter.name
+                            }
+                        }))
+                    break
+                if self.application.simu_test:
+                    self.websocket.send(json.dumps({
+                            "Command": "SaveConfig",
+                            "Data": {
 
                             }
                         }))
@@ -98,3 +114,5 @@ class AcdeviceWebsocketModule():
             except Exception as e:
                 print("wait_ac_charger_connection Exception:",e)
             time.sleep(3)
+
+

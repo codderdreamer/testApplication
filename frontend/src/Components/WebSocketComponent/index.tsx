@@ -47,11 +47,7 @@ const WebSocketComponent = () => {
     console.log("change socket --------------", socket)
   }, [socket]);
 
-  const send_test = () => {
-    send_ac_charger_connect_request()
-  };
-
-  const send_ac_charger_connect_request = () => {
+  const send_ac_charger_connect_request = (socket : W3CWebSocket) => {
     if (socket) {
       if (socket.readyState === socket.OPEN) {
         socket.send(
@@ -250,10 +246,13 @@ const WebSocketComponent = () => {
         case "WaitDeviceResult":
           console.log(jsonData);
           handleAddItem("Test cihazı hazır.", true)
-          send_test()
+          send_ac_charger_connect_request(newSocket)
           handleAddItem("AC Charger'a bağlanılıyor...", null)
           break
-        case "Test2":
+        case "ACChargerConnectResult":
+          if(jsonData.Data){
+            handleAddItem("AC Charger'a bağlandı.", true)
+          }
 
 
       }

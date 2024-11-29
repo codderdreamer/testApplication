@@ -53,7 +53,8 @@ class ModbusModule():
         self.LOADBANK_P3 = None
 
         Thread(target=self.scan_modbus_thread,daemon=True).start()
-        Thread(target=self.read_all_registers,daemon=True).start()
+        if self.application.simu_test == False:
+            Thread(target=self.read_all_registers,daemon=True).start()
 
 
     def connect_modbus(self,port):

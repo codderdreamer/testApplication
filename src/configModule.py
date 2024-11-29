@@ -13,9 +13,11 @@ class Config():
         self.fourG_pin = ""
 
         self.selectedUSB = ""
+
         self.seriNo = ""
         self.chargePointId = ""
-        self.sap = None
+
+        self.sap_save_device = None
 
         self.read_config_json()
 
