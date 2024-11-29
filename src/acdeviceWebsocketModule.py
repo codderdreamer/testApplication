@@ -29,7 +29,7 @@ class AcdeviceWebsocketModule():
             Command = sjon["Command"]
             Data = sjon["Data"]
             if Command == "MasterCardResult":
-                self.application.frontendWebsocket.master_card_result(message)
+                self.application.frontendWebsocket.websocket.send_message_to_all(message)
 
         except Exception as e:
             print("on_message Exception:",e)
