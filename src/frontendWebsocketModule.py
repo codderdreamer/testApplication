@@ -93,8 +93,8 @@ class FrontendWebsocketModule():
                         result = self.application.sap.get_serialNumberDetails(self.application.config.seriNo)
                     else:
                         result = True
-                        self.send_frontend_sap_seri_no_knowledge(result)
-                        self.send_frontend_charge_point_id_request(result)
+                    self.send_frontend_sap_seri_no_knowledge(result)
+                    self.send_frontend_charge_point_id_request(result)
                 elif Command == "ChargePointIdBarcode":
                     self.application.config.chargePointId = Data
                     self.send_frontend_wait_device()
