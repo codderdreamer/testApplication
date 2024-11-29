@@ -66,9 +66,11 @@ class AcdeviceWebsocketModule():
                     self.application.frontendWebsocket.send_ac_charger_connect_result(False)
                     break
                 if self.connection:
+                    print("Connection var")
                     self.application.frontendWebsocket.send_ac_charger_connect_result(True)
                     break
                 if self.application.simu_test:
+                    print("self.application.simu_test",self.application.simu_test)
                     self.application.frontendWebsocket.send_ac_charger_connect_result(True)
                     break
             except Exception as e:
@@ -112,7 +114,7 @@ class AcdeviceWebsocketModule():
                         }))
                     break
             except Exception as e:
-                print("wait_ac_charger_connection Exception:",e)
+                print("send_save_config Exception:",e)
             time.sleep(3)
 
 
