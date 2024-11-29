@@ -253,7 +253,19 @@ const WebSocketComponent = () => {
           if(jsonData.Data){
             handleAddItem("AC Charger'a bağlandı.", true)
           }
-
+          break
+        case "MasterCardRequest":
+          handleAddItem("Lütfen master katı cihaza okutunuz!", null)
+          break
+        case "MasterCardResult":
+          if (jsonData.Data == "" ){
+            handleAddItem("Master kart alınamadı " + jsonData.Data, false)
+          }
+          else{
+            handleAddItem("Okutulan Master Card:" + jsonData.Data, true)
+          }
+          break
+          
 
       }
     };

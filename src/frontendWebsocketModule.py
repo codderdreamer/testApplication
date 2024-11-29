@@ -118,6 +118,15 @@ class FrontendWebsocketModule():
         except Exception as e:
             print("send_ac_charger_connect_result Exception:",e)
 
+    def master_card_request(self):
+        try:
+            self.websocket.send_message_to_all(json.dumps({
+                            "Command": "MasterCardRequest",
+                            "Data": ""
+                        }))
+        except Exception as e:
+            print("master_card_request Exception:",e)
+
 
     def save_config(self,Data):
         try:

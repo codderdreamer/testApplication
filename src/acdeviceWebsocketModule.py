@@ -22,7 +22,18 @@ class AcdeviceWebsocketModule():
         self.__connection = value
 
     def on_message(self, ws, message):
-        print(f"Gelen mesaj: {message}")
+        print(f"Incoming message: {message}")
+        try:
+            sjon = json.loads(message)
+            print(f"Incoming: {sjon}")
+            Command = sjon["Command"]
+            Data = sjon["Data"]
+            if Command == "MasterCardResult":
+                self.application.frontendWebsocket.master_card_result(message)
+
+        except Exception as e:
+            print("on_message Exception:",e)
+        
 
     def on_error(self, ws, error):
         self.connection = False
@@ -55,6 +66,13 @@ class AcdeviceWebsocketModule():
                 self.connection = False
             time.sleep(5)
 
+    def master_card_request(self):
+        if self.connection:
+            self.websocket.send(json.dumps({
+                    "Command": "MasterCardRequest",
+                    "Data": ""
+                }))
+
     def wait_ac_charger_connection(self):
         while True:
             time_start = time.time()
@@ -68,10 +86,14 @@ class AcdeviceWebsocketModule():
                 if self.connection:
                     print("Connection var")
                     self.application.frontendWebsocket.send_ac_charger_connect_result(True)
+                    self.application.frontendWebsocket.master_card_request()
+                    self.master_card_request()
                     break
                 if self.application.simu_test:
                     print("self.application.simu_test",self.application.simu_test)
                     self.application.frontendWebsocket.send_ac_charger_connect_result(True)
+                    self.application.frontendWebsocket.master_card_request()
+                    self.master_card_request()
                     break
             except Exception as e:
                 print("wait_ac_charger_connection Exception:",e)
