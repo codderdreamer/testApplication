@@ -41,6 +41,16 @@ class FrontendWebsocketModule():
                 print("send_connected_USB_list Exception",e)
 
             time.sleep(3)
+
+    def send_ac_charger_not_connected(self):
+        try:
+            message = {
+                    "Command": "ACChargerNotConnected",
+                    "Data": ""
+                }
+
+        except Exception as e:
+                print("send_ac_charger_not_connected Exception",e)
         
     def NewClientws(self, client, server):
         self.client = client
