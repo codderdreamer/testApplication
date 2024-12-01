@@ -17,6 +17,7 @@ const WebSocketComponent = () => {
   const navigate = useNavigate();
   const [waitingForBarcode, setWaitingForBarcode] = useState(false);
   const [barcode, setBarcode] = useState("");
+  const [mcu_error, setmcu_error] = useState("");
   // const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [debounceId, setDebounceId] = useState<NodeJS.Timeout | null>(null);
   const [expectedBarcodeType, setExpectedBarcodeType] = useState<BarcodeType | null>(null);
@@ -284,7 +285,7 @@ const WebSocketComponent = () => {
             handleAddItem("İkinci kullanıcı kart alınamadı " + jsonData.Data, false)
           }
           else{
-            handleAddItem("İkinci kullanıcı kayıt edildi:" + jsonData.Data, true)
+            handleAddItem("İkinci kullanıcı kayıt edildi: " + jsonData.Data, true)
           }
           break
         case "WaitConfigResult":
@@ -298,6 +299,46 @@ const WebSocketComponent = () => {
         case "ACChargerNotConnected":
           handleAddItem("AC Şarj cihazından cevap alınamadı!", false)
           break
+        case "SaveConfigResult":
+          if (jsonData.Data.bluetooth_mac == "" || jsonData.Data.bluetooth_mac == null){
+            handleAddItem("Bluetooth mac adresi alınamadı!", false)
+          } else {
+            handleAddItem("Bluetooth mac adresi alındı: " + jsonData.Data.bluetooth_mac, true)
+          }
+          if (jsonData.Data.eth_mac == "" || jsonData.Data.eth_mac == null){
+            handleAddItem("Ethernet mac adresi alınamadı!", false)
+          } else {
+            handleAddItem("Ethernet mac adresi alındı: " + jsonData.Data.eth_mac, true)
+          }
+          if (jsonData.Data.mcu_error.length != 0){
+            setmcu_error("")
+            jsonData.Data.mcu_error.forEach((error: string, index: number) => {
+              handleAddItem("MCU'da hata var! " + error, false)
+            });
+            
+          } else {
+            handleAddItem("MCU'da hata yok.", true)
+          }
+          if (jsonData.Data.mcu_connection == false) {
+            handleAddItem("MCU bağlı değil!", false)
+          } else {
+            handleAddItem("MCU bağlı.", true)
+          }
+          if (jsonData.Data.fourg == true) {
+            if (jsonData.Data.imei_4g == "" || jsonData.Data.imei_4g == null){
+              handleAddItem("4G imei adresi alınamadı!", false)
+            } else {
+              handleAddItem("4G imei adresi alındı: " + jsonData.Data.imei_4g , true)
+            }
+          }
+          if (jsonData.Data.wlan0_connection == false) {
+            handleAddItem("Wifi'ye bağlanamadı!", false)
+          } else {
+            handleAddItem("Wifi'ye bağlandı.", true)
+          }
+          break
+
+
       }
     };
 

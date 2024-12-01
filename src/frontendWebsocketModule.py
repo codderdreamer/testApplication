@@ -78,7 +78,7 @@ class FrontendWebsocketModule():
                     "Command": "ACChargerNotConnected",
                     "Data": ""
                 }
-
+            self.websocket.send_message_to_all(json.dumps(message))
         except Exception as e:
                 print("send_ac_charger_not_connected Exception",e)
         

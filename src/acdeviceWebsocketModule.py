@@ -112,10 +112,16 @@ class AcdeviceWebsocketModule():
                 self.mcu_connection = self.save_config_result_json_data["mcu_connection"]
                 self.imei_4g = self.save_config_result_json_data["imei_4g"]
                 self.wlan0_connection = self.save_config_result_json_data["wlan0_connection"]
+                message = {
+                    "Command" : "SaveConfigResult",
+                    "Data" : self.save_config_result_json_data
+                }
+                self.application.frontendWebsocket.websocket.send_message_to_all(json.dumps(message))
                 break
             if time.time() - time_start > 120:
                 self.application.frontendWebsocket.send_ac_charger_not_connected()
                 break
+            time.sleep(3)
 
     
     def master_card_request(self):
