@@ -271,6 +271,22 @@ const WebSocketComponent = () => {
         case "User2CardRequest":
           handleAddItem("Lütfen ikinci kullanıcı katını cihaza okutunuz!", null)
           break
+        case "User1CardResult":
+          if (jsonData.Data == "" || jsonData.Data == null){
+            handleAddItem("Birinci kullanıcı kart alınamadı " + jsonData.Data, false)
+          }
+          else{
+            handleAddItem("Birinci kullanıcı kayıt edildi:" + jsonData.Data, true)
+          }
+          break
+        case "User2CardResult":
+          if (jsonData.Data == "" || jsonData.Data == null){
+            handleAddItem("İkinci kullanıcı kart alınamadı " + jsonData.Data, false)
+          }
+          else{
+            handleAddItem("İkinci kullanıcı kayıt edildi:" + jsonData.Data, true)
+          }
+          break
         case "WaitConfigResult":
           handleAddItem("AC Şarj cihazının 4G'li model ise 4G'ye bağlanması bekleniyor...", null)
           handleAddItem("AC Şarj cihazının Wifiye bağlanması bekleniyor...",null)

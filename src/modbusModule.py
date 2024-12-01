@@ -154,7 +154,8 @@ class ModbusModule():
     # 0: Cihaz Test Ediliyor;   1: Test Başarı ile Tamamlandı;   -1: Test Başarısız Oldu;   Diğer Değer: Test Başlamadı
     def write_is_test_complete(self,value:int):
         try:
-            self.write_register(0,value)
+            if self.application.simu_test == False:
+                self.write_register(0,value)
         except Exception as e:
             print("write_is_test_complete Exception:", e)
 
