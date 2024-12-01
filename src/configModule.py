@@ -16,6 +16,16 @@ class Config():
 
         self.seriNo = ""
         self.chargePointId = ""
+        self.master_card = None
+        self.user_1_card = None
+        self.user_2_card = None
+
+        self.bluetooth_mac = None
+        self.eth_mac = None
+        self.mcu_error = None
+        self.mcu_connection = None
+        self.imei_4g = None
+        self.wlan0_connection = None
 
         self.sap_save_device = None
 

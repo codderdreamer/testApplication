@@ -15,6 +15,36 @@ class FrontendWebsocketModule():
         Thread(target=self.websocket.run_forever, daemon=True).start()
         Thread(target=self.send_connected_USB_list,daemon=True).start()
         # Thread(target=self.send_connected_eth_list,daemon=True).start()
+
+    def wait_config_result(self):
+        try:
+            message = {
+                "Command": "WaitConfigResult",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("wait_config_result Exception",e)
+
+    def user_1_card_request(self):
+        try:
+            message = {
+                "Command": "User1CardRequest",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("user_1_card_request Exception",e)
+
+    def user_2_card_request(self):
+        try:
+            message = {
+                "Command": "User2CardRequest",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("user_2_card_request Exception",e)
         
     def send_connected_USB_list(self):
         while True:
@@ -96,7 +126,14 @@ class FrontendWebsocketModule():
                 Data = sjon["Data"]
                 if Command == "StartTest":
                     self.save_config(Data)
-                    self.send_frontend_connect_usb()
+                    if self.application.simu_test == False:
+                        usb_connected = self.application.modbusModule.connect_modbus(self.application.config.selectedUSB)
+                        print("usb_connected",usb_connected)
+                    else:
+                        usb_connected = True
+                    self.send_frontend_connect_usb(usb_connected)
+                    if usb_connected:
+                        self.application.modbusModule.write_is_test_complete(0)
                 elif Command == "SeriNoBarcode":
                     self.application.config.seriNo = Data
                     if self.application.simu_test == False:
@@ -105,6 +142,8 @@ class FrontendWebsocketModule():
                         result = True
                     self.send_frontend_sap_seri_no_knowledge(result)
                     self.send_frontend_charge_point_id_request(result)
+                    if result == False:
+                        self.application.modbusModule.write_is_test_complete(-1)
                 elif Command == "ChargePointIdBarcode":
                     self.application.config.chargePointId = Data
                     self.send_frontend_wait_device()
@@ -156,21 +195,12 @@ class FrontendWebsocketModule():
         except Exception as e:
             print("save_config Exception:",e)
 
-    def send_frontend_connect_usb(self):
+    def send_frontend_connect_usb(self,usb_connected):
         try:
-            if self.application.simu_test == False:
-                usb_connected = self.application.modbusModule.connect_modbus(self.application.config.selectedUSB)
-                print("usb_connected",usb_connected)
-
-                self.websocket.send_message_to_all(json.dumps({
-                        "Command": "USBControl",
-                        "Data": usb_connected
-                    }))
-            else:
-                self.websocket.send_message_to_all(json.dumps({
-                        "Command": "USBControl",
-                        "Data": True
-                    }))
+            self.websocket.send_message_to_all(json.dumps({
+                    "Command": "USBControl",
+                    "Data": usb_connected
+                }))
         except Exception as e:
             print("send_frontend_connect_usb Exception:",e)
 

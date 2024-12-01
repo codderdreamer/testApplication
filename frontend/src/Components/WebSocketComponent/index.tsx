@@ -258,15 +258,30 @@ const WebSocketComponent = () => {
           handleAddItem("Lütfen master katı cihaza okutunuz!", null)
           break
         case "MasterCardResult":
-          if (jsonData.Data == "" ){
+          if (jsonData.Data == "" || jsonData.Data == null){
             handleAddItem("Master kart alınamadı " + jsonData.Data, false)
           }
           else{
-            handleAddItem("Okutulan Master Card:" + jsonData.Data, true)
+            handleAddItem("Master kart kayıt edildi:" + jsonData.Data, true)
           }
           break
-          
-
+        case "User1CardRequest":
+          handleAddItem("Lütfen birinci kullanıcı katını cihaza okutunuz!", null)
+          break
+        case "User2CardRequest":
+          handleAddItem("Lütfen ikinci kullanıcı katını cihaza okutunuz!", null)
+          break
+        case "WaitConfigResult":
+          handleAddItem("AC Şarj cihazının 4G'li model ise 4G'ye bağlanması bekleniyor...", null)
+          handleAddItem("AC Şarj cihazının Wifiye bağlanması bekleniyor...",null)
+          handleAddItem("AC Şarj cihazının Bluetooth adı charge point id ile değiştiriliyor...",null)
+          handleAddItem("AC Şarj cihazının Ethernet MAC Adresi alınıyor...",null)
+          handleAddItem("AC Şarj cihazının MCU hata durumu sorgulanıyor...",null)
+          handleAddItem("AC Şarj cihazının 4G'li model ise 4G imei numarası alınıyor...", null)
+          break
+        case "ACChargerNotConnected":
+          handleAddItem("AC Şarj cihazından cevap alınamadı!", false)
+          break
       }
     };
 
