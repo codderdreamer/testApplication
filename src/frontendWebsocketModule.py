@@ -92,6 +92,16 @@ class FrontendWebsocketModule():
         except Exception as e:
             print("start_charge_test Exception",e)
 
+    def again_test(self):
+        try:
+            message = {
+                    "Command": "AgainTest",
+                    "Data": ""
+                }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("start_charge_test Exception",e)
+
     def wait_user_1_card_request(self):
         try:
             message = {

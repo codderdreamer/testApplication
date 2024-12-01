@@ -346,6 +346,9 @@ const WebSocketComponent = () => {
         case "WaitUser1CardRequest":
           handleAddItem("Lütfen birinci kullanıcı RFID kartını okutunuz!", null)
           break
+        case "AgainTest":
+          handleAddItem("Test işleminde hata var lütfen kontrol edip tekrar test ediniz!", false)
+          break
 
       }
     };

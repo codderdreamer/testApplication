@@ -117,8 +117,9 @@ class AcdeviceWebsocketModule():
                     "Data" : self.save_config_result_json_data
                 }
                 self.application.frontendWebsocket.websocket.send_message_to_all(json.dumps(message))
-                if self.is_there_error_in_config():
+                if self.is_there_error_in_config(self.save_config_result_json_data):
                     self.application.modbusModule.write_is_test_complete(-1)
+                    self.application.frontendWebsocket.again_test()
                 else:
                     self.application.frontendWebsocket.start_charge_test()
                     self.application.modbusModule.write_cable_control(1)
