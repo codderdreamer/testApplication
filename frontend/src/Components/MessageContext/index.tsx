@@ -4,6 +4,7 @@ import { w3cwebsocket as W3CWebSocket } from "websocket";
 interface Item {
   message: string;
   isSuccess: boolean | null;
+  type: string | null;
 }
 
 interface MessageContextType {

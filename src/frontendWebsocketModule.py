@@ -80,8 +80,28 @@ class FrontendWebsocketModule():
                 }
             self.websocket.send_message_to_all(json.dumps(message))
         except Exception as e:
-                print("send_ac_charger_not_connected Exception",e)
-        
+            print("send_ac_charger_not_connected Exception",e)
+
+    def start_charge_test(self):
+        try:
+            message = {
+                    "Command": "ChargeTest",
+                    "Data": ""
+                }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("start_charge_test Exception",e)
+
+    def wait_user_1_card_request(self):
+        try:
+            message = {
+                    "Command": "WaitUser1CardRequest",
+                    "Data": ""
+                }
+        except Exception as e:
+            print("wait_user_1_card_request Exception",e)
+
+
     def NewClientws(self, client, server):
         self.client = client
         if client:

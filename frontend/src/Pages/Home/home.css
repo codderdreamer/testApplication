@@ -7,14 +7,12 @@ body{
 .fullscreen-div {
     /* width: 100vw; */
     height: 100vh;
-    
-    padding: 20px;
 }
 
 .screen-1{
     width: 700px;
     height: 700px;
-    background-color: black;
+    background-color: #20253875;
     display: inline-block;
     position: absolute;
     padding: 10px;
@@ -32,20 +30,26 @@ body{
 }
 
 .header{
-    height: 50px;
-    font-size: 34px;
-    color: azure;
-    text-align: center;
     align-items: center;
-    /* width: 100%; */
-    font-weight: 700;
-    padding: 20px;
-    color: bisque;
+    color: azure;
+    color: #00afe39e;
     display: block;
+    font-size: 34px;
+    font-weight: 700;
+    height: 50px;
+    padding: 20px;
+    text-align: center;
 }
 
 .textlog{
+    background: #3e406bab;
+    border: 1px;
+    border-color: #135792;
     height: 20px;
+    line-height: 20px;
+    padding-left: 10px;
+    position: relative;
+    font-size: 12px;
 }
 
 .text1{
@@ -92,6 +96,7 @@ body{
     font-size: 15px;
     cursor: pointer;
     margin-bottom: 50px;
+    margin-left: 10px;
 }
 
 .fakestart{
@@ -103,6 +108,7 @@ body{
     background-color: bisque;
     cursor: pointer;
     margin-bottom: 50px;
+    margin-left: 10px;
 }
 
 .cancelTest{
@@ -115,20 +121,19 @@ body{
     margin-bottom: 50px;
     background-color: rgb(180, 0, 0);
     color: aliceblue;
+    margin-left: 10px;
 }
 
 .tick {
-    display: inline-block;
-    margin-left: 20px;
-    opacity: 0;
-    animation: slideIn 0.5s forwards ease-in-out;
-    color: green;
+    animation: slideIn .5s ease-in-out forwards;
     background-color: green;
+    color: green;
+    display: inline-block;
     padding: 3px;
-    border-radius: 20px;
-    margin-top: 5px;
-    width: 15px;
-    height: 15px;
+    position: absolute;
+    right: 10px;
+    top: 0px;
+    width: 12px;
   }
   
   @keyframes slideIn {

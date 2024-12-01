@@ -228,21 +228,36 @@ const Home = () => {
             </div>
 
             <div className="screen-2" ref={containerRef}>
-                {items.map((item, index) => (
-                    <div
+                
+                {items.map((item, index) => {
+                    if (item.type === "header") {
+                    return (
+                        <div
+                        key={index}
+                        className="textlog"
+                        style={{ margin: "10px 0", fontWeight: 900, color: "#6dff28" , background: "#0b091e"}}
+                        >
+                        {item.message}
+                        </div>
+                    );
+                    } else {
+                    return (
+                        <div
                         className="textlog"
                         key={index}
                         style={{
                             margin: "10px 0",
                             color: item.isSuccess === false ? "red" : "inherit",
                         }}
-                    >
+                        >
                         {item.message}
                         {item.isSuccess === true && (
                             <img className="tick" src="/assets/img/tik.png" alt="" />
                         )}
-                    </div>
-                ))}
+                        </div>
+                    );
+                    }
+                })}
 
             </div>
 
@@ -251,3 +266,23 @@ const Home = () => {
 };
 
 export default Home;
+
+
+// {items.map((item, index) => (
+                    
+//     <div
+//         className="textlog"
+//         key={index}
+//         style={{
+//             margin: "10px 0",
+//             color: item.isSuccess === false ? "red" : "inherit",
+//         }}
+//     >
+//         {item.message}
+//         {item.isSuccess === true && (
+//             <img className="tick" src="/assets/img/tik.png" alt="" />
+//         )}
+//     </div>
+
+
+// ))}

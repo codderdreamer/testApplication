@@ -106,23 +106,44 @@ class AcdeviceWebsocketModule():
         time_start = time.time()
         while True:
             if self.save_config_result_json_data != None:
-                self.bluetooth_mac = self.save_config_result_json_data["bluetooth_mac"]
-                self.eth_mac = self.save_config_result_json_data["eth_mac"]
-                self.mcu_error = self.save_config_result_json_data["mcu_error"]
-                self.mcu_connection = self.save_config_result_json_data["mcu_connection"]
-                self.imei_4g = self.save_config_result_json_data["imei_4g"]
-                self.wlan0_connection = self.save_config_result_json_data["wlan0_connection"]
+                self.application.config.bluetooth_mac = self.save_config_result_json_data["bluetooth_mac"]
+                self.application.config.eth_mac = self.save_config_result_json_data["eth_mac"]
+                self.application.config.mcu_error = self.save_config_result_json_data["mcu_error"]
+                self.application.config.mcu_connection = self.save_config_result_json_data["mcu_connection"]
+                self.application.config.imei_4g = self.save_config_result_json_data["imei_4g"]
+                self.application.config.wlan0_connection = self.save_config_result_json_data["wlan0_connection"]
                 message = {
                     "Command" : "SaveConfigResult",
                     "Data" : self.save_config_result_json_data
                 }
                 self.application.frontendWebsocket.websocket.send_message_to_all(json.dumps(message))
+                if self.is_there_error_in_config():
+                    self.application.modbusModule.write_is_test_complete(-1)
+                else:
+                    self.application.frontendWebsocket.start_charge_test()
+                    self.application.modbusModule.write_cable_control(1)
+                    self.application.frontendWebsocket.wait_user_1_card_request()
                 break
             if time.time() - time_start > 120:
                 self.application.frontendWebsocket.send_ac_charger_not_connected()
                 break
             time.sleep(3)
 
+    def is_there_error_in_config(self,Data):
+        error = False
+        if Data["bluetooth_mac"] == "" or Data["bluetooth_mac"] == None:
+            error = True
+        if Data["eth_mac"] == "" or Data["eth_mac"] == None:
+            error = True
+        if len(Data["mcu_error"]) > 0:
+            error = True
+        if Data["mcu_connection"] == False:
+            error = True
+        if Data["imei_4g"] == "" or Data["imei_4g"] == None:
+            error = True
+        if Data["wlan0_connection"] == False:
+            error = True
+        return error
     
     def master_card_request(self):
         if self.connection:

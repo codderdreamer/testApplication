@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 interface Item {
   message: string;
   isSuccess: boolean | null;
+  type: string | null;
 }
 
 type BarcodeType = "seriNo" | "chargePointId";
@@ -65,10 +66,10 @@ const WebSocketComponent = () => {
     }
   }
 
-  const handleAddItem = (message: string, isSuccess: boolean | null) => {
+  const handleAddItem = (message: string, isSuccess: boolean | null, type: string | null = null) => {
     setItems((prevItems: Item[]) => [
       ...prevItems,
-      { message, isSuccess },
+      { message, isSuccess, type },
     ]);
 
     if (containerRef.current) {
@@ -193,6 +194,7 @@ const WebSocketComponent = () => {
           break
         case "Config":
           console.log(jsonData);
+          handleAddItem("SMART FONKSIYON ve BAĞLANTI TESTLERİ", null, "header")
           if (jsonData.Data) {
             setwifiSSID(jsonData.Data.wifiSSID)
             setwifiPassword(jsonData.Data.wifiPassword)
@@ -337,7 +339,13 @@ const WebSocketComponent = () => {
             handleAddItem("Wifi'ye bağlandı.", true)
           }
           break
-
+        case "ChargeTest":
+          handleAddItem("ŞARJ TESTİ", null,"header")
+          handleAddItem("Şarj cihazı B konumuna getirildi", true)
+          break
+        case "WaitUser1CardRequest":
+          handleAddItem("Lütfen birinci kullanıcı RFID kartını okutunuz!", null)
+          break
 
       }
     };
