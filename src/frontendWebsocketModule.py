@@ -100,7 +100,7 @@ class FrontendWebsocketModule():
                 }
             self.websocket.send_message_to_all(json.dumps(message))
         except Exception as e:
-            print("start_charge_test Exception",e)
+            print("again_test Exception",e)
 
     def wait_user_1_card_request(self):
         try:

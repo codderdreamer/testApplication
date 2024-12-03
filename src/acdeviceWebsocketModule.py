@@ -124,6 +124,7 @@ class AcdeviceWebsocketModule():
                     self.application.frontendWebsocket.start_charge_test()
                     self.application.modbusModule.write_cable_control(1)
                     self.application.frontendWebsocket.wait_user_1_card_request()
+                    self.wait_user_1_card_request()
                 break
             if time.time() - time_start > 120:
                 self.application.frontendWebsocket.send_ac_charger_not_connected()
@@ -146,6 +147,16 @@ class AcdeviceWebsocketModule():
             error = True
         return error
     
+    def wait_user_1_card_request(self):
+        try:
+            if self.connection:
+                self.websocket.send(json.dumps({
+                        "Command": "WaitUser1CardRequest",
+                        "Data": ""
+                    }))
+        except Exception as e:
+            print("wait_user_1_card_request Exception:",e)
+
     def master_card_request(self):
         if self.connection:
             self.websocket.send(json.dumps({
