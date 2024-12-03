@@ -3,6 +3,7 @@ from threading import Thread
 import websocket
 import time
 import json
+from src.enums import *
 
 class AcdeviceWebsocketModule():
     def __init__(self, application) -> None:
@@ -59,6 +60,17 @@ class AcdeviceWebsocketModule():
                     Thread(target=self.wait_save_config_result,daemon=True).start()
             elif Command == "SaveConfigResult":
                 self.save_config_result_json_data = Data
+            elif Command == "WaitUser1CardResult":
+                self.application.frontendWebsocket.websocket.send_message_to_all(message)
+                if Data:
+                    self.application.frontendWebsocket.wait_relay_on()
+                    self.application.acdeviceWebsocket.wait_relay_on()
+            elif Command == "WaitRelayOnResult":
+                self.application.frontendWebsocket.websocket.send_message_to_all(message)
+                if Data:
+                    self.application.modbusModule.write_load_control(0)
+                    Thread(target=self.control_values,daemon=True).start()
+
         except Exception as e:
             print("on_message Exception:",e)
         
@@ -147,6 +159,75 @@ class AcdeviceWebsocketModule():
             error = True
         return error
     
+    def control_values(self):
+        if self.control_voltage():
+            if self.control_current():
+                pass
+    
+    def control_voltage(self):
+        time_start = time.time()
+        while True:
+            try:
+                if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
+                    if not (self.application.modbusModule.LOADBANK_V1 > 195 and self.application.modbusModule.LOADBANK_V1 < 265):
+                        self.application.frontendWebsocket.send_control_voltage(False)
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                if self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
+                    if not (self.application.modbusModule.LOADBANK_V2 > 195 and self.application.modbusModule.LOADBANK_V2 < 265):
+                        self.application.frontendWebsocket.send_control_voltage(False)
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                    if not (self.application.modbusModule.LOADBANK_V3 > 195 and self.application.modbusModule.LOADBANK_V3 < 265):
+                        self.application.frontendWebsocket.send_control_voltage(False)
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                if time.time() - time_start > 5:
+                    self.application.frontendWebsocket.send_control_voltage(True)
+                    return True
+            except Exception as e:
+                print("control_voltage Exception:",e)
+
+    def control_current(self):
+        time_start = time.time()
+        while True:
+            try:
+                if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
+                    if not (self.application.modbusModule.LOADBANK_I1 > 4.5 and self.application.modbusModule.LOADBANK_I1 < 6.5):
+                        self.application.frontendWebsocket.send_control_current(False)
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                if self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
+                    if not (self.application.modbusModule.LOADBANK_I2 > 4.5 and self.application.modbusModule.LOADBANK_I2 < 6.5):
+                        self.application.frontendWebsocket.send_control_current(False)
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                    if not (self.application.modbusModule.LOADBANK_I3 > 4.5 and self.application.modbusModule.LOADBANK_I3 < 6.5):
+                        self.application.frontendWebsocket.send_control_current(False)
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                if time.time() - time_start > 5:
+                    self.application.frontendWebsocket.send_control_current(True)
+                    return True
+            except Exception as e:
+                print("control_current Exception:",e)
+
+    def wait_relay_on(self):
+        try:
+            if self.connection:
+                self.websocket.send(json.dumps({
+                        "Command": "WaitRelayOnRequest",
+                        "Data": ""
+                    }))
+        except Exception as e:
+            print("wait_relay_on Exception:",e)
+
     def wait_user_1_card_request(self):
         try:
             if self.connection:

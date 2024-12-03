@@ -11,7 +11,7 @@ body{
 
 .screen-1{
     width: 700px;
-    height: 700px;
+    height: 600px;
     background-color: #20253875;
     display: inline-block;
     position: absolute;
@@ -20,13 +20,32 @@ body{
 
 .screen-2{
     width: 700px;
-    height: 700px;
+    height: 600px;
     background-color: rgb(45, 45, 45);
     overflow-y: auto;
     display: inline-block;
     position: absolute;
     left: 750px;
     padding: 10px;
+}
+
+.screen-3{
+    background-color: rgb(55, 67, 82);
+    position: absolute;
+    top: 620px;
+    width: 1450px;
+    height: 200px;
+    padding: 10px;
+}
+
+.loads{
+    background-color: rgb(35, 93, 100);
+    width: 200px;
+    height: 30px;
+    display: inline-block;
+    margin-right: 10px;
+    margin-top: 10px;
+    line-height: 30px;
 }
 
 .header{

@@ -39,6 +39,33 @@ interface MessageContextType {
 
   timeoutId: NodeJS.Timeout | null;
   setTimeoutId: Dispatch<SetStateAction<NodeJS.Timeout | null>>;
+
+  LOADBANK_I1: string;
+  setLOADBANK_I1: (LOADBANK_I1: string) => void;
+
+  LOADBANK_I2: string;
+  setLOADBANK_I2: (LOADBANK_I2: string) => void;
+
+  LOADBANK_I3: string;
+  setLOADBANK_I3: (LOADBANK_I3: string) => void;
+
+  LOADBANK_V1: string;
+  setLOADBANK_V1: (LOADBANK_V1: string) => void;
+
+  LOADBANK_V2: string;
+  setLOADBANK_V2: (LOADBANK_V2: string) => void;
+
+  LOADBANK_V3: string;
+  setLOADBANK_V3: (LOADBANK_V3: string) => void;
+
+  LOADBANK_P1: string;
+  setLOADBANK_P1: (LOADBANK_P1: string) => void;
+
+  LOADBANK_P2: string;
+  setLOADBANK_P2: (LOADBANK_P2: string) => void;
+
+  LOADBANK_P3: string;
+  setLOADBANK_P3: (LOADBANK_P3: string) => void;
   
 
 
@@ -65,6 +92,15 @@ export const MessageProvider: React.FC<MessageProviderProps> = ({ children }) =>
   const [items, setItems] = useState<Item[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [LOADBANK_I1, setLOADBANK_I1] = useState<string>("");
+  const [LOADBANK_I2, setLOADBANK_I2] = useState<string>("");
+  const [LOADBANK_I3, setLOADBANK_I3] = useState<string>("");
+  const [LOADBANK_V1, setLOADBANK_V1] = useState<string>("");
+  const [LOADBANK_V2, setLOADBANK_V2] = useState<string>("");
+  const [LOADBANK_V3, setLOADBANK_V3] = useState<string>("");
+  const [LOADBANK_P1, setLOADBANK_P1] = useState<string>("");
+  const [LOADBANK_P2, setLOADBANK_P2] = useState<string>("");
+  const [LOADBANK_P3, setLOADBANK_P3] = useState<string>("");
 
   // const [networkjsonString, setNetworkPriority] = useState<string | null>(null);
   
@@ -80,7 +116,16 @@ export const MessageProvider: React.FC<MessageProviderProps> = ({ children }) =>
                                     fourG_pin, setfourG_pin,
                                     items,setItems,
                                     containerRef,
-                                    timeoutId, setTimeoutId
+                                    timeoutId, setTimeoutId,
+                                    LOADBANK_I1, setLOADBANK_I1,
+                                    LOADBANK_I2, setLOADBANK_I2,
+                                    LOADBANK_I3, setLOADBANK_I3,
+                                    LOADBANK_V1, setLOADBANK_V1,
+                                    LOADBANK_V2, setLOADBANK_V2,
+                                    LOADBANK_V3, setLOADBANK_V3,
+                                    LOADBANK_P1, setLOADBANK_P1,
+                                    LOADBANK_P2, setLOADBANK_P2,
+                                    LOADBANK_P3, setLOADBANK_P3
     }}>
       {children}
     </MessageContext.Provider>

@@ -33,6 +33,15 @@ const Home = () => {
         items,
         setItems,
         containerRef,timeoutId, setTimeoutId,
+        LOADBANK_I1, setLOADBANK_I1,
+        LOADBANK_I2, setLOADBANK_I2,
+        LOADBANK_I3, setLOADBANK_I3,
+        LOADBANK_V1, setLOADBANK_V1,
+        LOADBANK_V2, setLOADBANK_V2,
+        LOADBANK_V3, setLOADBANK_V3,
+        LOADBANK_P1, setLOADBANK_P1,
+        LOADBANK_P2, setLOADBANK_P2,
+        LOADBANK_P3, setLOADBANK_P3
     } = useMessage();
 
     useEffect(() => {
@@ -242,50 +251,69 @@ const Home = () => {
             </div>
 
             <div className="screen-2" ref={containerRef}>
-                
-            {items.map((item, index) => {
-        if (item.type === "header") {
-          return (
-            <div
-              key={index}
-              className="textlog"
-              style={{
-                margin: "10px 0",
-                fontWeight: 900,
-                color: "#6dff28",
-                background: "#0b091e",
-              }}
-            >
-              {item.message}
+                {items.map((item, index) => {
+                    if (item.type === "header") {
+                    return (
+                        <div
+                        key={index}
+                        className="textlog"
+                        style={{
+                            margin: "10px 0",
+                            fontWeight: 900,
+                            color: "#6dff28",
+                            background: "#0b091e",
+                        }}
+                        >
+                        {item.message}
+                        </div>
+                    );
+                    } else {
+                    return (
+                        <div
+                        className="textlog"
+                        key={index}
+                        style={{
+                            margin: "10px 0",
+                            color: item.isSuccess === false ? "red" : "inherit",
+                            background:
+                            index === highlightIndex
+                                ? isHighlightRed
+                                ? "blue"
+                                : "green"
+                                : "inherit",
+                        }}
+                        >
+                        {item.message}
+                        {item.isSuccess === true && (
+                            <img className="tick" src="/assets/img/tik.png" alt="" />
+                        )}
+                        </div>
+                    );
+                    }
+                })}
             </div>
-          );
-        } else {
-          return (
-            <div
-              className="textlog"
-              key={index}
-              style={{
-                margin: "10px 0",
-                color: item.isSuccess === false ? "red" : "inherit",
-                background:
-                  index === highlightIndex
-                    ? isHighlightRed
-                      ? "blue"
-                      : "green"
-                    : "inherit",
-              }}
-            >
-              {item.message}
-              {item.isSuccess === true && (
-                <img className="tick" src="/assets/img/tik.png" alt="" />
-              )}
-            </div>
-          );
-        }
-      })}
+            
+            <div className="screen-3">
+                <span className="loads">LOADBANK_I1</span>
+                <span className="loads">: {LOADBANK_I1}</span>
+                <span className="loads">LOADBANK_I2</span>
+                <span className="loads">: {LOADBANK_I2}</span>
+                <span className="loads">LOADBANK_I3</span>
+                <span className="loads">: {LOADBANK_I3}</span>
+                <span className="loads">LOADBANK_V1</span>
+                <span className="loads">: {LOADBANK_V1}</span>
+                <span className="loads">LOADBANK_V2</span>
+                <span className="loads">: {LOADBANK_V2}</span>
+                <span className="loads">LOADBANK_V3</span>
+                <span className="loads">: {LOADBANK_V3}</span>
+                <span className="loads">LOADBANK_P1</span>
+                <span className="loads">: {LOADBANK_P1}</span>
+                <span className="loads">LOADBANK_P2</span>
+                <span className="loads">: {LOADBANK_P2}</span>
+                <span className="loads">LOADBANK_P3</span>
+                <span className="loads">: {LOADBANK_P3}</span>
 
             </div>
-
         </div>
     );
 };

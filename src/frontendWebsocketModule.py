@@ -14,7 +14,50 @@ class FrontendWebsocketModule():
         self.websocket.set_fn_message_received(self.MessageReceivedws)
         Thread(target=self.websocket.run_forever, daemon=True).start()
         Thread(target=self.send_connected_USB_list,daemon=True).start()
-        # Thread(target=self.send_connected_eth_list,daemon=True).start()
+        Thread(target=self.send_all_load_data,daemon=True).start()
+
+    def send_all_load_data(self):
+        while True:
+            try:
+                message = {
+                    "Command": "LoadData",
+                    "Data": {
+                        "LOADBANK_I1" : self.application.modbusModule.LOADBANK_I1,
+                        "LOADBANK_I2" : self.application.modbusModule.LOADBANK_I2,
+                        "LOADBANK_I3" : self.application.modbusModule.LOADBANK_I3,
+                        "LOADBANK_V1" : self.application.modbusModule.LOADBANK_V1,
+                        "LOADBANK_V2" : self.application.modbusModule.LOADBANK_V2,
+                        "LOADBANK_V3" : self.application.modbusModule.LOADBANK_V3,
+                        "LOADBANK_P1" : self.application.modbusModule.LOADBANK_P1,
+                        "LOADBANK_P2" : self.application.modbusModule.LOADBANK_P2,
+                        "LOADBANK_P3" : self.application.modbusModule.LOADBANK_P3
+                    }
+                }
+                self.websocket.send_message_to_all(json.dumps(message))
+            except Exception as e:
+                # print("send_all_load_data Exception",e)
+                pass
+            time.sleep(1)
+
+    def send_control_voltage(self,value):
+        try:
+            message = {
+                "Command": "ControlVoltage",
+                "Data": value
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("wait_config_result Exception",e)
+
+    def send_control_current(self,value):
+        try:
+            message = {
+                "Command": "ControlCurrent",
+                "Data": value
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("wait_config_result Exception",e)
 
     def wait_config_result(self):
         try:
@@ -110,6 +153,15 @@ class FrontendWebsocketModule():
                 }
         except Exception as e:
             print("wait_user_1_card_request Exception",e)
+
+    def wait_relay_on(self):
+        try:
+            message = {
+                    "Command": "WaitRelayOnRequest",
+                    "Data": ""
+                }
+        except Exception as e:
+            print("wait_relay_on Exception",e)
 
 
     def NewClientws(self, client, server):

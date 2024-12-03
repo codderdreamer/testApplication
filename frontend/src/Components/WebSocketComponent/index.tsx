@@ -43,6 +43,15 @@ const WebSocketComponent = () => {
     items,
     setItems, timeoutId, setTimeoutId,
     containerRef,
+    LOADBANK_I1, setLOADBANK_I1,
+    LOADBANK_I2, setLOADBANK_I2,
+    LOADBANK_I3, setLOADBANK_I3,
+    LOADBANK_V1, setLOADBANK_V1,
+    LOADBANK_V2, setLOADBANK_V2,
+    LOADBANK_V3, setLOADBANK_V3,
+    LOADBANK_P1, setLOADBANK_P1,
+    LOADBANK_P2, setLOADBANK_P2,
+    LOADBANK_P3, setLOADBANK_P3
   } = useMessage();
 
   useEffect(() => {
@@ -189,6 +198,18 @@ const WebSocketComponent = () => {
     newSocket.onmessage = (message) => {
       const jsonData = JSON.parse(message.data.toString());
       switch (jsonData.Command) {
+        case "LoadData":
+          console.log(jsonData.Data)
+          setLOADBANK_I1(jsonData.Data.LOADBANK_I1)
+          setLOADBANK_I2(jsonData.Data.LOADBANK_I2)
+          setLOADBANK_I3(jsonData.Data.LOADBANK_I3)
+          setLOADBANK_V1(jsonData.Data.LOADBANK_V1)
+          setLOADBANK_V2(jsonData.Data.LOADBANK_V2)
+          setLOADBANK_V3(jsonData.Data.LOADBANK_V3)
+          setLOADBANK_P1(jsonData.Data.LOADBANK_P1)
+          setLOADBANK_P2(jsonData.Data.LOADBANK_P2)
+          setLOADBANK_P3(jsonData.Data.LOADBANK_P3)
+          break
         case "USBList":
           setUSBList(jsonData.Data)
           break
@@ -349,6 +370,32 @@ const WebSocketComponent = () => {
         case "AgainTest":
           handleAddItem("Test işleminde hata var lütfen kontrol edip tekrar test ediniz!", false)
           break
+        case "WaitUser1CardResult":
+          if(jsonData.Data){
+            handleAddItem("Birinci kullanıcı kartı okutuldu", true)
+          } else{
+            handleAddItem("Birinci kullanıcı kartı okutulamadı!", false)
+          }
+          break
+        case "WaitRelayOnRequest":
+          handleAddItem("Rölenin On olması bekleniyor...", null)
+          break
+        case "WaitRelayOnResult":
+          if(jsonData.Data){
+            handleAddItem("Röle On oldu. Yük bankası devrede.",true)
+          } else{
+            handleAddItem("Röle On olmadı!",false)
+          }
+          break
+        case "ControlVoltage":
+          if(jsonData.Data){
+            handleAddItem("Voltaj değerleri kontrol edildi doğrulandı.",true)
+          } else{
+            handleAddItem("Voltaj değerleri sınırı aşmıştır! Test durduruldu.",false)
+          }
+          break
+          
+        
 
       }
     };
