@@ -64,6 +64,7 @@ class ModbusModule():
             self.client = ModbusClient(port=port, baudrate=115200, timeout=1)
             connect = self.client.connect()
             self.application.modbus_connected = connect
+            self.write_cable_control(0)
             if connect == True:
                 print("Modbus Bağlandı.")
                 # self.read_all_registers()

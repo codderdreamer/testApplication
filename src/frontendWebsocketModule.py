@@ -184,6 +184,7 @@ class FrontendWebsocketModule():
                     Thread(target=self.application.acdeviceWebsocket.wait_ac_charger_connection,daemon=True).start()
                     Thread(target=self.application.acdeviceWebsocket.send_save_config,daemon=True).start()
                 elif Command == "CancelTest":
+                    self.application.modbusModule.write_cable_control(0)
                     self.application.config.cancel_test = True
         except Exception as e:
             print("MessageReceivedws Exception",e)
