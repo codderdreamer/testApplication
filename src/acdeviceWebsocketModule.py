@@ -161,8 +161,18 @@ class AcdeviceWebsocketModule():
     
     def control_values(self):
         if self.control_voltage():
+            self.application.modbusModule.write_load_control(6)
             if self.control_current():
                 pass
+
+    def control_voltage_current_power(self):
+        time_start = time.time()
+        while True:
+            try:
+                if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
+                    pass
+            except Exception as e:
+                print("control_voltage_current_power Exception:",e)
     
     def control_voltage(self):
         time_start = time.time()
