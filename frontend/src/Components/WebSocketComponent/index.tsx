@@ -387,11 +387,24 @@ const WebSocketComponent = () => {
             handleAddItem("Röle On olmadı!",false)
           }
           break
+        case "ControlVoltageRequest":
+          handleAddItem("Voltaj değerleri 5 saniye boyunca kontrol ediliyor...",null)
+          break
         case "ControlVoltage":
           if(jsonData.Data){
             handleAddItem("Voltaj değerleri kontrol edildi doğrulandı.",true)
           } else{
             handleAddItem("Voltaj değerleri sınırı aşmıştır! Test durduruldu.",false)
+          }
+          break
+        case "ControlCurrentRequest":
+          handleAddItem("Akım değerleri 5 saniye boyunca kontrol ediliyor...",null)
+          break
+        case "ControlCurrent":
+          if(jsonData.Data){
+            handleAddItem("Akım değerleri kontrol edildi doğrulandı.",true)
+          } else{
+            handleAddItem("Akım değerleri sınırı aşmıştır! Test durduruldu.",false)
           }
           break
           

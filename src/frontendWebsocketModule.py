@@ -39,6 +39,36 @@ class FrontendWebsocketModule():
                 pass
             time.sleep(1)
 
+    def send_control_voltage_current_power(self,value):
+        try:
+            message = {
+                "Command": "ControlVoltageCurrentPower",
+                "Data": value
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("send_control_voltage_current_power Exception",e)
+
+    def send_control_voltage_request(self):
+        try:
+            message = {
+                "Command": "ControlVoltageRequest",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("send_control_voltage_request Exception",e)
+
+    def send_control_current_request(self):
+        try:
+            message = {
+                "Command": "ControlCurrentRequest",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("send_control_voltage_request Exception",e)
+
     def send_control_voltage(self,value):
         try:
             message = {

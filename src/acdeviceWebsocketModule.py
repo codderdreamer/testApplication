@@ -171,11 +171,17 @@ class AcdeviceWebsocketModule():
             try:
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
                     pass
+                
+                if time.time() - time_start > 30:
+                    break
             except Exception as e:
                 print("control_voltage_current_power Exception:",e)
+            
+            time.sleep(1)
     
     def control_voltage(self):
         time_start = time.time()
+        self.application.frontendWebsocket.send_control_voltage_request()
         while True:
             try:
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
@@ -203,6 +209,7 @@ class AcdeviceWebsocketModule():
 
     def control_current(self):
         time_start = time.time()
+        self.application.frontendWebsocket.send_control_current_request()
         while True:
             try:
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
