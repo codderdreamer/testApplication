@@ -156,6 +156,8 @@ class ModbusModule():
     def write_is_test_complete(self,value:int):
         try:
             if self.application.simu_test == False:
+                if value == -1:
+                    value = 0xFFFF
                 self.write_register(0,value)
         except Exception as e:
             print("write_is_test_complete Exception:", e)
@@ -164,6 +166,8 @@ class ModbusModule():
     # 0:YükBankası Devrede  0Amper Yük   ;    6: YükBankası Devrede 6A Yük    ;    10: YükBankası Devrede 10A Yük   ;  -1: YükBankası Kapalı
     def write_load_control(self,value:int):
         try:
+            if value == -1:
+                value = 0xFFFF
             self.write_register(7,value)
         except Exception as e:
             print("write_load_control Exception:", e)
@@ -172,6 +176,8 @@ class ModbusModule():
     # 1 : Kaçak Akımı Devreye Sok   ;   0: Kaçak Akım Devrede Değil
     def write_rcd_control(self,value:int):
         try:
+            if value == -1:
+                value = 0xFFFF
             self.write_register(8,value)
         except Exception as e:
             print("write_rcd_control Exception:", e)
@@ -180,6 +186,8 @@ class ModbusModule():
     # 1 : Kabloyu Araca Tak   ;   0: Kabloyu Araçtan Çıkart
     def write_cable_control(self,value:int):
         try:
+            if value == -1:
+                value = 0xFFFF
             self.write_register(9,value)
         except Exception as e:
             print("write_cable_control Exception:", e)
