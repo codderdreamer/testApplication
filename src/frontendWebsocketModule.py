@@ -46,6 +46,7 @@ class FrontendWebsocketModule():
                 "Data": value
             }
             self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("send_control_voltage_current_power Exception",e)
 
@@ -56,6 +57,7 @@ class FrontendWebsocketModule():
                 "Data": ""
             }
             self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("send_control_voltage_request Exception",e)
 
@@ -66,6 +68,7 @@ class FrontendWebsocketModule():
                 "Data": ""
             }
             self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("send_control_voltage_request Exception",e)
 
@@ -76,6 +79,7 @@ class FrontendWebsocketModule():
                 "Data": value
             }
             self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("wait_config_result Exception",e)
 
@@ -86,6 +90,7 @@ class FrontendWebsocketModule():
                 "Data": value
             }
             self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("wait_config_result Exception",e)
 
@@ -96,6 +101,7 @@ class FrontendWebsocketModule():
                 "Data": ""
             }
             self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("wait_config_result Exception",e)
 
@@ -106,6 +112,7 @@ class FrontendWebsocketModule():
                 "Data": ""
             }
             self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("user_1_card_request Exception",e)
 
@@ -116,6 +123,7 @@ class FrontendWebsocketModule():
                 "Data": ""
             }
             self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("user_2_card_request Exception",e)
         
@@ -152,6 +160,7 @@ class FrontendWebsocketModule():
                     "Data": ""
                 }
             self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("send_ac_charger_not_connected Exception",e)
 
@@ -162,6 +171,7 @@ class FrontendWebsocketModule():
                     "Data": ""
                 }
             self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("start_charge_test Exception",e)
 
@@ -172,6 +182,7 @@ class FrontendWebsocketModule():
                     "Data": ""
                 }
             self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("again_test Exception",e)
 
@@ -181,6 +192,8 @@ class FrontendWebsocketModule():
                     "Command": "WaitUser1CardRequest",
                     "Data": ""
                 }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("wait_user_1_card_request Exception",e)
 
@@ -190,6 +203,8 @@ class FrontendWebsocketModule():
                     "Command": "WaitRelayOnRequest",
                     "Data": ""
                 }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
         except Exception as e:
             print("wait_relay_on Exception",e)
 

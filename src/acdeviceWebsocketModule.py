@@ -133,6 +133,7 @@ class AcdeviceWebsocketModule():
                     self.application.modbusModule.write_is_test_complete(-1)
                     self.application.frontendWebsocket.again_test()
                 else:
+                    print("start_charge_test")
                     self.application.frontendWebsocket.start_charge_test()
                     self.application.modbusModule.write_cable_control(1)
                     self.application.frontendWebsocket.wait_user_1_card_request()
