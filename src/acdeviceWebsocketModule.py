@@ -161,7 +161,6 @@ class AcdeviceWebsocketModule():
         return error
     
     def control_values(self):
-        # time.sleep(2)
         if self.control_voltage():
             self.application.modbusModule.write_load_control(6)
             # time.sleep(2)
@@ -183,52 +182,51 @@ class AcdeviceWebsocketModule():
             time.sleep(1)
     
     def control_voltage(self):
+        time.sleep(2)
         time_start = time.time()
         self.application.frontendWebsocket.send_control_voltage_request()
         while True:
             try:
-                print("-------------------------------------------------------------------------------")
-                print("self.application.modbusModule.LOADBANK_V1",self.application.modbusModule.LOADBANK_V1)
-                print("self.application.modbusModule.LOADBANK_V2",self.application.modbusModule.LOADBANK_V2)
-                print("self.application.modbusModule.LOADBANK_V3",self.application.modbusModule.LOADBANK_V3)
-                print("self.application.modbusModule.LOADBANK_I1",self.application.modbusModule.LOADBANK_I1)
-                print("self.application.modbusModule.LOADBANK_I2",self.application.modbusModule.LOADBANK_I2)
-                print("self.application.modbusModule.LOADBANK_I3",self.application.modbusModule.LOADBANK_I3)
-                print("self.application.modbusModule.LOADBANK_P1",self.application.modbusModule.LOADBANK_P1)
-                print("self.application.modbusModule.LOADBANK_P2",self.application.modbusModule.LOADBANK_P2)
-                print("self.application.modbusModule.LOADBANK_P3",self.application.modbusModule.LOADBANK_P3)
-                # if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
-                #     if not (self.application.modbusModule.LOADBANK_V1 > 195 and self.application.modbusModule.LOADBANK_V1 < 265):
-                #         self.application.frontendWebsocket.send_control_voltage(False)
-                #         self.application.modbusModule.write_cable_control(0)
-                #         self.application.modbusModule.write_is_test_complete(-1)
-                #         return False
-                # if self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
-                #     if not (self.application.modbusModule.LOADBANK_V2 > 195 and self.application.modbusModule.LOADBANK_V2 < 265):
-                #         self.application.frontendWebsocket.send_control_voltage(False)
-                #         self.application.modbusModule.write_cable_control(0)
-                #         self.application.modbusModule.write_is_test_complete(-1)
-                #         return False
-                #     if not (self.application.modbusModule.LOADBANK_V3 > 195 and self.application.modbusModule.LOADBANK_V3 < 265):
-                #         self.application.frontendWebsocket.send_control_voltage(False)
-                #         self.application.modbusModule.write_cable_control(0)
-                #         self.application.modbusModule.write_is_test_complete(-1)
-                #         return False
-                # if time.time() - time_start > 5:
-                #     self.application.frontendWebsocket.send_control_voltage(True)
-                #     return True
+                if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
+                    if not (self.application.modbusModule.LOADBANK_V1 > 195 and self.application.modbusModule.LOADBANK_V1 < 265):
+                        self.application.frontendWebsocket.send_control_voltage(False)
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                if self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
+                    if not (self.application.modbusModule.LOADBANK_V2 > 195 and self.application.modbusModule.LOADBANK_V2 < 265):
+                        self.application.frontendWebsocket.send_control_voltage(False)
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                    if not (self.application.modbusModule.LOADBANK_V3 > 195 and self.application.modbusModule.LOADBANK_V3 < 265):
+                        self.application.frontendWebsocket.send_control_voltage(False)
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                if time.time() - time_start > 5:
+                    self.application.frontendWebsocket.send_control_voltage(True)
+                    return True
             except Exception as e:
                 print("control_voltage Exception:",e)
 
             time.sleep(1)
 
     def control_current(self):
+        time.sleep(2)
         time_start = time.time()
         self.application.frontendWebsocket.send_control_current_request()
         while True:
+            print("-------------------------------------------------------------------------------")
+            print("self.application.modbusModule.LOADBANK_V1",self.application.modbusModule.LOADBANK_V1)
+            print("self.application.modbusModule.LOADBANK_V2",self.application.modbusModule.LOADBANK_V2)
+            print("self.application.modbusModule.LOADBANK_V3",self.application.modbusModule.LOADBANK_V3)
             print("self.application.modbusModule.LOADBANK_I1",self.application.modbusModule.LOADBANK_I1)
             print("self.application.modbusModule.LOADBANK_I2",self.application.modbusModule.LOADBANK_I2)
             print("self.application.modbusModule.LOADBANK_I3",self.application.modbusModule.LOADBANK_I3)
+            print("self.application.modbusModule.LOADBANK_P1",self.application.modbusModule.LOADBANK_P1)
+            print("self.application.modbusModule.LOADBANK_P2",self.application.modbusModule.LOADBANK_P2)
+            print("self.application.modbusModule.LOADBANK_P3",self.application.modbusModule.LOADBANK_P3)
             try:
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
                     if not (self.application.modbusModule.LOADBANK_I1 > 4.5 and self.application.modbusModule.LOADBANK_I1 < 6.5):
