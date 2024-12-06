@@ -161,8 +161,10 @@ class AcdeviceWebsocketModule():
         return error
     
     def control_values(self):
+        time.sleep(2)
         if self.control_voltage():
             self.application.modbusModule.write_load_control(6)
+            time.sleep(2)
             if self.control_current():
                 pass
 
