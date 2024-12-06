@@ -187,12 +187,16 @@ class AcdeviceWebsocketModule():
         self.application.frontendWebsocket.send_control_voltage_request()
         while True:
             try:
+                print("-------------------------------------------------------------------------------")
                 print("self.application.modbusModule.LOADBANK_V1",self.application.modbusModule.LOADBANK_V1)
                 print("self.application.modbusModule.LOADBANK_V2",self.application.modbusModule.LOADBANK_V2)
                 print("self.application.modbusModule.LOADBANK_V3",self.application.modbusModule.LOADBANK_V3)
                 print("self.application.modbusModule.LOADBANK_I1",self.application.modbusModule.LOADBANK_I1)
                 print("self.application.modbusModule.LOADBANK_I2",self.application.modbusModule.LOADBANK_I2)
                 print("self.application.modbusModule.LOADBANK_I3",self.application.modbusModule.LOADBANK_I3)
+                print("self.application.modbusModule.LOADBANK_P1",self.application.modbusModule.LOADBANK_P1)
+                print("self.application.modbusModule.LOADBANK_P2",self.application.modbusModule.LOADBANK_P2)
+                print("self.application.modbusModule.LOADBANK_P3",self.application.modbusModule.LOADBANK_P3)
                 # if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
                 #     if not (self.application.modbusModule.LOADBANK_V1 > 195 and self.application.modbusModule.LOADBANK_V1 < 265):
                 #         self.application.frontendWebsocket.send_control_voltage(False)
