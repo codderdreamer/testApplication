@@ -215,6 +215,9 @@ class AcdeviceWebsocketModule():
         time_start = time.time()
         self.application.frontendWebsocket.send_control_current_request()
         while True:
+            print("self.application.modbusModule.LOADBANK_I1",self.application.modbusModule.LOADBANK_I1)
+            print("self.application.modbusModule.LOADBANK_I2",self.application.modbusModule.LOADBANK_I2)
+            print("self.application.modbusModule.LOADBANK_I3",self.application.modbusModule.LOADBANK_I3)
             try:
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
                     if not (self.application.modbusModule.LOADBANK_I1 > 4.5 and self.application.modbusModule.LOADBANK_I1 < 6.5):
