@@ -249,6 +249,8 @@ class AcdeviceWebsocketModule():
             except Exception as e:
                 print("control_current Exception:",e)
 
+            time.sleep(1)
+
     def wait_relay_on(self):
         try:
             if self.connection:
