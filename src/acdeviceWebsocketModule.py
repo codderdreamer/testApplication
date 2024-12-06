@@ -182,7 +182,7 @@ class AcdeviceWebsocketModule():
             time.sleep(1)
     
     def control_voltage(self):
-        time.sleep(2)
+        time.sleep(4)
         time_start = time.time()
         self.application.frontendWebsocket.send_control_voltage_request()
         while True:
@@ -213,7 +213,7 @@ class AcdeviceWebsocketModule():
             time.sleep(1)
 
     def control_current(self):
-        time.sleep(2)
+        time.sleep(4)
         time_start = time.time()
         self.application.frontendWebsocket.send_control_current_request()
         while True:
