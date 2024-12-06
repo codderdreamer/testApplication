@@ -216,6 +216,8 @@ class AcdeviceWebsocketModule():
             except Exception as e:
                 print("control_voltage Exception:",e)
 
+            time.sleep(1)
+
     def control_current(self):
         time_start = time.time()
         self.application.frontendWebsocket.send_control_current_request()
