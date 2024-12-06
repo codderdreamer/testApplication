@@ -189,17 +189,20 @@ class AcdeviceWebsocketModule():
             try:
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
                     if not (self.application.modbusModule.LOADBANK_V1 > 195 and self.application.modbusModule.LOADBANK_V1 < 265):
+                        print("self.application.modbusModule.LOADBANK_V1",self.application.modbusModule.LOADBANK_V1)
                         self.application.frontendWebsocket.send_control_voltage(False)
                         self.application.modbusModule.write_cable_control(0)
                         self.application.modbusModule.write_is_test_complete(-1)
                         return False
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
                     if not (self.application.modbusModule.LOADBANK_V2 > 195 and self.application.modbusModule.LOADBANK_V2 < 265):
+                        print("self.application.modbusModule.LOADBANK_V2",self.application.modbusModule.LOADBANK_V2)
                         self.application.frontendWebsocket.send_control_voltage(False)
                         self.application.modbusModule.write_cable_control(0)
                         self.application.modbusModule.write_is_test_complete(-1)
                         return False
                     if not (self.application.modbusModule.LOADBANK_V3 > 195 and self.application.modbusModule.LOADBANK_V3 < 265):
+                        print("self.application.modbusModule.LOADBANK_V3",self.application.modbusModule.LOADBANK_V3)
                         self.application.frontendWebsocket.send_control_voltage(False)
                         self.application.modbusModule.write_cable_control(0)
                         self.application.modbusModule.write_is_test_complete(-1)
