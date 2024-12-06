@@ -232,18 +232,18 @@ class AcdeviceWebsocketModule():
             print("self.application.modbusModule.LOADBANK_P3",self.application.modbusModule.LOADBANK_P3)
             try:
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
-                    if not (self.application.modbusModule.LOADBANK_I1 > 4.5 and self.application.modbusModule.LOADBANK_I1 < 6.5):
+                    if not (self.application.modbusModule.LOADBANK_I1 > 4500 and self.application.modbusModule.LOADBANK_I1 < 6500):
                         self.application.frontendWebsocket.send_control_current(False)
                         self.application.modbusModule.write_cable_control(0)
                         self.application.modbusModule.write_is_test_complete(-1)
                         return False
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
-                    if not (self.application.modbusModule.LOADBANK_I2 > 4.5 and self.application.modbusModule.LOADBANK_I2 < 6.5):
+                    if not (self.application.modbusModule.LOADBANK_I2 > 4500 and self.application.modbusModule.LOADBANK_I2 < 6500):
                         self.application.frontendWebsocket.send_control_current(False)
                         self.application.modbusModule.write_cable_control(0)
                         self.application.modbusModule.write_is_test_complete(-1)
                         return False
-                    if not (self.application.modbusModule.LOADBANK_I3 > 4.5 and self.application.modbusModule.LOADBANK_I3 < 6.5):
+                    if not (self.application.modbusModule.LOADBANK_I3 > 4500 and self.application.modbusModule.LOADBANK_I3 < 6500):
                         self.application.frontendWebsocket.send_control_current(False)
                         self.application.modbusModule.write_cable_control(0)
                         self.application.modbusModule.write_is_test_complete(-1)
