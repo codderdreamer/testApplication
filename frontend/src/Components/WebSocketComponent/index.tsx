@@ -407,8 +407,78 @@ const WebSocketComponent = () => {
             handleAddItem("Akım değerleri sınırı aşmıştır! Test durduruldu.",false)
           }
           break
-          
-        
+        case "ControlAllValues30sn":
+          handleAddItem("30 sn içerisinde de Modbus Registerından okunan, akım, gerilim ve güç değerleri ile şarj cihazının kendisinin okuduğu akım, gerilim ve güç değerleri karşılaştırılır...",null)
+          break
+        case "ControlAllValues30snResult":
+          if(jsonData.Data){
+            handleAddItem("Akım, Voltaj ve Güç değerleri kontrol edildi doğrulandı.",true)
+          } else{
+            handleAddItem("Akım, Voltaj ve Güç değerleri sınırı aşmıştır! Test durduruldu.",false)
+          }
+          break
+        case "OverCurrentTest":
+          handleAddItem("AŞIRI AKIM TESTİ", null, "header")
+          break
+        case "OverCurrentTestResult":
+          if (jsonData.Data.length != 0){
+            jsonData.Data.forEach((error: string, index: number) => {
+              handleAddItem("MCU'da hata: " + error, true)
+            });
+          }
+          else{
+            handleAddItem("MCU'da hata yok!" , false)
+          }
+          break
+        case "RCDLeakageCurrentTestResult":
+          if (jsonData.Data.length != 0){
+            jsonData.Data.forEach((error: string, index: number) => {
+              handleAddItem("MCU'da hata: " + error, true)
+            });
+          }
+          else{
+            handleAddItem("MCU'da hata yok!" , false)
+          }
+          break
+        case "WaitAState":
+          handleAddItem("Şarj cihazının 5 sn içerisinde A state'ine geçmesi bekleniyor..." , null)
+          break
+        case "WaitAStateResult":
+          if(jsonData.Data){
+            handleAddItem("Şarj cihazı A state'ine geçti.",true)
+          } else{
+            handleAddItem("Şarj cihazı 5 sn içerisinde A statine geçemedi!",false)
+          }
+          break
+        case "WaitCState":
+          handleAddItem("Şarj cihazının 40 sn içerisinde C state'ine geçmesi bekleniyor..." , null)
+          break
+        case "WaitCStateResult":
+          if(jsonData.Data){
+            handleAddItem("Şarj cihazı tekrar C state'ine geçti.",true)
+          } else{
+            handleAddItem("Şarj cihazı 40 sn içerisinde C statine geçemedi!",false)
+          }
+          break
+        case "RCDLeakageCurrentTest":
+          handleAddItem("RCD KAÇAK AKIM TESTİ", null, "header")
+          break
+        case "SecondUserCard":
+          handleAddItem("İKİNCİ RFID KARTININ TESTİ", null, "header")
+          handleAddItem("Şarj cihazı B statine getirildi.",true)
+          handleAddItem("Şarjı Başlatmak İçin İkinci Kullanıcı RFID Kartını Okutunuz!",null)
+          break
+        case "SecondUserWaitCStateResult":
+          if(jsonData.Data){
+            handleAddItem("Şarj cihazı tekrar C state'ine geçti.",true)
+          } else{
+            handleAddItem("Şarj cihazı C state'ine geçemedi!",false)
+          }
+          break
+        case "EndTest":
+          handleAddItem("TESTİN SONLANDIRILMASI", null, "header")
+          break
+
 
       }
     };

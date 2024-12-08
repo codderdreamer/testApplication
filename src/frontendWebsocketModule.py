@@ -16,6 +16,72 @@ class FrontendWebsocketModule():
         Thread(target=self.send_connected_USB_list,daemon=True).start()
         Thread(target=self.send_all_load_data,daemon=True).start()
 
+    def rcd_leakage_current_test(self):
+        try:
+            message = {
+                "Command": "RCDLeakageCurrentTest",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("rcd_leakage_current_test Exception",e)
+
+    def wait_c_state_result(self,value):
+        try:
+            message = {
+                "Command": "WaitCStateResult",
+                "Data": value
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("wait_c_state Exception",e)
+
+    def wait_c_state(self):
+        try:
+            message = {
+                "Command": "WaitCState",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("wait_c_state Exception",e)
+
+    def over_current_test(self):
+        try:
+            message = {
+                "Command": "OverCurrentTest",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("over_current_test Exception",e)
+
+    def send_control_all_values_30sn(self):
+        try:
+            message = {
+                "Command": "ControlAllValues30sn",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("send_control_all_values_30sn Exception",e)
+
+    def send_control_all_values_30sn_result(self,value):
+        try:
+            message = {
+                "Command": "ControlAllValues30snResult",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("send_control_all_values_30sn Exception",e)
+
     def send_all_load_data(self):
         while True:
             try:
@@ -49,6 +115,62 @@ class FrontendWebsocketModule():
             print("frontend send:",message)
         except Exception as e:
             print("send_control_voltage_current_power Exception",e)
+
+    def wait_state_a(self):
+        try:
+            message = {
+                "Command": "WaitAState",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("wait_state_a Exception",e)
+
+    def wait_state_a_result(self,value):
+        try:
+            message = {
+                "Command": "WaitAStateResult",
+                "Data": value
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("wait_state_a Exception",e)
+
+    def second_user_wait_c_state_result(self,value):
+        try:
+            message = {
+                "Command": "SecondUserWaitCStateResult",
+                "Data": value
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("second_user_wait_c_state_result Exception",e)
+
+    def end_test(self):
+        try:
+            message = {
+                "Command": "EndTest",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("end_test Exception",e)
+
+    def second_user_card_test(self):
+        try:
+            message = {
+                "Command": "SecondUserCard",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("wait_state_a Exception",e)
+
 
     def send_control_voltage_request(self):
         try:
@@ -281,6 +403,7 @@ class FrontendWebsocketModule():
                     Thread(target=self.application.acdeviceWebsocket.wait_ac_charger_connection,daemon=True).start()
                     Thread(target=self.application.acdeviceWebsocket.send_save_config,daemon=True).start()
                 elif Command == "CancelTest":
+                    self.application.acdeviceWebsocket.cancel_test()
                     self.application.modbusModule.write_cable_control(0)
                     self.application.config.cancel_test = True
         except Exception as e:

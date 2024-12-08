@@ -11,7 +11,12 @@ class AcdeviceWebsocketModule():
         self.__connection = False
         self.websocket = None
         self.wait_timeout = 60*5 # 5dk
-        # if self.application.simu_test == False:
+        self.current_L1 = None
+        self.current_L2 = None
+        self.current_L3 = None
+        self.voltage_L1 = None
+        self.voltage_L2 = None
+        self.voltage_L3 = None
         Thread(target=self.websocket_thread,daemon=True).start()
         self.save_config_result_json_data = None
 
@@ -70,10 +75,79 @@ class AcdeviceWebsocketModule():
                 if Data:
                     self.application.modbusModule.write_load_control(0)
                     Thread(target=self.control_values,daemon=True).start()
+            elif Command == "ControlAllValues30snResult":
+                self.current_L1 = Data["current_L1"]
+                self.current_L2 = Data["current_L2"]
+                self.current_L3 = Data["current_L3"]
+                self.voltage_L1 = Data["voltage_L1"]
+                self.voltage_L2 = Data["voltage_L2"]
+                self.voltage_L3 = Data["voltage_L3"]
+            elif Command == "OverCurrentTestResult":
+                self.application.frontendWebsocket.websocket.send_message_to_all(json.dumps(message))
+                if len(Data) > 0:
+                    self.application.modbusModule.write_load_control(0)
+                    self.application.frontendWebsocket.wait_c_state()
+                    Thread(target=self.wait_c_state,daemon=True).start()
+                else:
+                    self.application.modbusModule.write_load_control(0)
+                    self.application.modbusModule.write_cable_control(0)
+                    self.application.modbusModule.write_is_test_complete(-1)
+            elif Command == "RCDLeakageCurrentTestResult":
+                self.application.frontendWebsocket.websocket.send_message_to_all(json.dumps(message))
+                if len(Data) > 0:
+                    self.application.modbusModule.write_cable_control(0)
+                    Thread(target=self.wait_state_a,daemon=True).start()
+                else:
+                    self.application.modbusModule.write_load_control(0)
+                    self.application.modbusModule.write_cable_control(0)
+                    self.application.modbusModule.write_is_test_complete(-1)
+
 
         except Exception as e:
             print("on_message Exception:",e)
-        
+
+    def wait_state_a(self):
+        time_start = time.time()
+        self.application.frontendWebsocket.wait_state_a()
+        while True:
+            print("CP_STATE:",self.application.modbusModule.CP_STATE)
+            if self.application.config.cancel_test:
+                print("Test iptal edildi!")
+                break
+            if time.time() - time_start > 5:
+                print("5 snyeyi geçti")
+                self.application.frontendWebsocket.wait_state_a_result(False)
+                self.application.modbusModule.write_load_control(0)
+                self.application.modbusModule.write_cable_control(0)
+                self.application.modbusModule.write_is_test_complete(-1)
+                break
+            if self.application.modbusModule.CP_STATE == 0:
+                self.application.frontendWebsocket.wait_state_a_result(True)
+                self.application.write_cable_control(1)
+                self.application.frontendWebsocket.second_user_card_test()
+                Thread(target=self.second_user_wait_c_state,daemon=True).start()
+                break
+
+    def second_user_wait_c_state(self):
+        time_start = time.time()
+        while True:
+            if self.application.config.cancel_test:
+                print("Test iptal edildi!")
+                break
+            if time.time() - time_start > 10:
+                self.application.frontendWebsocket.second_user_wait_c_state_result(False)
+                self.application.modbusModule.write_load_control(0)
+                self.application.modbusModule.write_cable_control(0)
+                self.application.modbusModule.write_is_test_complete(-1)
+                break
+            if self.application.modbusModule.CP_STATE == 2:
+                self.application.frontendWebsocket.second_user_wait_c_state_result(False)
+                self.application.modbusModule.write_cable_control(0)
+                self.application.modbusModule.write_load_control(0)
+                self.application.modbusModule.write_is_test_complete(1)
+                self.application.frontendWebsocket.end_test()
+                break
+
 
     def on_error(self, ws, error):
         self.connection = False
@@ -160,26 +234,53 @@ class AcdeviceWebsocketModule():
             error = True
         return error
     
+    def wait_c_state(self):
+        time_start = time.time()
+        while True:
+            print("CP_STATE",self.application.modbusModule.CP_STATE)
+            if self.application.modbusModule.CP_STATE == 2:
+                self.application.frontendWebsocket.wait_c_state_result(True)
+                self.application.frontendWebsocket.rcd_leakage_current_test()
+                if self.control_voltage():
+                    self.application.modbusModule.write_rcd_control(1)
+                    self.rcd_leakage_current_test()
+                break
+            if time.time() - time_start > 40:
+                self.application.frontendWebsocket.wait_c_state_result(False)
+                break
+            time.sleep(1)
+
+    def rcd_leakage_current_test(self):
+        try:
+            if self.connection:
+                self.websocket.send(json.dumps({
+                        "Command": "RCDLeakageCurrentTest",
+                        "Data": ""
+                    }))
+        except Exception as e:
+            print("rcd_leakage_current_test Exception:",e)
+
+    def over_current_test(self):
+        try:
+            if self.connection:
+                self.websocket.send(json.dumps({
+                        "Command": "OverCurrentTest",
+                        "Data": ""
+                    }))
+        except Exception as e:
+            print("over_current_test Exception:",e)
+
     def control_values(self):
         if self.control_voltage():
             self.application.modbusModule.write_load_control(6)
-            # time.sleep(2)
             if self.control_current():
-                pass
+                if self.control_all_values_30sn():
+                    self.over_current_test()
 
-    def control_voltage_current_power(self):
-        time_start = time.time()
-        while True:
-            try:
-                if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
-                    pass
-                
-                if time.time() - time_start > 30:
-                    break
-            except Exception as e:
-                print("control_voltage_current_power Exception:",e)
-            
-            time.sleep(1)
+    def over_current_test(self):
+        self.application.frontendWebsocket.over_current_test()
+        self.application.acdeviceWebsocket.over_current_test()
+        self.application.modbusModule.write_load_control(10)
     
     def control_voltage(self):
         time.sleep(4)
@@ -189,20 +290,20 @@ class AcdeviceWebsocketModule():
             try:
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
                     if not (self.application.modbusModule.LOADBANK_V1 > 195 and self.application.modbusModule.LOADBANK_V1 < 265):
-                        print("self.application.modbusModule.LOADBANK_V1",self.application.modbusModule.LOADBANK_V1)
+                        print("Sınırı aştı: self.application.modbusModule.LOADBANK_V1",self.application.modbusModule.LOADBANK_V1)
                         self.application.frontendWebsocket.send_control_voltage(False)
                         self.application.modbusModule.write_cable_control(0)
                         self.application.modbusModule.write_is_test_complete(-1)
                         return False
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
                     if not (self.application.modbusModule.LOADBANK_V2 > 195 and self.application.modbusModule.LOADBANK_V2 < 265):
-                        print("self.application.modbusModule.LOADBANK_V2",self.application.modbusModule.LOADBANK_V2)
+                        print("Sınırı aştı: self.application.modbusModule.LOADBANK_V2",self.application.modbusModule.LOADBANK_V2)
                         self.application.frontendWebsocket.send_control_voltage(False)
                         self.application.modbusModule.write_cable_control(0)
                         self.application.modbusModule.write_is_test_complete(-1)
                         return False
                     if not (self.application.modbusModule.LOADBANK_V3 > 195 and self.application.modbusModule.LOADBANK_V3 < 265):
-                        print("self.application.modbusModule.LOADBANK_V3",self.application.modbusModule.LOADBANK_V3)
+                        print("Sınırı aştı: self.application.modbusModule.LOADBANK_V3",self.application.modbusModule.LOADBANK_V3)
                         self.application.frontendWebsocket.send_control_voltage(False)
                         self.application.modbusModule.write_cable_control(0)
                         self.application.modbusModule.write_is_test_complete(-1)
@@ -220,30 +321,23 @@ class AcdeviceWebsocketModule():
         time_start = time.time()
         self.application.frontendWebsocket.send_control_current_request()
         while True:
-            print("-------------------------------------------------------------------------------")
-            print("self.application.modbusModule.LOADBANK_V1",self.application.modbusModule.LOADBANK_V1)
-            print("self.application.modbusModule.LOADBANK_V2",self.application.modbusModule.LOADBANK_V2)
-            print("self.application.modbusModule.LOADBANK_V3",self.application.modbusModule.LOADBANK_V3)
-            print("self.application.modbusModule.LOADBANK_I1",self.application.modbusModule.LOADBANK_I1)
-            print("self.application.modbusModule.LOADBANK_I2",self.application.modbusModule.LOADBANK_I2)
-            print("self.application.modbusModule.LOADBANK_I3",self.application.modbusModule.LOADBANK_I3)
-            print("self.application.modbusModule.LOADBANK_P1",self.application.modbusModule.LOADBANK_P1)
-            print("self.application.modbusModule.LOADBANK_P2",self.application.modbusModule.LOADBANK_P2)
-            print("self.application.modbusModule.LOADBANK_P3",self.application.modbusModule.LOADBANK_P3)
             try:
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
                     if not (self.application.modbusModule.LOADBANK_I1 > 4500 and self.application.modbusModule.LOADBANK_I1 < 6500):
+                        print("Sınırı aştı: self.application.modbusModule.LOADBANK_I1",self.application.modbusModule.LOADBANK_I1)
                         self.application.frontendWebsocket.send_control_current(False)
                         self.application.modbusModule.write_cable_control(0)
                         self.application.modbusModule.write_is_test_complete(-1)
                         return False
                 if self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
                     if not (self.application.modbusModule.LOADBANK_I2 > 4500 and self.application.modbusModule.LOADBANK_I2 < 6500):
+                        print("Sınırı aştı: self.application.modbusModule.LOADBANK_I2",self.application.modbusModule.LOADBANK_I2)
                         self.application.frontendWebsocket.send_control_current(False)
                         self.application.modbusModule.write_cable_control(0)
                         self.application.modbusModule.write_is_test_complete(-1)
                         return False
                     if not (self.application.modbusModule.LOADBANK_I3 > 4500 and self.application.modbusModule.LOADBANK_I3 < 6500):
+                        print("Sınırı aştı: self.application.modbusModule.LOADBANK_I3",self.application.modbusModule.LOADBANK_I3)
                         self.application.frontendWebsocket.send_control_current(False)
                         self.application.modbusModule.write_cable_control(0)
                         self.application.modbusModule.write_is_test_complete(-1)
@@ -255,6 +349,83 @@ class AcdeviceWebsocketModule():
                 print("control_current Exception:",e)
 
             time.sleep(1)
+
+    def control_all_values_30sn(self):
+        self.application.frontendWebsocket.send_control_all_values_30sn()
+        self.application.acdeviceWebsocket.send_control_all_values_30sn()
+        time.sleep(2)
+        time_start = time.time()
+        while True:
+            try:
+                if self.application.deviceModel.outputPower == OutputPower.Max32A_7kW or self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
+                    if abs(self.application.modbusModule.LOADBANK_V1 - self.voltage_L1) > self.voltage_L1 * 0.05:
+                        print("%5 sınırını aştı: LOADBANK_V1:",self.application.modbusModule.LOADBANK_V1,"cihaz voltage_L1:",self.voltage_L1)
+                        self.application.frontendWebsocket.send_control_all_values_30sn_result(False)
+                        self.application.acdeviceWebsocket.cancel_test()
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                    if abs(self.application.modbusModule.LOADBANK_I1/1000 - self.current_L1) > self.current_L1 * 0.05:
+                        print("%5 sınırını aştı: LOADBANK_I1:",self.application.modbusModule.LOADBANK_I1/1000,"cihaz current_L1:",self.current_L1)
+                        self.application.frontendWebsocket.send_control_all_values_30sn_result(False)
+                        self.application.acdeviceWebsocket.cancel_test()
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                if self.application.deviceModel.outputPower == OutputPower.Max32A_22kW:
+                    if abs(self.application.modbusModule.LOADBANK_V2 - self.voltage_L2) > self.voltage_L2 * 0.05:
+                        print("%5 sınırını aştı: LOADBANK_V2:",self.application.modbusModule.LOADBANK_V2,"cihaz voltage_L2:",self.voltage_L2)
+                        self.application.frontendWebsocket.send_control_all_values_30sn_result(False)
+                        self.application.acdeviceWebsocket.cancel_test()
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                    if abs(self.application.modbusModule.LOADBANK_I2/1000 - self.current_L2) > self.current_L2 * 0.05:
+                        print("%5 sınırını aştı: LOADBANK_I2:",self.application.modbusModule.LOADBANK_I2/1000,"cihaz current_L2:",self.current_L2)
+                        self.application.frontendWebsocket.send_control_all_values_30sn_result(False)
+                        self.application.acdeviceWebsocket.cancel_test()
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                    if abs(self.application.modbusModule.LOADBANK_V3 - self.voltage_L3) > self.voltage_L3 * 0.05:
+                        print("%5 sınırını aştı: LOADBANK_V3:",self.application.modbusModule.LOADBANK_V3,"cihaz voltage_L3:",self.voltage_L3)
+                        self.application.frontendWebsocket.send_control_all_values_30sn_result(False)
+                        self.application.acdeviceWebsocket.cancel_test()
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                    if abs(self.application.modbusModule.LOADBANK_I3/1000 - self.current_L3) > self.current_L3 * 0.05:
+                        print("%5 sınırını aştı: LOADBANK_I3:",self.application.modbusModule.LOADBANK_I3/1000,"cihaz current_L3:",self.current_L3)
+                        self.application.frontendWebsocket.send_control_all_values_30sn_result(False)
+                        self.application.acdeviceWebsocket.cancel_test()
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        return False
+                if abs(self.application.modbusModule.CP_PWM_DUTY/1000 - 6 ) > 6 * 0.05:
+                    print("%5 sınırını aştı: CP_PWM_DUTY:",self.application.modbusModule.CP_PWM_DUTY/1000,"cihaz CP_PWM_DUTY:",6)
+                    self.application.frontendWebsocket.send_control_all_values_30sn_result(False)
+                    self.application.acdeviceWebsocket.cancel_test()
+                    self.application.modbusModule.write_cable_control(0)
+                    self.application.modbusModule.write_is_test_complete(-1)
+                    return False
+                if time.time() - time_start > 30:
+                    self.application.frontendWebsocket.send_control_all_values_30sn_result(True)
+                    return True
+            except Exception as e:
+                print("control_all_values_30sn Exception:",e)
+
+            time.sleep(1)
+
+        
+    def send_control_all_values_30sn(self):
+        try:
+            if self.connection:
+                self.websocket.send(json.dumps({
+                        "Command": "ControlAllValues30sn",
+                        "Data": ""
+                    }))
+        except Exception as e:
+            print("send_control_all_values_30sn Exception:",e)
 
     def wait_relay_on(self):
         try:
@@ -294,6 +465,13 @@ class AcdeviceWebsocketModule():
         if self.connection:
             self.websocket.send(json.dumps({
                     "Command": "User2CardRequest",
+                    "Data": ""
+                }))
+
+    def cancel_test(self):
+        if self.connection:
+            self.websocket.send(json.dumps({
+                    "Command": "CancelTest",
                     "Data": ""
                 }))
 

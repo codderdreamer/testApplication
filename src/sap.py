@@ -32,7 +32,7 @@ class SAP():
             return False
 
     def get_serialNumberDetails(self, serialNo):
-        if not self.session_id and not self.login():
+        if not self.login():
             print("Unable to authenticate. Cannot proceed with the request.")
             return False
         try:
@@ -66,4 +66,40 @@ class SAP():
                 return False
         except Exception as e:
             print("get_serialNumberDetails Exception:", e)
+            return False
+        
+    def update_serialNumberDetails(self):
+        if not self.login():
+            print("Unable to authenticate. Cannot proceed with the request.")
+            return False
+        try:
+            print("Call /SerialNumberDetails (PATCH)")
+            url = f"{self.serialNumberDetails_url}"
+            headers = {
+                "Content-Type": "application/json",
+                "Cookie": f"B1SESSION={self.session_id}"
+            }
+
+            update_data = {
+                "U_4GImei": self.application.config.imei_4g,
+                "U_BluetoothMAC": self.application.config.bluetooth_mac,
+                "U_EthernetMAC": self.application.config.eth_mac,
+                "U_CPID": self.application.config.chargePointId,
+                "U_MRFID": self.application.config.master_card,
+                "U_KRFID": self.application.config.user_1_card,
+                "U_KRFID1": self.application.config.user_2_card
+            }
+
+            response = requests.patch(url, headers=headers, json=update_data, verify=False)
+            print("Response Status Code:", response.status_code)
+            print("Response Text:", response.text)
+
+            if response.status_code == 204:
+                print("Update successful.")
+                return True
+            else:
+                print("Failed to update SerialNumberDetails:", response.text)
+                return False
+        except Exception as e:
+            print("update_serialNumberDetails Exception:", e)
             return False
