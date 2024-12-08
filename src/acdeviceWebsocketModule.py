@@ -146,6 +146,8 @@ class AcdeviceWebsocketModule():
                 self.application.modbusModule.write_load_control(0)
                 self.application.modbusModule.write_is_test_complete(1)
                 self.application.frontendWebsocket.end_test()
+                result = self.application.sap.update_serialNumberDetails()
+                self.application.frontendWebsocket.send_sap_result(result)
                 break
 
 

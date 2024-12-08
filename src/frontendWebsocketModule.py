@@ -160,6 +160,17 @@ class FrontendWebsocketModule():
         except Exception as e:
             print("end_test Exception",e)
 
+    def send_sap_result(self,value):
+        try:
+            message = {
+                "Command": "SapResult",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("send_sap_result Exception",e)
+
     def second_user_card_test(self):
         try:
             message = {

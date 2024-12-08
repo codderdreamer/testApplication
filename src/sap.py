@@ -94,7 +94,7 @@ class SAP():
             print("Response Status Code:", response.status_code)
             print("Response Text:", response.text)
 
-            if response.status_code == 204:
+            if response.status_code == 204 or response.status_code == 200:
                 print("Update successful.")
                 return True
             else:

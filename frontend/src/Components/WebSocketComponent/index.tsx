@@ -478,6 +478,13 @@ const WebSocketComponent = () => {
         case "EndTest":
           handleAddItem("TESTİN SONLANDIRILMASI", null, "header")
           break
+        case "SapResult":
+          if(jsonData.Data){
+            handleAddItem("Şarj cihazı SAP sistemine başarılı kayıt edildi.",true)
+          } else{
+            handleAddItem("Şarj cihazı SAP sistemine başarılı kayıt edilemedi!",false)
+          }
+          break
 
 
       }
