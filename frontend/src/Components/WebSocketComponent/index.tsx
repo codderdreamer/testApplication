@@ -408,7 +408,7 @@ const WebSocketComponent = () => {
           }
           break
         case "ControlAllValues30sn":
-          handleAddItem("30 sn içerisinde de Modbus Registerından okunan, akım, gerilim ve güç değerleri ile şarj cihazının kendisinin okuduğu akım, gerilim ve güç değerleri karşılaştırılır...",null)
+          handleAddItem("30 sn içerisinde de test cihazının ve şarj cihazının okuduğu akım, gerilim ve güç değerleri karşılaştırılır...",null)
           break
         case "ControlAllValues30snResult":
           if(jsonData.Data){
