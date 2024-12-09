@@ -75,7 +75,7 @@ class FrontendWebsocketModule():
         try:
             message = {
                 "Command": "ControlAllValues30snResult",
-                "Data": ""
+                "Data": value
             }
             self.websocket.send_message_to_all(json.dumps(message))
             print("frontend send:",message)
