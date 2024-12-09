@@ -158,7 +158,8 @@ class ModbusModule():
             if self.application.simu_test == False:
                 if value == -1:
                     value = 0xFFFF
-                self.write_register(0,value)
+                else:
+                    self.write_register(0,value)
         except Exception as e:
             print("write_is_test_complete Exception:", e)
 
