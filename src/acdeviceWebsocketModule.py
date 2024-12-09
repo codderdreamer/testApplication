@@ -262,7 +262,7 @@ class AcdeviceWebsocketModule():
         except Exception as e:
             print("rcd_leakage_current_test Exception:",e)
 
-    def over_current_test(self):
+    def send_over_current_test(self):
         try:
             if self.connection:
                 self.websocket.send(json.dumps({
@@ -270,7 +270,7 @@ class AcdeviceWebsocketModule():
                         "Data": ""
                     }))
         except Exception as e:
-            print("over_current_test Exception:",e)
+            print("send_over_current_test Exception:",e)
 
     def control_values(self):
         if self.control_voltage():
@@ -280,8 +280,8 @@ class AcdeviceWebsocketModule():
                     self.over_current_test()
 
     def over_current_test(self):
-        self.application.frontendWebsocket.over_current_test()
-        self.application.acdeviceWebsocket.over_current_test()
+        self.application.frontendWebsocket.send_over_current_test()
+        self.application.acdeviceWebsocket.send_over_current_test()
         self.application.modbusModule.write_load_control(10)
     
     def control_voltage(self):

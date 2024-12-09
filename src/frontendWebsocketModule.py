@@ -49,7 +49,7 @@ class FrontendWebsocketModule():
         except Exception as e:
             print("wait_c_state Exception",e)
 
-    def over_current_test(self):
+    def send_over_current_test(self):
         try:
             message = {
                 "Command": "OverCurrentTest",
