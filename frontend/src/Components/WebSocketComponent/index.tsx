@@ -377,6 +377,13 @@ const WebSocketComponent = () => {
             handleAddItem("Birinci kullanıcı kartı okutulamadı!", false)
           }
           break
+        case "WaitUser2CardResult":
+          if(jsonData.Data){
+            handleAddItem("İkinci kullanıcı kartı okutuldu", true)
+          } else{
+            handleAddItem("İkinci kullanıcı kartı okutulamadı!", false)
+          }
+          break
         case "WaitRelayOnRequest":
           handleAddItem("Rölenin On olması bekleniyor...", null)
           break
@@ -473,7 +480,10 @@ const WebSocketComponent = () => {
         case "SecondUserCard":
           handleAddItem("İKİNCİ RFID KARTININ TESTİ", null, "header")
           handleAddItem("Şarj cihazı B statine getirildi.",true)
-          handleAddItem("Şarjı Başlatmak İçin İkinci Kullanıcı RFID Kartını Okutunuz!",null)
+          // handleAddItem("Şarjı Başlatmak İçin İkinci Kullanıcı RFID Kartını Okutunuz!",null)
+          break
+        case "WaitUser2CardRequest":
+          handleAddItem("Lütfen birinci kullanıcı RFID kartını okutunuz!", null)
           break
         case "SecondUserWaitCStateResult":
           if(jsonData.Data){

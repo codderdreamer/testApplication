@@ -70,11 +70,19 @@ class AcdeviceWebsocketModule():
                 if Data:
                     self.application.frontendWebsocket.wait_relay_on()
                     self.application.acdeviceWebsocket.wait_relay_on()
+                else:
+                    self.application.modbusModule.write_load_control(0)
+                    self.application.modbusModule.write_cable_control(0)
+                    self.application.modbusModule.write_is_test_complete(-1)
             elif Command == "WaitRelayOnResult":
                 self.application.frontendWebsocket.websocket.send_message_to_all(message)
                 if Data:
                     self.application.modbusModule.write_load_control(0)
                     Thread(target=self.control_values,daemon=True).start()
+                else:
+                    self.application.modbusModule.write_load_control(0)
+                    self.application.modbusModule.write_cable_control(0)
+                    self.application.modbusModule.write_is_test_complete(-1)
             elif Command == "ControlAllValues30snResult":
                 self.current_L1 = Data["current_L1"]
                 self.current_L2 = Data["current_L2"]
@@ -102,7 +110,14 @@ class AcdeviceWebsocketModule():
                     self.application.modbusModule.write_load_control(0)
                     self.application.modbusModule.write_cable_control(0)
                     self.application.modbusModule.write_is_test_complete(-1)
-
+            elif Command == "WaitUser2CardResult":
+                self.application.frontendWebsocket.websocket.send_message_to_all(message)
+                if Data:
+                    Thread(target=self.second_user_wait_c_state,daemon=True).start()
+                else:
+                    self.application.modbusModule.write_load_control(0)
+                    self.application.modbusModule.write_cable_control(0)
+                    self.application.modbusModule.write_is_test_complete(-1)
 
         except Exception as e:
             print("on_message Exception:",e)
@@ -126,7 +141,8 @@ class AcdeviceWebsocketModule():
                 self.application.frontendWebsocket.wait_state_a_result(True)
                 self.application.modbusModule.write_cable_control(1)
                 self.application.frontendWebsocket.second_user_card_test()
-                Thread(target=self.second_user_wait_c_state,daemon=True).start()
+                self.application.frontendWebsocket.wait_user_2_card_request()
+                self.application.acdeviceWebsocket.wait_user_2_card_request()
                 break
             time.sleep(1)
 
@@ -136,7 +152,7 @@ class AcdeviceWebsocketModule():
             if self.application.config.cancel_test:
                 print("Test iptal edildi!")
                 break
-            if time.time() - time_start > 10:
+            if time.time() - time_start > 20:
                 self.application.frontendWebsocket.second_user_wait_c_state_result(False)
                 self.application.modbusModule.write_load_control(0)
                 self.application.modbusModule.write_cable_control(0)
@@ -456,6 +472,17 @@ class AcdeviceWebsocketModule():
             print("sended ac:",message)
         except Exception as e:
             print("wait_user_1_card_request Exception:",e)
+
+    def wait_user_2_card_request(self):
+        try:
+            message = {
+                    "Command": "WaitUser2CardRequest",
+                    "Data": ""
+                }
+            self.websocket.send(json.dumps(message))
+            print("sended ac:",message)
+        except Exception as e:
+            print("wait_user_2_card_request Exception:",e)
 
     def master_card_request(self):
         try:

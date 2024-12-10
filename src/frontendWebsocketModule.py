@@ -341,6 +341,17 @@ class FrontendWebsocketModule():
         except Exception as e:
             print("wait_user_1_card_request Exception",e)
 
+    def wait_user_2_card_request(self):
+        try:
+            message = {
+                    "Command": "WaitUser2CardRequest",
+                    "Data": ""
+                }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("wait_user_2_card_request Exception",e)
+
     def wait_relay_on(self):
         try:
             message = {
