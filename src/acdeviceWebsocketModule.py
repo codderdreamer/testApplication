@@ -155,14 +155,14 @@ class AcdeviceWebsocketModule():
             if self.application.config.cancel_test:
                 print("Test iptal edildi!")
                 break
-            if time.time() - time_start > 20:
+            if time.time() - time_start > 30:
                 self.application.frontendWebsocket.second_user_wait_c_state_result(False)
                 self.application.modbusModule.write_load_control(0)
                 self.application.modbusModule.write_cable_control(0)
                 self.application.modbusModule.write_is_test_complete(-1)
                 break
             if self.application.modbusModule.CP_STATE == 2:
-                self.application.frontendWebsocket.second_user_wait_c_state_result(False)
+                self.application.frontendWebsocket.second_user_wait_c_state_result(True)
                 self.application.modbusModule.write_cable_control(0)
                 self.application.modbusModule.write_load_control(0)
                 self.application.modbusModule.write_is_test_complete(1)
@@ -170,6 +170,7 @@ class AcdeviceWebsocketModule():
                 result = self.application.sap.update_serialNumberDetails()
                 self.application.frontendWebsocket.send_sap_result(result)
                 break
+            time.sleep(1)
 
 
     def on_error(self, ws, error):
