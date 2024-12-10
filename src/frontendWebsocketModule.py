@@ -175,7 +175,7 @@ class FrontendWebsocketModule():
         try:
             message = {
                 "Command": "SapResult",
-                "Data": ""
+                "Data": value
             }
             self.websocket.send_message_to_all(json.dumps(message))
             print("frontend send:",message)

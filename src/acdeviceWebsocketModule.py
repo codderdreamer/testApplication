@@ -181,10 +181,13 @@ class AcdeviceWebsocketModule():
                 self.application.frontendWebsocket.second_user_wait_c_state_result(True)
                 self.application.modbusModule.write_cable_control(0)
                 self.application.modbusModule.write_load_control(0)
-                self.application.modbusModule.write_is_test_complete(1)
                 self.application.frontendWebsocket.end_test()
                 result = self.application.sap.update_serialNumberDetails()
                 self.application.frontendWebsocket.send_sap_result(result)
+                if result:
+                    self.application.modbusModule.write_is_test_complete(1)
+                else:
+                    self.application.modbusModule.write_is_test_complete(-1)
                 break
             time.sleep(1)
 
