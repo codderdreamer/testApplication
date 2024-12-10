@@ -214,7 +214,7 @@ class FrontendWebsocketModule():
             self.websocket.send_message_to_all(json.dumps(message))
             print("frontend send:",message)
         except Exception as e:
-            print("send_control_voltage_request Exception",e)
+            print("send_control_current_request Exception",e)
 
     def send_control_voltage(self,value):
         try:
