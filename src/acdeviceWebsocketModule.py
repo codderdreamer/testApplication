@@ -83,7 +83,7 @@ class AcdeviceWebsocketModule():
                 self.voltage_L2 = Data["voltage_L2"]
                 self.voltage_L3 = Data["voltage_L3"]
             elif Command == "OverCurrentTestResult":
-                self.application.frontendWebsocket.websocket.send_message_to_all(json.dumps(message))
+                self.application.frontendWebsocket.websocket.send_message_to_all(message)
                 if len(Data) > 0:
                     self.application.modbusModule.write_load_control(0)
                     self.application.frontendWebsocket.wait_c_state()
@@ -94,7 +94,7 @@ class AcdeviceWebsocketModule():
                     self.application.modbusModule.write_cable_control(0)
                     self.application.modbusModule.write_is_test_complete(-1)
             elif Command == "RCDLeakageCurrentTestResult":
-                self.application.frontendWebsocket.websocket.send_message_to_all(json.dumps(message))
+                self.application.frontendWebsocket.websocket.send_message_to_all(message)
                 if len(Data) > 0:
                     self.application.modbusModule.write_cable_control(0)
                     Thread(target=self.wait_state_a,daemon=True).start()
