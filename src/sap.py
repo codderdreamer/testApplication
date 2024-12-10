@@ -7,6 +7,7 @@ class SAP():
         self.login_url = f"{self.base_url}/Login"
         self.serialNumberDetails_url = f"{self.base_url}/SerialNumberDetails"
         self.session_id = None
+        self.DocEntry = None
         self.login_payload = {
             "CompanyDB": "HERATEST03",
             "Password": "3944",
@@ -55,6 +56,7 @@ class SAP():
                 if "value" in data and len(data["value"]) > 0:
                     item = data["value"][0] 
                     ItemCode = item["ItemCode"]
+                    self.DocEntry = item["DocEntry"]
                     print("ItemCode:", ItemCode)
                     self.application.deviceModel.find(ItemCode)
                     return True
@@ -74,7 +76,7 @@ class SAP():
             return False
         try:
             print("Call /SerialNumberDetails (PATCH)")
-            url = f"{self.serialNumberDetails_url}"
+            url = f"{self.serialNumberDetails_url}({self.DocEntry})"
             headers = {
                 "Content-Type": "application/json",
                 "Cookie": f"B1SESSION={self.session_id}"
