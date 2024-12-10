@@ -124,7 +124,7 @@ class AcdeviceWebsocketModule():
                 break
             if self.application.modbusModule.CP_STATE == 0:
                 self.application.frontendWebsocket.wait_state_a_result(True)
-                self.application.write_cable_control(1)
+                self.application.modbusModule.write_cable_control(1)
                 self.application.frontendWebsocket.second_user_card_test()
                 Thread(target=self.second_user_wait_c_state,daemon=True).start()
                 break
