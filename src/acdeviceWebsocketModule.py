@@ -128,6 +128,7 @@ class AcdeviceWebsocketModule():
                 self.application.frontendWebsocket.second_user_card_test()
                 Thread(target=self.second_user_wait_c_state,daemon=True).start()
                 break
+            time.sleep(1)
 
     def second_user_wait_c_state(self):
         time_start = time.time()
@@ -246,6 +247,7 @@ class AcdeviceWebsocketModule():
                 self.application.frontendWebsocket.rcd_leakage_current_test()
                 if self.control_voltage():
                     self.application.modbusModule.write_rcd_control(1)
+                    self.application.frontendWebsocket.rcd_leakage_current_set()
                     self.rcd_leakage_current_test()
                 break
             if time.time() - time_start > 40:

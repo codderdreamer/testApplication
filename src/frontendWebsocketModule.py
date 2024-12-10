@@ -16,6 +16,17 @@ class FrontendWebsocketModule():
         Thread(target=self.send_connected_USB_list,daemon=True).start()
         Thread(target=self.send_all_load_data,daemon=True).start()
 
+    def rcd_leakage_current_set(self):
+        try:
+            message = {
+                "Command": "RCDLeakageCurrentSet",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("rcd_leakage_current_test Exception",e)
+
     def rcd_leakage_current_test(self):
         try:
             message = {

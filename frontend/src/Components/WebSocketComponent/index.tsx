@@ -431,8 +431,11 @@ const WebSocketComponent = () => {
             handleAddItem("MCU'da hata yok!" , false)
           }
           break
+        case "RCDLeakageCurrentSet":
+          handleAddItem("Şarj Cihazının RCD hatasına geçmesi bekleniyor..." , null)
+          break
         case "RCDLeakageCurrentTestResult":
-          setmcu_error("")
+          console.log("RCDLeakageCurrentTestResult",jsonData)
           if (jsonData.Data.length != 0){
             jsonData.Data.forEach((error: string, index: number) => {
               handleAddItem("MCU'da hata: " + error, true)
