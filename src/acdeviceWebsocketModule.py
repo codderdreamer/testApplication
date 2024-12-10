@@ -143,11 +143,27 @@ class AcdeviceWebsocketModule():
                 self.application.frontendWebsocket.wait_state_a_result(True)
                 time.sleep(10)
                 self.application.modbusModule.write_cable_control(1)
+                self.wait_cable_control_b_state()
                 self.application.frontendWebsocket.second_user_card_test()
                 self.application.frontendWebsocket.wait_user_2_card_request()
                 self.application.acdeviceWebsocket.wait_user_2_card_request()
                 break
             time.sleep(1)
+
+    def wait_cable_control_b_state(self):
+        time_start = time.time()
+        while True:
+            print("B statine geçmesi bekleniyor...")
+            if self.application.modbusModule.CP_STATE == 1:
+                break
+            else:
+                self.application.modbusModule.write_cable_control(1)
+
+            if time.time() - time_start > 5:
+                break
+
+            time.sleep(1)
+
 
     def second_user_wait_c_state(self):
         time_start = time.time()
@@ -234,6 +250,7 @@ class AcdeviceWebsocketModule():
                     print("start_charge_test")
                     self.application.frontendWebsocket.start_charge_test()
                     self.application.modbusModule.write_cable_control(1)
+                    self.wait_cable_control_b_state()
                     self.application.frontendWebsocket.wait_user_1_card_request()
                     self.wait_user_1_card_request()
                 break
