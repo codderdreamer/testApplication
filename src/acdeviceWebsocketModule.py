@@ -103,6 +103,8 @@ class AcdeviceWebsocketModule():
                     self.application.modbusModule.write_is_test_complete(-1)
             elif Command == "RCDLeakageCurrentTestResult":
                 self.application.frontendWebsocket.websocket.send_message_to_all(message)
+                self.application.modbusModule.write_rcd_control(0)
+                time.sleep(1)
                 if len(Data) > 0:
                     self.application.modbusModule.write_cable_control(0)
                     Thread(target=self.wait_state_a,daemon=True).start()
