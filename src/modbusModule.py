@@ -187,6 +187,7 @@ class ModbusModule():
     # 1 : Kabloyu Araca Tak   ;   0: Kabloyu Araçtan Çıkart
     def write_cable_control(self,value:int):
         try:
+            print("write_cable_control",value)
             if value == -1:
                 value = 0xFFFF
             self.write_register(9,value)
