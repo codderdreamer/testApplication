@@ -87,6 +87,7 @@ class AcdeviceWebsocketModule():
                 if len(Data) > 0:
                     self.application.modbusModule.write_load_control(0)
                     self.application.frontendWebsocket.wait_c_state()
+                    time.sleep(5)
                     Thread(target=self.wait_c_state,daemon=True).start()
                 else:
                     self.application.modbusModule.write_load_control(0)

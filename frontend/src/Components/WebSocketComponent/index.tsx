@@ -421,6 +421,7 @@ const WebSocketComponent = () => {
           handleAddItem("AŞIRI AKIM TESTİ", null, "header")
           break
         case "OverCurrentTestResult":
+          setmcu_error("")
           if (jsonData.Data.length != 0){
             jsonData.Data.forEach((error: string, index: number) => {
               handleAddItem("MCU'da hata: " + error, true)
@@ -431,6 +432,7 @@ const WebSocketComponent = () => {
           }
           break
         case "RCDLeakageCurrentTestResult":
+          setmcu_error("")
           if (jsonData.Data.length != 0){
             jsonData.Data.forEach((error: string, index: number) => {
               handleAddItem("MCU'da hata: " + error, true)
