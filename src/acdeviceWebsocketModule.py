@@ -257,21 +257,23 @@ class AcdeviceWebsocketModule():
 
     def rcd_leakage_current_test(self):
         try:
-            if self.connection:
-                self.websocket.send(json.dumps({
-                        "Command": "RCDLeakageCurrentTest",
-                        "Data": ""
-                    }))
+            message = {
+                    "Command": "RCDLeakageCurrentTest",
+                    "Data": ""
+                }
+            self.websocket.send(json.dumps(message))
+            print("sended ac:",message)
         except Exception as e:
             print("rcd_leakage_current_test Exception:",e)
 
     def send_over_current_test(self):
         try:
-            if self.connection:
-                self.websocket.send(json.dumps({
+            message = {
                         "Command": "OverCurrentTest",
                         "Data": ""
-                    }))
+                    }
+            self.websocket.send(json.dumps(message))
+            print("sended ac:",message)
         except Exception as e:
             print("send_over_current_test Exception:",e)
 
@@ -424,61 +426,80 @@ class AcdeviceWebsocketModule():
         
     def send_control_all_values_30sn(self):
         try:
-            if self.connection:
-                self.websocket.send(json.dumps({
-                        "Command": "ControlAllValues30sn",
-                        "Data": ""
-                    }))
+            message = {
+                    "Command": "ControlAllValues30sn",
+                    "Data": ""
+                }
+            self.websocket.send(json.dumps(message))
+            print("sended ac:",message)
         except Exception as e:
             print("send_control_all_values_30sn Exception:",e)
 
     def wait_relay_on(self):
         try:
-            if self.connection:
-                self.websocket.send(json.dumps({
-                        "Command": "WaitRelayOnRequest",
-                        "Data": ""
-                    }))
+            message = {
+                    "Command": "WaitRelayOnRequest",
+                    "Data": ""
+                }
+            self.websocket.send(json.dumps(message))
+            print("sended ac:",message)
         except Exception as e:
             print("wait_relay_on Exception:",e)
 
     def wait_user_1_card_request(self):
         try:
-            if self.connection:
-                self.websocket.send(json.dumps({
-                        "Command": "WaitUser1CardRequest",
-                        "Data": ""
-                    }))
+            message = {
+                    "Command": "WaitUser1CardRequest",
+                    "Data": ""
+                }
+            self.websocket.send(json.dumps(message))
+            print("sended ac:",message)
         except Exception as e:
             print("wait_user_1_card_request Exception:",e)
 
     def master_card_request(self):
-        if self.connection:
-            self.websocket.send(json.dumps({
+        try:
+            message = {
                     "Command": "MasterCardRequest",
                     "Data": ""
-                }))
+            }
+            self.websocket.send(json.dumps(message))
+            print("sended ac:",message)
+        except Exception as e:
+            print("master_card_request Exception:",e)
             
     def user_1_card_request(self):
-        if self.connection:
-            self.websocket.send(json.dumps({
+        try:
+            message = {
                     "Command": "User1CardRequest",
                     "Data": ""
-                }))
+                }
+            self.websocket.send(json.dumps(message))
+            print("sended ac:",message)
+        except Exception as e:
+            print("user_1_card_request Exception:",e)
             
     def user_2_card_request(self):
-        if self.connection:
-            self.websocket.send(json.dumps({
+        try:
+            message = {
                     "Command": "User2CardRequest",
                     "Data": ""
-                }))
+                }
+            self.websocket.send(json.dumps(message))
+            print("sended ac:",message)
+        except Exception as e:
+            print("user_1_card_request Exception:",e)
 
     def cancel_test(self):
-        if self.connection:
-            self.websocket.send(json.dumps({
+        try:
+            message = {
                     "Command": "CancelTest",
                     "Data": ""
-                }))
+                }
+            self.websocket.send(json.dumps(message))
+            print("sended ac:",message)
+        except Exception as e:
+            print("user_1_card_request Exception:",e)
 
     def wait_ac_charger_connection(self):
         while True:
@@ -519,7 +540,7 @@ class AcdeviceWebsocketModule():
                     print("5dk bounca bağlanamadı Config bilgisi gönderilemedi!")
                     break
                 if self.connection:
-                    self.websocket.send(json.dumps({
+                    message = {
                             "Command": "SaveConfig",
                             "Data": {
                                 "wifiSSID" : self.application.config.wifiSSID,
@@ -534,7 +555,9 @@ class AcdeviceWebsocketModule():
                                 "fourg" : self.application.deviceModel.system.name == "RFID_Wifi_Ethernet_Bluetooth_4G",
                                 "midMeter" : self.application.deviceModel.midMeter.name
                             }
-                        }))
+                        }
+                    self.websocket.send(json.dumps(message))
+                    print("sended ac:",message)
                     break
                 if self.application.simu_test:
                     break
