@@ -55,7 +55,7 @@ const WebSocketComponent = () => {
   } = useMessage();
 
   useEffect(() => {
-    console.log("change socket --------------", socket)
+    // console.log("change socket --------------", socket)
   }, [socket]);
 
   const send_ac_charger_connect_request = (socket : W3CWebSocket) => {
@@ -89,7 +89,7 @@ const WebSocketComponent = () => {
   };
 
   const handleBarcodeInput = (event: KeyboardEvent) => {
-    console.log("event.key", event.key, "expectedBarcodeType", expectedBarcodeType)
+    // console.log("event.key", event.key, "expectedBarcodeType", expectedBarcodeType)
     if (!expectedBarcodeType) return;
 
     if (event.key === "Shift") return;
@@ -100,17 +100,14 @@ const WebSocketComponent = () => {
     }
 
     if (event.key === "Enter") {
-      console.log("event.key === Enter")
       if (debounceId) clearTimeout(debounceId);
       processBarcode();
       if (timeoutId) clearTimeout(timeoutId);
     } else {
       setBarcode((prev) => prev + event.key);
-      console.log("debounceId", debounceId)
       if (debounceId) clearTimeout(debounceId);
-      const newDebounceId = setTimeout(() => console.log("Debounced barcode:", barcode), 300);
-      console.log("newDebounceId", newDebounceId)
-      setDebounceId(newDebounceId);
+      // const newDebounceId = setTimeout(() => console.log("Debounced barcode:", barcode), 300);
+      // setDebounceId(newDebounceId);
     }
   };
 
@@ -132,8 +129,8 @@ const WebSocketComponent = () => {
   };
 
   const processBarcode = () => {
-    console.log("processBarcode aşaması")
-    console.log("barcode", barcode)
+    // console.log("processBarcode aşaması")
+    // console.log("barcode", barcode)
     if (barcode.trim() === "") {
       handleAddItem("Barkod girilmedi. Hata!", false);
     } else if (expectedBarcodeType === "seriNo") {
@@ -141,18 +138,26 @@ const WebSocketComponent = () => {
       sendBarcode("SeriNoBarcode");
       handleAddItem("Cihazın Model Idsi sorgulanıyor...", null);
     } else if (expectedBarcodeType === "chargePointId") {
-      handleAddItem(`Charge Point ID: ${barcode}`, true);
-      sendBarcode("ChargePointIdBarcode");
+      if (barcode.startsWith("HCAC") && barcode.length === 10) {
+        handleAddItem(`Charge Point ID: ${barcode}`, true);
+        sendBarcode("ChargePointIdBarcode");
+      } else {
+        handleAddItem(`Geçersiz barkod: ${barcode}  -->  Barkod HCAC ile başlamalı ve 10 haneli olmalıdır.`,false);
+        setBarcode("")
+        setExpectedBarcodeType("chargePointId")
+        handleAddItem("Lütfen cihazın Charge Point Id barkodunu okutunuz!", null);
+        setWaitingForBarcode(true);
+      }
     }
   };
 
   const startTimeout = () => {
-    console.log("startTimeout")
+    // console.log("startTimeout")
     if (timeoutId) clearTimeout(timeoutId);
     const id = setTimeout(() => {
-      console.log("setTimeout")
+      // console.log("setTimeout")
       if (expectedBarcodeType) {
-        console.log("expectedBarcodeType")
+        // console.log("expectedBarcodeType")
       }
       if (!barcode) {
         handleAddItem("Barkod girilmedi. Hata!", false);
@@ -184,7 +189,7 @@ const WebSocketComponent = () => {
 
 
   const connectWebSocket = () => {
-    console.log("Web", isConnecting)
+    // console.log("Web", isConnecting)
     setIsConnecting(true);
     const newSocket = new W3CWebSocket('ws://' + window.location.hostname + ':4000');
 
@@ -197,9 +202,11 @@ const WebSocketComponent = () => {
 
     newSocket.onmessage = (message) => {
       const jsonData = JSON.parse(message.data.toString());
+      if (jsonData.Command != "LoadData" && jsonData.Command != "USBList"){
+        console.log(jsonData)
+      }
       switch (jsonData.Command) {
         case "LoadData":
-          console.log(jsonData.Data)
           setLOADBANK_I1(jsonData.Data.LOADBANK_I1)
           setLOADBANK_I2(jsonData.Data.LOADBANK_I2)
           setLOADBANK_I3(jsonData.Data.LOADBANK_I3)
@@ -214,7 +221,6 @@ const WebSocketComponent = () => {
           setUSBList(jsonData.Data)
           break
         case "Config":
-          console.log(jsonData);
           handleAddItem("SMART FONKSIYON ve BAĞLANTI TESTLERİ", null, "header")
           if (jsonData.Data) {
             setwifiSSID(jsonData.Data.wifiSSID)
@@ -226,21 +232,19 @@ const WebSocketComponent = () => {
           }
           break
         case "USBControl":
-          console.log(jsonData);
           if (jsonData.Data) {
-            console.log("Test cihazına bağlandı")
             handleAddItem("Test cihazına bağlandı.", true)
             setExpectedBarcodeType("seriNo")
-            handleAddItem("Lütfen cihazın seri numara barkodunu okutunuz!", null);
-            setWaitingForBarcode(true);
           }
           else {
-            console.log("Test cihazına bağlanamadı")
             handleAddItem("Test cihazına bağlanamadı!.", false)
           }
           break
+        case "SeriNoRequest":
+          handleAddItem("Lütfen cihazın seri numara barkodunu okutunuz!", null);
+          setWaitingForBarcode(true);
+          break
         case "SeriNoBarcodeResult":
-          console.log(jsonData);
           if (jsonData.Data) {
             if (jsonData.Data.result) {
               handleAddItem(`ItemCode: ${jsonData.Data.ItemCode}`, null);
@@ -257,18 +261,15 @@ const WebSocketComponent = () => {
           }
           break
         case "ChargePointIdRequest":
-          console.log(jsonData);
           setBarcode("")
           setExpectedBarcodeType("chargePointId")
           handleAddItem("Lütfen cihazın Charge Point Id barkodunu okutunuz!", null);
           setWaitingForBarcode(true);
           break
         case "WaitDevice":
-          console.log(jsonData);
           handleAddItem("Test cihazının hazır olması bekleniyor...", null)
           break
         case "WaitDeviceResult":
-          console.log(jsonData);
           handleAddItem("Test cihazı hazır.", true)
           send_ac_charger_connect_request(newSocket)
           handleAddItem("AC Charger'a bağlanılıyor...", null)
@@ -296,7 +297,10 @@ const WebSocketComponent = () => {
           handleAddItem("Lütfen ikinci kullanıcı katını cihaza okutunuz!", null)
           break
         case "User1CardResult":
-          if (jsonData.Data == "" || jsonData.Data == null){
+          if (jsonData.Data == "Same"){
+            handleAddItem("Aynı kartı okuttunuz!", false)
+          }
+          else if (jsonData.Data == "" || jsonData.Data == null){
             handleAddItem("Birinci kullanıcı kart alınamadı " + jsonData.Data, false)
           }
           else{
@@ -304,7 +308,10 @@ const WebSocketComponent = () => {
           }
           break
         case "User2CardResult":
-          if (jsonData.Data == "" || jsonData.Data == null){
+          if (jsonData.Data == "Same"){
+            handleAddItem("Aynı kartı okuttunuz!", false)
+          }
+          else if (jsonData.Data == "" || jsonData.Data == null){
             handleAddItem("İkinci kullanıcı kart alınamadı " + jsonData.Data, false)
           }
           else{
@@ -362,7 +369,14 @@ const WebSocketComponent = () => {
           break
         case "ChargeTest":
           handleAddItem("ŞARJ TESTİ", null,"header")
-          handleAddItem("Şarj cihazı B konumuna getirildi", true)
+          handleAddItem("Lütfen kablonun takılı olduğundan emin olunuz!", null)
+          break
+        case "DeviceB":
+          if(jsonData.Data){
+            handleAddItem("Şarj cihazı B konumuna getirildi", true)
+          } else{
+            handleAddItem("Şarj cihazı B konumuna getirilemedi", true)
+          }
           break
         case "WaitUser1CardRequest":
           handleAddItem("Lütfen birinci kullanıcı RFID kartını okutunuz!", null)
@@ -429,7 +443,6 @@ const WebSocketComponent = () => {
           break
         case "OverCurrentTestResult":
           setmcu_error("")
-          console.log("jsonData.Data.length",jsonData.Data.length)
           if (jsonData.Data.length != 0){
             jsonData.Data.forEach((error: string, index: number) => {
               handleAddItem("MCU'da hata: " + error, true)
@@ -443,8 +456,6 @@ const WebSocketComponent = () => {
           handleAddItem("Şarj Cihazının RCD hatasına geçmesi bekleniyor..." , null)
           break
         case "RCDLeakageCurrentTestResult":
-          console.log("jsonData.Data.length",jsonData.Data.length)
-          console.log("RCDLeakageCurrentTestResult",jsonData)
           if (jsonData.Data.length != 0){
             jsonData.Data.forEach((error: string, index: number) => {
               handleAddItem("MCU'da hata: " + error, true)

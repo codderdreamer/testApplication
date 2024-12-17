@@ -49,7 +49,10 @@ class AcdeviceWebsocketModule():
                     self.application.acdeviceWebsocket.user_1_card_request()
             elif Command == "User1CardResult":
                 self.application.frontendWebsocket.websocket.send_message_to_all(message)
-                if Data == None or Data == "":
+                if Data == "Same":
+                    self.application.frontendWebsocket.user_1_card_request()
+                    self.application.acdeviceWebsocket.user_1_card_request()
+                elif Data == None or Data == "":
                     self.application.modbusModule.write_is_test_complete(-1)
                 else:
                     self.application.config.user_1_card = Data
@@ -57,7 +60,10 @@ class AcdeviceWebsocketModule():
                     self.application.acdeviceWebsocket.user_2_card_request()
             elif Command == "User2CardResult":
                 self.application.frontendWebsocket.websocket.send_message_to_all(message)
-                if Data == None or Data == "":
+                if Data == "Same":
+                    self.application.frontendWebsocket.user_2_card_request()
+                    self.application.acdeviceWebsocket.user_2_card_request()
+                elif Data == None or Data == "":
                     self.application.modbusModule.write_is_test_complete(-1)
                 else:
                     self.application.config.user_2_card = Data
@@ -141,12 +147,28 @@ class AcdeviceWebsocketModule():
                 break
             if self.application.modbusModule.CP_STATE == 0:
                 self.application.frontendWebsocket.wait_state_a_result(True)
-                time.sleep(10)
-                self.application.modbusModule.write_cable_control(1)
-                self.wait_cable_control_b_state()
-                self.application.frontendWebsocket.second_user_card_test()
-                self.application.frontendWebsocket.wait_user_2_card_request()
-                self.application.acdeviceWebsocket.wait_user_2_card_request()
+                # ikinci kullanıcıya geçmeden bitiriliyor
+                self.application.modbusModule.write_cable_control(0)
+                self.application.modbusModule.write_load_control(0)
+                self.application.frontendWebsocket.end_test()
+                result = self.application.sap.update_serialNumberDetails()
+                self.application.frontendWebsocket.send_sap_result(result)
+                if result:
+                    self.application.modbusModule.write_is_test_complete(1)
+                else:
+                    self.application.modbusModule.write_is_test_complete(-1)
+
+                # time.sleep(10)
+                # self.application.modbusModule.write_cable_control(1)
+                # result = self.wait_cable_control_b_state()
+                # if result:
+                #     self.application.frontendWebsocket.second_user_card_test()
+                #     self.application.frontendWebsocket.wait_user_2_card_request()
+                #     self.application.acdeviceWebsocket.wait_user_2_card_request()
+                # else:
+                #     self.application.modbusModule.write_load_control(0)
+                #     self.application.modbusModule.write_cable_control(0)
+                #     self.application.modbusModule.write_is_test_complete(-1)
                 break
             time.sleep(1)
 
@@ -155,12 +177,14 @@ class AcdeviceWebsocketModule():
         while True:
             print("B statine geçmesi bekleniyor...")
             if self.application.modbusModule.CP_STATE == 1:
-                break
+                self.application.frontendWebsocket.send_device_B(True)
+                return True
             else:
                 self.application.modbusModule.write_cable_control(1)
 
             if time.time() - time_start > 5:
-                break
+                self.application.frontendWebsocket.send_device_B(False)
+                return False
 
             time.sleep(1)
 
@@ -251,8 +275,8 @@ class AcdeviceWebsocketModule():
                     self.application.frontendWebsocket.again_test()
                 else:
                     print("start_charge_test")
-                    self.application.frontendWebsocket.start_charge_test()
                     self.application.modbusModule.write_cable_control(1)
+                    self.application.frontendWebsocket.start_charge_test()
                     self.wait_cable_control_b_state()
                     self.application.frontendWebsocket.wait_user_1_card_request()
                     self.wait_user_1_card_request()
@@ -539,7 +563,7 @@ class AcdeviceWebsocketModule():
             self.websocket.send(json.dumps(message))
             print("sended ac:",message)
         except Exception as e:
-            print("user_1_card_request Exception:",e)
+            print("user_2_card_request Exception:",e)
 
     def cancel_test(self):
         try:
@@ -550,7 +574,7 @@ class AcdeviceWebsocketModule():
             self.websocket.send(json.dumps(message))
             print("sended ac:",message)
         except Exception as e:
-            print("user_1_card_request Exception:",e)
+            print("cancel_test Exception:",e)
 
     def wait_ac_charger_connection(self):
         while True:
