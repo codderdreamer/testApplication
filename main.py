@@ -11,7 +11,7 @@ from src.configModule import *
 
 class Application():
     def __init__(self):
-        self.simu_test = True
+        self.simu_test = False
         self.modbus_ports = []                  # Aktif portlar
         self.aktive_eth = []                    # Aktif ethernetler
         self.modbus_connected = False           # Modbus bağlantısı
