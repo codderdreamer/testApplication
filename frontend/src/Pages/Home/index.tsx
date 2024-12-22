@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
-import "./home.css";
+// import "./home.css";
+import "./home2.css";
 import { toast } from "react-toastify";
 import { useMessage } from '../../Components/MessageContext';
 
@@ -13,6 +14,7 @@ const Home = () => {
     const [selectedUSB, setSelectedUSB] = useState('');
     const [highlightIndex, setHighlightIndex] = useState<number | null>(null);
     const [isHighlightRed, setIsHighlightRed] = useState(true);
+    const [activeSection, setActiveSection] = useState('settings');
 
     const {
         socket,
@@ -194,127 +196,201 @@ const Home = () => {
     const Tick = () => {
         return <img className="tick" src="/assets/img/tik.png" alt="" />
     };
+
+    const handleSectionClick = (sectionName:string) => {
+        setActiveSection(sectionName);
+    };
     
 
     return (
-        <div className='fullscreen-div'>
-            <div className="screen-1">
-                <div className='header'>Hera Test Uygulaması</div>
-                <div className='text1'>Lütfen bigisyara USB ve Ethernet kablosunu takınız...</div>
-                <div>
-                    <span className='text2'>Bağlı USB Kablosu:</span>
-                    <select className="text2" value={selectedUSB} onChange={handleUSBChange}>
-                        <option value="" disabled>
-                            USB Seçiniz
-                        </option>
-                        {USBList.map((usb, index) => (
-                            <option key={index} value={usb}>
-                                {usb}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div>
-                    <span className='text2'>Bağlanacak cihazın Ethernet IP'si:</span>
-                    <span className='text2'>172.16.0.104</span>
-                </div>
-                <div className='text1'>Cihazın bağlanacağı wifi adresi ve şifresini giriniz...</div>
-                <div>
-                    <span className='text2'>Wifi SSID:</span>
-                    <span className='text2'><input className="input" type="text" value={wifiSSID} onChange={handlewifiSSIDChange} /></span>
-                </div>
-                <div>
-                    <span className='text2'>Wifi Password:</span>
-                    <span className='text2'><input className="input" type="text" value={wifiPassword} onChange={handlewifiPasswordChange} /></span>
-                </div>
-                <div>
-                    <span className='text2'>4G APN Adresi:</span>
-                    <span className='text2'><input className="input" type="text" value={fourG_apn} onChange={handlefourG_apnChange} /></span>
-                </div>
-                <div>
-                    <span className='text2'>4G User:</span>
-                    <span className='text2'><input className="input" type="text" value={fourG_user} onChange={handlefourG_userChange} /></span>
-                </div>
-                <div>
-                    <span className='text2'>4G Password:</span>
-                    <span className='text2'><input className="input" type="text" value={fourG_password} onChange={handlefourG_passwordChange} /></span>
-                </div>
-                <div>
-                    <span className='text2'>4G Pin:</span>
-                    <span className='text2'><input className="input" type="text" value={fourG_pin} onChange={handlefourG_pinChange} /></span>
-                </div>
-
-                <button className='start' onClick={testStart} disabled={isDisabled}>Teste Başla</button>
-                <button className='fakestart' onClick={fakeTestStart} disabled={isDisabled}>Fake Teste Başla</button>
-                <button className='cancelTest' onClick={cancelTest} >Testi İptal Et</button>
-
+        <div className="full-screen">
+            <div className="navbar">
+                <div className={`section ${activeSection === 'settings' ? 'active' : ''}`} onClick={() => handleSectionClick('settings')}>Ayarlar</div>
+                <div className={`section ${activeSection === 'newdevice' ? 'active' : ''}`} onClick={() => handleSectionClick('newdevice')}>Yeni Cihaz Ekle</div>
+                <div className={`section ${activeSection === 'updatedevice' ? 'active' : ''}`} onClick={() => handleSectionClick('updatedevice')}>Cihaz Güncelle</div>
+                <div className={`section ${activeSection === 'knowledgedevice' ? 'active' : ''}`} onClick={() => handleSectionClick('knowledgedevice')}>Cihaz Bilgileri Sorgulama</div>
             </div>
-
-            <div className="screen-2" ref={containerRef}>
-                {items.map((item, index) => {
-                    if (item.type === "header") {
-                    return (
-                        <div
-                        key={index}
-                        className="textlog"
-                        style={{
-                            margin: "10px 0",
-                            fontWeight: 900,
-                            color: "#6dff28",
-                            background: "#0b091e",
-                        }}
-                        >
-                        {item.message}
-                        </div>
-                    );
-                    } else {
-                    return (
-                        <div
-                        className="textlog"
-                        key={index}
-                        style={{
-                            margin: "10px 0",
-                            color: item.isSuccess === false ? "red" : "inherit",
-                            background:
-                            index === highlightIndex
-                                ? isHighlightRed
-                                ? "blue"
-                                : "green"
-                                : "inherit",
-                        }}
-                        >
-                        {item.message}
-                        {item.isSuccess === true && (
-                            <img className="tick" src="/assets/img/tik.png" alt="" />
-                        )}
-                        </div>
-                    );
-                    }
-                })}
+            <div id="settings" className={`container ${activeSection != 'settings' ? 'hide' : ''}`}>
+                <div className="container-section">
+                    <div className="sub">Bağlı USB kablosunu seçiniz.</div>
+                    <div className="sub">
+                        <select className="sub-select" name="" id="">
+                            <option value="">USB Seçiniz</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="container-section">
+                    <div className="sub">Bağlanacak cihazın Ethernet IP'si</div>
+                    <div className="sub">172.16.0.104</div>
+                </div>
+                <div className="container-section">
+                    <div className="sub">Cihazın bağlanacağı wifi ssid adresini giriniz.</div>
+                    <div className="sub"><input className="sub-select" type="text" value={wifiSSID} onChange={handlewifiSSIDChange} /></div>
+                </div>
+                <div className="container-section">
+                    <div className="sub">Cihazın bağlanacağı wifi şifresini giriniz.</div>
+                    <div className="sub"><input className="sub-select" type="text" value={wifiPassword} onChange={handlewifiPasswordChange} /></div>
+                </div>
+                <div className="container-section">
+                    <div className="sub">Cihazın bağlanacağı 4G APN adresini giriniz.</div>
+                    <div className="sub"><input className="sub-select" type="text" value={fourG_apn} onChange={handlefourG_apnChange} /></div>
+                </div>
+                <div className="container-section">
+                    <div className="sub">Cihazın bağlanacağı 4G Kullanıcı Adını giriniz. </div>
+                    <div className="sub"><input className="sub-select" type="text" value={fourG_user} onChange={handlefourG_userChange} /></div>
+                </div>
+                <div className="container-section">
+                    <div className="sub">Cihazın bağlanacağı 4G şifresini giriniz.</div>
+                    <div className="sub"><input className="sub-select" type="text" value={fourG_password} onChange={handlefourG_passwordChange} /></div>
+                </div>
+                <div className="container-section">
+                    <div className="sub">Cihazın bağlanacağı 4G pinini giriniz.</div>
+                    <div className="sub"><input className="sub-select" type="text" value={fourG_pin} onChange={handlefourG_pinChange} /></div>
+                </div>
+                <div>
+                    <button className="save">Kaydet</button>
+                </div>
             </div>
-            
-            <div className="screen-3">
-                <span className="loads">LOADBANK_I1</span>
-                <span className="loads">: {LOADBANK_I1}</span>
-                <span className="loads">LOADBANK_I2</span>
-                <span className="loads">: {LOADBANK_I2}</span>
-                <span className="loads">LOADBANK_I3</span>
-                <span className="loads">: {LOADBANK_I3}</span>
-                <span className="loads">LOADBANK_V1</span>
-                <span className="loads">: {LOADBANK_V1}</span>
-                <span className="loads">LOADBANK_V2</span>
-                <span className="loads">: {LOADBANK_V2}</span>
-                <span className="loads">LOADBANK_V3</span>
-                <span className="loads">: {LOADBANK_V3}</span>
-                <span className="loads">LOADBANK_P1</span>
-                <span className="loads">: {LOADBANK_P1}</span>
-                <span className="loads">LOADBANK_P2</span>
-                <span className="loads">: {LOADBANK_P2}</span>
-                <span className="loads">LOADBANK_P3</span>
-                <span className="loads">: {LOADBANK_P3}</span>
-
+            <div id="newdevice" className={`container ${activeSection != 'newdevice' ? 'hide' : ''}`}>
+                <div>Lütfen bilgisayara USB ve Ethernet kablosunun bağlı olduğundan emin olunuz...</div>
+                <div>Ayarlar bölümünden USB seçeneğini kontrol ediniz.</div>
+                <button className="startTest">Teste Başla</button>
+                <div className="test-container">
+                    <div className="test-step test-suc" style={{left:0}}>1</div>
+                    <div className="test-step" style={{left:52}}>2</div>
+                    <div className="test-step" style={{left:104}}>3</div>
+                    <div className="test-step" style={{left:156}}>4</div>
+                    <div className="test-step" style={{left:208}}>5</div>
+                    <div className="test-step" style={{left:260}}>6</div>
+                    <div className="test-step" style={{left:312}}>7</div>
+                    <div className="test-step" style={{left:364}}>8</div>
+                </div>
+            </div>
+            <div id="updatedevice" className={`container ${activeSection != 'updatedevice' ? 'hide' : ''}`}>
+                update device
+            </div>
+            <div id="knowledgedevice" className={`container ${activeSection != 'knowledgedevice' ? 'hide' : ''}`}>
+                knowledgedevice
             </div>
         </div>
+        // <div className='fullscreen-div'>
+        //     <div className="screen-1">
+        //         <div className='header'>Hera Test Uygulaması</div>
+        //         <div className='text1'>Lütfen bigisyara USB ve Ethernet kablosunu takınız...</div>
+        //         <div>
+        //             <span className='text2'>Bağlı USB Kablosu:</span>
+        //             <select className="text2" value={selectedUSB} onChange={handleUSBChange}>
+        //                 <option value="" disabled>
+        //                     USB Seçiniz
+        //                 </option>
+        //                 {USBList.map((usb, index) => (
+        //                     <option key={index} value={usb}>
+        //                         {usb}
+        //                     </option>
+        //                 ))}
+        //             </select>
+        //         </div>
+        //         <div>
+        //             <span className='text2'>Bağlanacak cihazın Ethernet IP'si:</span>
+        //             <span className='text2'>172.16.0.104</span>
+        //         </div>
+        //         <div className='text1'>Cihazın bağlanacağı wifi adresi ve şifresini giriniz...</div>
+        //         <div>
+        //             <span className='text2'>Wifi SSID:</span>
+        //             <span className='text2'><input className="input" type="text" value={wifiSSID} onChange={handlewifiSSIDChange} /></span>
+        //         </div>
+        //         <div>
+        //             <span className='text2'>Wifi Password:</span>
+        //             <span className='text2'><input className="input" type="text" value={wifiPassword} onChange={handlewifiPasswordChange} /></span>
+        //         </div>
+        //         <div>
+        //             <span className='text2'>4G APN Adresi:</span>
+        //             <span className='text2'><input className="input" type="text" value={fourG_apn} onChange={handlefourG_apnChange} /></span>
+        //         </div>
+        //         <div>
+        //             <span className='text2'>4G User:</span>
+        //             <span className='text2'><input className="input" type="text" value={fourG_user} onChange={handlefourG_userChange} /></span>
+        //         </div>
+        //         <div>
+        //             <span className='text2'>4G Password:</span>
+        //             <span className='text2'><input className="input" type="text" value={fourG_password} onChange={handlefourG_passwordChange} /></span>
+        //         </div>
+        //         <div>
+        //             <span className='text2'>4G Pin:</span>
+        //             <span className='text2'><input className="input" type="text" value={fourG_pin} onChange={handlefourG_pinChange} /></span>
+        //         </div>
+
+        //         <button className='start' onClick={testStart} disabled={isDisabled}>Teste Başla</button>
+        //         <button className='fakestart' onClick={fakeTestStart} disabled={isDisabled}>Fake Teste Başla</button>
+        //         <button className='cancelTest' onClick={cancelTest} >Testi İptal Et</button>
+
+        //     </div>
+
+        //     <div className="screen-2" ref={containerRef}>
+        //         {items.map((item, index) => {
+        //             if (item.type === "header") {
+        //             return (
+        //                 <div
+        //                 key={index}
+        //                 className="textlog"
+        //                 style={{
+        //                     margin: "10px 0",
+        //                     fontWeight: 900,
+        //                     color: "#6dff28",
+        //                     background: "#0b091e",
+        //                 }}
+        //                 >
+        //                 {item.message}
+        //                 </div>
+        //             );
+        //             } else {
+        //             return (
+        //                 <div
+        //                 className="textlog"
+        //                 key={index}
+        //                 style={{
+        //                     margin: "10px 0",
+        //                     color: item.isSuccess === false ? "red" : "inherit",
+        //                     background:
+        //                     index === highlightIndex
+        //                         ? isHighlightRed
+        //                         ? "blue"
+        //                         : "green"
+        //                         : "inherit",
+        //                 }}
+        //                 >
+        //                 {item.message}
+        //                 {item.isSuccess === true && (
+        //                     <img className="tick" src="/assets/img/tik.png" alt="" />
+        //                 )}
+        //                 </div>
+        //             );
+        //             }
+        //         })}
+        //     </div>
+            
+        //     <div className="screen-3">
+        //         <span className="loads">LOADBANK_I1</span>
+        //         <span className="loads">: {LOADBANK_I1}</span>
+        //         <span className="loads">LOADBANK_I2</span>
+        //         <span className="loads">: {LOADBANK_I2}</span>
+        //         <span className="loads">LOADBANK_I3</span>
+        //         <span className="loads">: {LOADBANK_I3}</span>
+        //         <span className="loads">LOADBANK_V1</span>
+        //         <span className="loads">: {LOADBANK_V1}</span>
+        //         <span className="loads">LOADBANK_V2</span>
+        //         <span className="loads">: {LOADBANK_V2}</span>
+        //         <span className="loads">LOADBANK_V3</span>
+        //         <span className="loads">: {LOADBANK_V3}</span>
+        //         <span className="loads">LOADBANK_P1</span>
+        //         <span className="loads">: {LOADBANK_P1}</span>
+        //         <span className="loads">LOADBANK_P2</span>
+        //         <span className="loads">: {LOADBANK_P2}</span>
+        //         <span className="loads">LOADBANK_P3</span>
+        //         <span className="loads">: {LOADBANK_P3}</span>
+
+        //     </div>
+        // </div>
     );
 };
 

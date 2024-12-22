@@ -1,0 +1,148 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+.full-screen {
+    width: 100vw;
+    height: 100vh;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    background-color: #82dcfa66;
+    overflow: hidden; 
+}
+
+.navbar{
+    position: absolute;
+    top: 2vh;
+    width: 80vw;
+    height: 10vh;
+    background-color: rgba(1, 117, 125, 0.333);
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.container{
+    position: absolute;
+    top: 15vh;
+    width: 80vw;
+    height: 80vh;
+    /* background-color: antiquewhite; */
+    justify-content: center; 
+    align-items: center; 
+    text-align: center; 
+    
+}
+
+.section {
+    width: 200px;
+    height: 10vh;
+    display: flex; 
+    /* background-color: rgb(32, 82, 125); */
+    margin-left: 30px;
+    color: black;
+    justify-content: center; 
+    align-items: center; 
+    text-align: center; 
+    font-size: 16px;
+    font-weight: 900;
+    padding: 10px;
+}
+
+.section:hover{
+    background-color: rgb(1, 180, 120);
+    color: aliceblue;
+    border-radius: 10px;
+}
+
+.active{
+    background-color: rgb(3, 128, 87);
+    color: aliceblue;
+    border-radius: 10px;
+}
+
+.container-section{
+    display: inline-block;
+    width: 50vw;
+    height: 7vh;
+    /* background-color: rgb(31, 61, 51); */
+    margin-top: 1.5vh;
+}
+
+.sub{
+    width: 21vw;
+    height: 7vh;
+    /* background-color: #513b3b; */
+    margin-right: 2vw;
+    display: inline-block;
+    color: black;
+    line-height: 8vh;
+    font-size: 14px;
+    text-align: left;
+}
+
+.sub-select{
+    width: 22vw;
+    height: 3vh;
+}
+
+.save{
+    width: 10vw;
+    height: 10vh;
+    margin-top: 2vh;
+    border-radius: 10px;
+    background-color: rgb(7, 99, 52);
+    color: aliceblue;
+    font-size: 16px;
+}
+
+.hide{
+    display: none;
+}
+
+.startTest{
+    width: 10vw;
+    height: 5vh;
+    margin-top: 2vh;
+    border-radius: 10px;
+    background-color: rgb(7, 99, 52);
+    color: aliceblue;
+    font-size: 16px;
+}
+
+.test-container{
+    position: relative;
+    width: 50vw;
+    height: 40vh;
+    background-color: rgba(115, 169, 173, 0.333);
+    margin: auto;
+    margin-top: 10vh;
+    border-radius: 30px;
+}
+
+.test-step{
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: rgb(76, 76, 76);
+    border-radius: 10px;
+    display: inline-block;
+    bottom: 0px;
+    left: 0px;
+    line-height: 50px;
+    color: aliceblue;
+}
+
+.test-suc{
+    background-color: rgb(9, 118, 1);
+}
