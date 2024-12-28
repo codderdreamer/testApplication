@@ -53,15 +53,16 @@ class ModbusModule():
         self.LOADBANK_P3 = None
 
         Thread(target=self.scan_modbus_thread,daemon=True).start()
+
         if self.application.simu_test == False:
             Thread(target=self.read_all_registers,daemon=True).start()
 
 
-    def connect_modbus(self,port):
+    def connect_modbus(self):
         try:
             if self.client != None:
                 self.client.close()
-            self.client = ModbusClient(port=port, baudrate=115200, timeout=1)
+            self.client = ModbusClient(port=self.application.config.selectedUSB, baudrate=115200, timeout=1)
             connect = self.client.connect()
             self.application.modbus_connected = connect
             self.write_cable_control(0)
@@ -72,7 +73,6 @@ class ModbusModule():
             else:
                 print("Modbus Bağlanmadı!")
                 return False
-            
         except Exception as e:
             print("connect_modbus Exception:",e)
             return False

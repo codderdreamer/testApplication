@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FiWifi, FiSettings, FiSmartphone } from 'react-icons/fi';
 import "./settings.css";
 
@@ -17,6 +17,7 @@ interface SettingsProps {
   setFourG_pin: (value: string) => void;
   handleSave: () => void;
   selectedUSB: string;
+  setSelectedUSB: (value: string) => void;
   USBList: string[];
   handleUSBChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
@@ -36,23 +37,27 @@ const Settings: React.FC<SettingsProps> = ({
   setFourG_pin,
   handleSave,
   selectedUSB,
+  setSelectedUSB,
   USBList,
   handleUSBChange,
 }) => {
+
+
   return (
     <div className="settings-container">
       <div className="settings-group">
         <div className="usb-select-container">
           <span>Bağlı USB Kablosu:</span>
           <select value={selectedUSB} onChange={handleUSBChange}>
-            <option value="" disabled>
-              USB Seçiniz
-            </option>
-            {USBList.map((usb, index) => (
-              <option key={index} value={usb}>
-                {usb}
-              </option>
-            ))}
+            {USBList.length > 0 ? (
+              USBList.map((usb, index) => (
+                <option key={index} value={usb}>
+                  {usb}
+                </option>
+              ))
+            ) : (
+              <option value="">{selectedUSB || "USB Seçiniz"}</option>
+            )}
           </select>
         </div>
         <div className="ip-container">

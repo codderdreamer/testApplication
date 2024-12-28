@@ -1,4 +1,3 @@
-
 from threading import Thread
 import websocket
 import time
@@ -17,7 +16,7 @@ class AcdeviceWebsocketModule():
         self.voltage_L1 = None
         self.voltage_L2 = None
         self.voltage_L3 = None
-        Thread(target=self.websocket_thread,daemon=True).start()
+        # Thread(target=self.websocket_thread,daemon=True).start()
         self.save_config_result_json_data = None
 
     @property
@@ -234,7 +233,7 @@ class AcdeviceWebsocketModule():
                 print("AC Cihazına bağlanma deneniyor...")
                 if self.application.simu_test == False:
                     self.websocket = websocket.WebSocketApp(
-                        "ws://172.16.0.104:9000",
+                        f"ws://{self.application.config.ac_device_ip}:{self.application.config.ac_device_port}",
                         on_message=self.on_message,
                         on_error=self.on_error,
                         on_close=self.on_close,
@@ -452,7 +451,7 @@ class AcdeviceWebsocketModule():
                         self.application.modbusModule.write_is_test_complete(-1)
                         return False
                     if abs(self.application.modbusModule.LOADBANK_I2/1000 - self.current_L2) > self.current_L2 * 0.05:
-                        print("%5 sınırını aştı: LOADBANK_I2:",self.application.modbusModule.LOADBANK_I2/1000,"cihaz current_L2:",self.current_L2)
+                        print("%5 sınırını aşt��: LOADBANK_I2:",self.application.modbusModule.LOADBANK_I2/1000,"cihaz current_L2:",self.current_L2)
                         self.application.frontendWebsocket.send_control_all_values_30sn_result(False)
                         self.application.acdeviceWebsocket.cancel_test()
                         self.application.modbusModule.write_cable_control(0)

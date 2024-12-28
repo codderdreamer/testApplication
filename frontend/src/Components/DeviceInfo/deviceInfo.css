@@ -1,0 +1,79 @@
+.device-info {
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.test-button {
+  margin: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.test-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+}
+
+.test-page {
+  padding: 15px;
+  color: black;
+  font-size: 10px;
+  /* border: 1px solid #ccc; */
+  border-radius: 5px;
+  /* background-color: #f8f9fa; */
+  transition: all 0.3s ease;
+}
+
+.test-page.hidden {
+  display: none;
+}
+
+.test-page.active-test {
+  display: block;
+  /* background-color: #e9ecef;
+  border-color: #007bff; */
+}
+
+.test-steps {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.test-step {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #e9ecef;
+}
+
+.test-step:hover {
+  background-color: #e9ecef;
+}
+
+.test-success {
+  background-color: #076b0a;
+  color: white;
+}
+
+.test-error {
+  background-color: #dc3545;
+  color: white;
+}
+
+.test-waiting {
+  background-color: #e9ecef;
+  color: black;
+} 

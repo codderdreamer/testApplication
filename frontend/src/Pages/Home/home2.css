@@ -148,7 +148,7 @@ html, body {
 }
 
 .test-step.test-success {
-    background-color: #4CAF50;
+    background-color: #076b0a;
 }
 
 .test-suc{
@@ -164,7 +164,7 @@ html, body {
 }
 
 .connection-status.connected {
-    background-color: #4CAF50;
+    background-color: #076b0a;
     color: white;
 }
 

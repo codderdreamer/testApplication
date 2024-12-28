@@ -400,6 +400,7 @@ class FrontendWebsocketModule():
                         "fourG_user" : self.application.config.fourG_user,
                         "fourG_password" : self.application.config.fourG_password,
                         "fourG_pin" : self.application.config.fourG_pin,
+                        "selectedUSB" : self.application.config.selectedUSB,
                     }
                 }
                 print(message)
@@ -427,8 +428,9 @@ class FrontendWebsocketModule():
                 print(f"Incoming: {sjon}")
                 Command = sjon["Command"]
                 Data = sjon["Data"]
-                if Command == "StartTest":
+                if Command == "Save":
                     self.save_config(Data)
+                elif Command == "StartTest":
                     if self.application.simu_test == False:
                         usb_connected = self.application.modbusModule.connect_modbus(self.application.config.selectedUSB)
                         print("usb_connected",usb_connected)
@@ -496,7 +498,7 @@ class FrontendWebsocketModule():
             self.application.config.selectedUSB = Data["selectedUSB"]
             self.application.config.sap_save_device = Data["sap"]
             
-            self.application.config.write_config_json()
+            self.application.config.write_config()
             print("Bilgiler kayıt edildi.")
         except Exception as e:
             print("save_config Exception:",e)

@@ -6,6 +6,7 @@ import "./home2.css";
 import { toast } from "react-toastify";
 import { useMessage } from '../../Components/MessageContext';
 import Settings from '../../Components/Settings';
+import DeviceInfo from '../../Components/DeviceInfo';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -24,7 +25,7 @@ const Home = () => {
     const [isStep6Complete, setIsStep6Complete] = useState(false);
     const [isStep7Complete, setIsStep7Complete] = useState(false);
     const [isStep8Complete, setIsStep8Complete] = useState(false);
-    const [completedSteps, setCompletedSteps] = useState<boolean[]>(new Array(20).fill(false));
+    const [completedSteps, setCompletedSteps] = useState<(boolean | null)[]>(new Array(20).fill(null));
     const [selectedSerial, setSelectedSerial] = useState('');
     const [serialNumbers, setSerialNumbers] = useState([]);
     const [activeButton, setActiveButton] = useState<number | null>(null);
@@ -73,45 +74,6 @@ const Home = () => {
         }
       }, [items]);
 
-    useEffect(() => {
-        if (socket) {
-            const handleTestStep = (data: any) => {
-                if (data.Command === "TestStep") {
-                    const stepNumber = parseInt(data.Data);
-                    if (stepNumber >= 1 && stepNumber <= 20) {
-                        setCompletedSteps(prev => {
-                            const newSteps = [...prev];
-                            newSteps[stepNumber - 1] = true;
-                            return newSteps;
-                        });
-                    }
-                }
-            };
-
-            socket.onmessage = (event) => {
-                const data = JSON.parse(event.data.toString());
-                handleTestStep(data);
-            };
-
-            return () => {
-                socket.onmessage = () => {}; // Empty function instead of null
-            };
-        }
-    }, [socket]);
-
-    // useEffect(() => {
-    //     console.log("hey")
-    // }, [wifiSSID]);
-
-    // const handleAddDiv = (text:string) => {
-    //     const newDiv = (
-    //       <div className="text3" key={divs.length}>
-    //         {text} <Tick />
-    //       </div>
-    //     );
-    //     setDivs([...divs, newDiv]); // Add the new div to the state
-    //   };
-
     function verifyInputs() {
         if (selectedUSB == "") {
             toast.error("Lütfen USB seçiniz!")
@@ -128,12 +90,12 @@ const Home = () => {
         return true
     }
 
-    function testStart() {
+    function save() {
         if (verifyInputs()) {
             if (socket) {
                 if (socket.readyState === socket.OPEN) {
                     socket.send(JSON.stringify({
-                        "Command": "StartTest",
+                        "Command": "Save",
                         "Data": {
                             "selectedUSB": selectedUSB,
                             "wifiSSID": wifiSSID,
@@ -265,6 +227,17 @@ const Home = () => {
         }
     };
 
+    useEffect(() => {
+        console.log("selectedUSB değişti:", selectedUSB);
+        if (selectedUSB) {
+            // Settings'te USB seçildiğinde
+            setActiveSection('settings');
+            
+            // USB seçimi yapıldığında form alanlarını etkinleştir
+            setIsDisabled(false);
+        }
+    }, [selectedUSB]);
+
     return (
         <div className="full-screen">
             <div className="navbar">
@@ -287,43 +260,23 @@ const Home = () => {
                     setFourG_password={setfourG_password}
                     fourG_pin={fourG_pin}
                     setFourG_pin={setfourG_pin}
-                    handleSave={() => {}}
+                    handleSave={save}
                     selectedUSB={selectedUSB}
+                    setSelectedUSB={setSelectedUSB}
                     USBList={USBList}
                     handleUSBChange={handleUSBChange}
                 />
             </div>
             <div id="newdevice" className={`container ${activeSection != 'newdevice' ? 'hide' : ''}`}>
-                <div className="device-info">
-                    <p>
-                        Lütfen bilgisayara USB kablosunun bağlı olduğundan emin olunuz...
-                        <div className={`connection-status ${deviceConnected ? 'connected' : 'disconnected'}`}>
-                            {deviceConnected ? 'Bağlı' : 'Bağlı Değil'}
-                        </div>
-                    </p>
-                    <p>Ayarlar bölümünden USB seçeneğini kontrol ediniz.</p>
-                    <p>Lütfen bilgisayara Ethernet kablosunun bağlı olduğundan emin olunuz...</p>
-                </div>
-                <button className="test-button">Teste Başla</button>
-                <div className="test-container">
-                    {Array.from({ length: 20 }, (_, i) => (
-                        <div
-                            key={i}
-                            className={`test-step ${completedSteps[i] ? 'test-success' : ''}`}
-                            style={{ left: `${28 + (i * 28)}px` }}
-                        >
-                            {i + 1}
-                        </div>
-                    ))}
-                </div>
+                <DeviceInfo completedSteps={completedSteps} />
             </div>
             <div id="updatedevice" className={`container ${activeSection != 'updatedevice' ? 'hide' : ''}`}>
             <div className="device-info">
                     <p>
                         Lütfen bilgisayara USB kablosunun bağlı olduğundan emin olunuz...
-                        <div className={`connection-status ${deviceConnected ? 'connected' : 'disconnected'}`}>
+                        {/* <div className={`connection-status ${deviceConnected ? 'connected' : 'disconnected'}`}>
                             {deviceConnected ? 'Bağlı' : 'Bağlı Değil'}
-                        </div>
+                        </div> */}
                     </p>
                     <p>Ayarlar bölümünden USB seçeneğini kontrol ediniz.</p>
                     <p>Lütfen bilgisayara Ethernet kablosunun bağlı olduğundan emin olunuz...</p>
@@ -334,7 +287,7 @@ const Home = () => {
                         <div
                             key={i}
                             className={`test-step ${completedSteps[i] ? 'test-success' : ''}`}
-                            style={{ left: `${28 + (i * 28)}px` }}
+                            style={{ left: `${0 + (i * 28)}px` }}
                         >
                             {i + 1}
                         </div>
@@ -433,7 +386,7 @@ const Home = () => {
         //             <span className='text2'><input className="input" type="text" value={fourG_pin} onChange={handlefourG_pinChange} /></span>
         //         </div>
 
-        //         <button className='start' onClick={testStart} disabled={isDisabled}>Teste Başla</button>
+        //         <button className='start' onClick={save} disabled={isDisabled}>Teste Başla</button>
         //         <button className='fakestart' onClick={fakeTestStart} disabled={isDisabled}>Fake Teste Başla</button>
         //         <button className='cancelTest' onClick={cancelTest} >Testi İptal Et</button>
 

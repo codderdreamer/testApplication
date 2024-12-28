@@ -32,6 +32,9 @@ interface MessageContextType {
   fourG_pin: string;
   setfourG_pin: (fourG_pin: string) => void;
 
+  selectedUSB: string;
+  setSelectedUSB: (selectedUSB: string) => void;
+
   items: Item[];
   setItems: React.Dispatch<React.SetStateAction<Item[]>>;
 
@@ -85,6 +88,7 @@ interface MessageProviderProps {
 export const MessageProvider: React.FC<MessageProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<W3CWebSocket | null>(null);
   const [USBList, setUSBList] = useState<string[]>([]);
+  const [selectedUSB, setSelectedUSB] = useState("");
   const [wifiSSID, setwifiSSID] = useState<string>("");
   const [wifiPassword, setwifiPassword] = useState<string>("");
   const [fourG_apn, setfourG_apn] = useState<string>("");
@@ -111,6 +115,7 @@ export const MessageProvider: React.FC<MessageProviderProps> = ({ children }) =>
   return (
     <MessageContext.Provider value={{socket, setSocket, 
                                     USBList, setUSBList,
+                                    selectedUSB, setSelectedUSB,
                                     wifiSSID, setwifiSSID,
                                     wifiPassword, setwifiPassword,
                                     fourG_apn, setfourG_apn,
