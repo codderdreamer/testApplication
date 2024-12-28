@@ -1,0 +1,170 @@
+.navbar {
+  display: flex;
+  gap: 2px;
+  background-color: #a7c4bc;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.section {
+  padding: 12px 24px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.section:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.section.active {
+  background-color: #00875A;
+  color: white;
+}
+
+/* Settings styles */
+.settings-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.settings-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+  font-size: 24px;
+  color: #333;
+}
+
+.settings-group {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.settings-group:last-child {
+  margin-bottom: 0;
+}
+
+.group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #00875A;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #00875A;
+  box-shadow: 0 0 0 2px rgba(0, 135, 90, 0.1);
+}
+
+.input-group input::placeholder {
+  color: #757575;
+}
+
+.save-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #00875A;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 16px;
+}
+
+.save-button:hover {
+  background-color: #007048;
+}
+
+.container {
+  background-color: white;
+  border-radius: 8px;
+  height: calc(100vh - 140px);
+  padding: 20px;
+}
+
+.container.hide {
+  display: none;
+}
+
+.usb-select-container {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.usb-select-container span {
+  color: #00875A;
+  font-size: 16px;
+}
+
+.usb-select-container select {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.usb-select-container select:focus {
+  outline: none;
+  border-color: #00875A;
+  box-shadow: 0 0 0 2px rgba(0, 135, 90, 0.1);
+}
+
+.ip-container {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ip-container span {
+  color: #00875A;
+  font-size: 16px;
+}
+
+.ip-container .ip-value {
+  color: #333;
+  font-weight: 500;
+  background-color: white;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  flex: 1;
+}

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import "./home2.css";
 import { toast } from "react-toastify";
 import { useMessage } from '../../Components/MessageContext';
+import Settings from '../../Components/Settings';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -211,45 +212,24 @@ const Home = () => {
                 <div className={`section ${activeSection === 'knowledgedevice' ? 'active' : ''}`} onClick={() => handleSectionClick('knowledgedevice')}>Cihaz Bilgileri Sorgulama</div>
             </div>
             <div id="settings" className={`container ${activeSection != 'settings' ? 'hide' : ''}`}>
-                <div className="container-section">
-                    <div className="sub">Bağlı USB kablosunu seçiniz.</div>
-                    <div className="sub">
-                        <select className="sub-select" name="" id="">
-                            <option value="">USB Seçiniz</option>
-                        </select>
-                    </div>
-                </div>
-                <div className="container-section">
-                    <div className="sub">Bağlanacak cihazın Ethernet IP'si</div>
-                    <div className="sub">172.16.0.104</div>
-                </div>
-                <div className="container-section">
-                    <div className="sub">Cihazın bağlanacağı wifi ssid adresini giriniz.</div>
-                    <div className="sub"><input className="sub-select" type="text" value={wifiSSID} onChange={handlewifiSSIDChange} /></div>
-                </div>
-                <div className="container-section">
-                    <div className="sub">Cihazın bağlanacağı wifi şifresini giriniz.</div>
-                    <div className="sub"><input className="sub-select" type="text" value={wifiPassword} onChange={handlewifiPasswordChange} /></div>
-                </div>
-                <div className="container-section">
-                    <div className="sub">Cihazın bağlanacağı 4G APN adresini giriniz.</div>
-                    <div className="sub"><input className="sub-select" type="text" value={fourG_apn} onChange={handlefourG_apnChange} /></div>
-                </div>
-                <div className="container-section">
-                    <div className="sub">Cihazın bağlanacağı 4G Kullanıcı Adını giriniz. </div>
-                    <div className="sub"><input className="sub-select" type="text" value={fourG_user} onChange={handlefourG_userChange} /></div>
-                </div>
-                <div className="container-section">
-                    <div className="sub">Cihazın bağlanacağı 4G şifresini giriniz.</div>
-                    <div className="sub"><input className="sub-select" type="text" value={fourG_password} onChange={handlefourG_passwordChange} /></div>
-                </div>
-                <div className="container-section">
-                    <div className="sub">Cihazın bağlanacağı 4G pinini giriniz.</div>
-                    <div className="sub"><input className="sub-select" type="text" value={fourG_pin} onChange={handlefourG_pinChange} /></div>
-                </div>
-                <div>
-                    <button className="save">Kaydet</button>
-                </div>
+                <Settings 
+                    wifiSSID={wifiSSID}
+                    setWifiSSID={setwifiSSID}
+                    wifiPassword={wifiPassword}
+                    setWifiPassword={setwifiPassword}
+                    fourG_apn={fourG_apn}
+                    setFourG_apn={setfourG_apn}
+                    fourG_user={fourG_user}
+                    setFourG_user={setfourG_user}
+                    fourG_password={fourG_password}
+                    setFourG_password={setfourG_password}
+                    fourG_pin={fourG_pin}
+                    setFourG_pin={setfourG_pin}
+                    handleSave={() => {}}
+                    selectedUSB={selectedUSB}
+                    USBList={USBList}
+                    handleUSBChange={handleUSBChange}
+                />
             </div>
             <div id="newdevice" className={`container ${activeSection != 'newdevice' ? 'hide' : ''}`}>
                 <div>Lütfen bilgisayara USB ve Ethernet kablosunun bağlı olduğundan emin olunuz...</div>
