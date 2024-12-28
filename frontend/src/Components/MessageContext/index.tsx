@@ -72,6 +72,8 @@ interface MessageContextType {
   // networkjsonString: string | null;
   // setNetworkPriority:(networkjsonString: string | null) => void;
   
+  deviceConnected: boolean;
+  setDeviceConnected: (deviceConnected: boolean) => void;
 }
 
 const MessageContext = createContext<MessageContextType | undefined>(undefined);
@@ -101,6 +103,7 @@ export const MessageProvider: React.FC<MessageProviderProps> = ({ children }) =>
   const [LOADBANK_P1, setLOADBANK_P1] = useState<string>("");
   const [LOADBANK_P2, setLOADBANK_P2] = useState<string>("");
   const [LOADBANK_P3, setLOADBANK_P3] = useState<string>("");
+  const [deviceConnected, setDeviceConnected] = useState(false);
 
   // const [networkjsonString, setNetworkPriority] = useState<string | null>(null);
   
@@ -125,7 +128,9 @@ export const MessageProvider: React.FC<MessageProviderProps> = ({ children }) =>
                                     LOADBANK_V3, setLOADBANK_V3,
                                     LOADBANK_P1, setLOADBANK_P1,
                                     LOADBANK_P2, setLOADBANK_P2,
-                                    LOADBANK_P3, setLOADBANK_P3
+                                    LOADBANK_P3, setLOADBANK_P3,
+                                    deviceConnected,
+                                    setDeviceConnected
     }}>
       {children}
     </MessageContext.Provider>

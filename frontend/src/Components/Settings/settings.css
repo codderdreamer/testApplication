@@ -13,6 +13,7 @@
   border-radius: 6px;
   transition: all 0.3s ease;
   font-weight: 500;
+  color: #2c584c; /* Koyu yeşil text */
 }
 
 .section:hover {
@@ -28,6 +29,9 @@
 .settings-container {
   max-width: 600px;
   margin: 0 auto;
+  height: calc(100% - 20px);
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
 .settings-title {
@@ -72,6 +76,7 @@
   border-radius: 6px;
   font-size: 14px;
   transition: all 0.2s ease;
+  height: 35px;
 }
 
 .input-group input:focus {
@@ -105,8 +110,9 @@
 .container {
   background-color: white;
   border-radius: 8px;
-  height: calc(100vh - 140px);
+  height: 100%;
   padding: 20px;
+  overflow: hidden;
 }
 
 .container.hide {
@@ -116,11 +122,12 @@
 .usb-select-container {
   background-color: #f8f9fa;
   border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 20px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 40px;
 }
 
 .usb-select-container span {
@@ -130,10 +137,11 @@
 
 .usb-select-container select {
   flex: 1;
-  padding: 12px;
+  padding: 8px;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   font-size: 14px;
+  height: 35px;
   background-color: white;
   cursor: pointer;
 }
@@ -147,11 +155,12 @@
 .ip-container {
   background-color: #f8f9fa;
   border-radius: 8px;
-  padding: 12px;
-  margin-top: 12px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 40px;
 }
 
 .ip-container span {
@@ -163,8 +172,29 @@
   color: #333;
   font-weight: 500;
   background-color: white;
-  padding: 12px;
+  padding: 8px;
   border-radius: 6px;
   border: 1px solid #e0e0e0;
   flex: 1;
+  height: 35px;
+  line-height: 20px;
+}
+
+/* Scroll bar stilini özelleştir */
+.settings-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.settings-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.settings-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.settings-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

@@ -120,29 +120,204 @@ html, body {
     font-size: 16px;
 }
 
-.test-container{
+.test-container {
     position: relative;
-    width: 50vw;
-    height: 40vh;
+    height: 350px;
+    margin: 20px auto;
+    width: 600px;
+    padding: 20px;
     background-color: rgba(115, 169, 173, 0.333);
-    margin: auto;
-    margin-top: 10vh;
     border-radius: 30px;
+    overflow: hidden;
 }
 
-.test-step{
+.test-step {
     position: absolute;
-    width: 50px;
-    height: 50px;
-    background-color: rgb(76, 76, 76);
-    border-radius: 10px;
-    display: inline-block;
-    bottom: 0px;
-    left: 0px;
-    line-height: 50px;
-    color: aliceblue;
+    width: 20px;
+    height: 20px;
+    background-color: #4c4c4c;
+    border-radius: 8px;
+    bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    font-size: 8px;
+}
+
+.test-step.test-success {
+    background-color: #4CAF50;
 }
 
 .test-suc{
     background-color: rgb(9, 118, 1);
+}
+
+.connection-status {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.connection-status.connected {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.connection-status.disconnected {
+    background-color: #f44336;
+    color: white;
+}
+
+.test-button {
+    padding: 12px 24px;
+    background-color: #00875A;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin: 20px 0;
+}
+
+.test-button:hover {
+    background-color: #006c48;
+}
+
+.test-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Seri no seçim alanı */
+.serial-select-container {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+}
+
+.serial-select-container span {
+    color: #00875A;
+    font-size: 16px;
+}
+
+.serial-select-container select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    height: 35px;
+    background-color: white;
+    cursor: pointer;
+}
+
+/* İçerik düzeni */
+.knowledge-content {
+    display: flex;
+    gap: 20px;
+    height: calc(100% - 60px);
+}
+
+/* Sol panel - butonlar */
+.button-panel {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.knowledge-button {
+    padding: 8px;
+    background-color: #808080;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    justify-content: center;
+}
+
+.knowledge-button:hover {
+    background-color: #666666;
+}
+
+.knowledge-button.active {
+    background-color: #00875A;
+    border: 2px solid #006c48;
+    box-shadow: 0 0 5px rgba(0, 135, 90, 0.3);
+}
+
+.button-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.button-time {
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+}
+
+/* Sağ panel - tablo */
+.table-container {
+    width: 80%;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    overflow: auto;
+}
+
+.knowledge-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.knowledge-table th,
+.knowledge-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.knowledge-table th {
+    background-color: #00875A;
+    color: white;
+    font-weight: 500;
+}
+
+.knowledge-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.knowledge-table th:first-child {
+    width: 80%;
+}
+
+.knowledge-table th:last-child {
+    width: 20%;
+}
+
+.knowledge-table td, .knowledge-table th {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
 }

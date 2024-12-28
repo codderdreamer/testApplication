@@ -16,10 +16,24 @@ const Home = () => {
     const [highlightIndex, setHighlightIndex] = useState<number | null>(null);
     const [isHighlightRed, setIsHighlightRed] = useState(true);
     const [activeSection, setActiveSection] = useState('settings');
+    const [isStep1Complete, setIsStep1Complete] = useState(false);
+    const [isStep2Complete, setIsStep2Complete] = useState(false);
+    const [isStep3Complete, setIsStep3Complete] = useState(false);
+    const [isStep4Complete, setIsStep4Complete] = useState(false);
+    const [isStep5Complete, setIsStep5Complete] = useState(false);
+    const [isStep6Complete, setIsStep6Complete] = useState(false);
+    const [isStep7Complete, setIsStep7Complete] = useState(false);
+    const [isStep8Complete, setIsStep8Complete] = useState(false);
+    const [completedSteps, setCompletedSteps] = useState<boolean[]>(new Array(20).fill(false));
+    const [selectedSerial, setSelectedSerial] = useState('');
+    const [serialNumbers, setSerialNumbers] = useState([]);
+    const [activeButton, setActiveButton] = useState<number | null>(null);
+    const [tableData, setTableData] = useState<{description: string, value: string}[]>([]);
 
     const {
         socket,
         USBList,
+        deviceConnected,
         setUSBList,
         wifiSSID,
         setwifiSSID,
@@ -59,6 +73,31 @@ const Home = () => {
         }
       }, [items]);
 
+    useEffect(() => {
+        if (socket) {
+            const handleTestStep = (data: any) => {
+                if (data.Command === "TestStep") {
+                    const stepNumber = parseInt(data.Data);
+                    if (stepNumber >= 1 && stepNumber <= 20) {
+                        setCompletedSteps(prev => {
+                            const newSteps = [...prev];
+                            newSteps[stepNumber - 1] = true;
+                            return newSteps;
+                        });
+                    }
+                }
+            };
+
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data.toString());
+                handleTestStep(data);
+            };
+
+            return () => {
+                socket.onmessage = () => {}; // Empty function instead of null
+            };
+        }
+    }, [socket]);
 
     // useEffect(() => {
     //     console.log("hey")
@@ -201,7 +240,30 @@ const Home = () => {
     const handleSectionClick = (sectionName:string) => {
         setActiveSection(sectionName);
     };
+
+    const handleSerialChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedSerial(event.target.value);
+    };
     
+    const handleButtonClick = (index: number) => {
+        setActiveButton(index);
+        // Her butona ait farklı veriler
+        switch(index) {
+            case 0:
+                setTableData([
+                    { description: "Test 1 verisi", value: "42" },
+                    { description: "Test 1 sonucu", value: "Başarılı" }
+                ]);
+                break;
+            case 1:
+                setTableData([
+                    { description: "Test 2 verisi", value: "123" },
+                    { description: "Test 2 sonucu", value: "Devam ediyor" }
+                ]);
+                break;
+            // Diğer butonlar için case'ler...
+        }
+    };
 
     return (
         <div className="full-screen">
@@ -232,25 +294,96 @@ const Home = () => {
                 />
             </div>
             <div id="newdevice" className={`container ${activeSection != 'newdevice' ? 'hide' : ''}`}>
-                <div>Lütfen bilgisayara USB ve Ethernet kablosunun bağlı olduğundan emin olunuz...</div>
-                <div>Ayarlar bölümünden USB seçeneğini kontrol ediniz.</div>
-                <button className="startTest">Teste Başla</button>
+                <div className="device-info">
+                    <p>
+                        Lütfen bilgisayara USB kablosunun bağlı olduğundan emin olunuz...
+                        <div className={`connection-status ${deviceConnected ? 'connected' : 'disconnected'}`}>
+                            {deviceConnected ? 'Bağlı' : 'Bağlı Değil'}
+                        </div>
+                    </p>
+                    <p>Ayarlar bölümünden USB seçeneğini kontrol ediniz.</p>
+                    <p>Lütfen bilgisayara Ethernet kablosunun bağlı olduğundan emin olunuz...</p>
+                </div>
+                <button className="test-button">Teste Başla</button>
                 <div className="test-container">
-                    <div className="test-step test-suc" style={{left:0}}>1</div>
-                    <div className="test-step" style={{left:52}}>2</div>
-                    <div className="test-step" style={{left:104}}>3</div>
-                    <div className="test-step" style={{left:156}}>4</div>
-                    <div className="test-step" style={{left:208}}>5</div>
-                    <div className="test-step" style={{left:260}}>6</div>
-                    <div className="test-step" style={{left:312}}>7</div>
-                    <div className="test-step" style={{left:364}}>8</div>
+                    {Array.from({ length: 20 }, (_, i) => (
+                        <div
+                            key={i}
+                            className={`test-step ${completedSteps[i] ? 'test-success' : ''}`}
+                            style={{ left: `${28 + (i * 28)}px` }}
+                        >
+                            {i + 1}
+                        </div>
+                    ))}
                 </div>
             </div>
             <div id="updatedevice" className={`container ${activeSection != 'updatedevice' ? 'hide' : ''}`}>
-                update device
+            <div className="device-info">
+                    <p>
+                        Lütfen bilgisayara USB kablosunun bağlı olduğundan emin olunuz...
+                        <div className={`connection-status ${deviceConnected ? 'connected' : 'disconnected'}`}>
+                            {deviceConnected ? 'Bağlı' : 'Bağlı Değil'}
+                        </div>
+                    </p>
+                    <p>Ayarlar bölümünden USB seçeneğini kontrol ediniz.</p>
+                    <p>Lütfen bilgisayara Ethernet kablosunun bağlı olduğundan emin olunuz...</p>
+                </div>
+                <button className="test-button">Teste Başla</button>
+                <div className="test-container">
+                    {Array.from({ length: 20 }, (_, i) => (
+                        <div
+                            key={i}
+                            className={`test-step ${completedSteps[i] ? 'test-success' : ''}`}
+                            style={{ left: `${28 + (i * 28)}px` }}
+                        >
+                            {i + 1}
+                        </div>
+                    ))}
+                </div>
             </div>
             <div id="knowledgedevice" className={`container ${activeSection != 'knowledgedevice' ? 'hide' : ''}`}>
-                knowledgedevice
+                <div className="serial-select-container">
+                    <span>Cihaz Seri No:</span>
+                    <select value={selectedSerial} onChange={handleSerialChange}>
+                        <option value="" disabled>Seri No Seçiniz</option>
+                        {serialNumbers.map((serial, index) => (
+                            <option key={index} value={serial}>{serial}</option>
+                        ))}
+                    </select>
+                </div>
+                
+                <div className="knowledge-content">
+                    <div className="button-panel">
+                        {["14:30", "15:45", "16:20", "17:10", "18:00"].map((time, index) => (
+                            <button 
+                                key={index}
+                                className={`knowledge-button ${activeButton === index ? 'active' : ''}`}
+                                onClick={() => handleButtonClick(index)}
+                            >
+                                <span className="button-time">12.03.2024 {time}</span>
+                            </button>
+                        ))}
+                    </div>
+                    
+                    <div className="table-container">
+                        <table className="knowledge-table">
+                            <thead>
+                                <tr>
+                                    <th style={{width: '80%'}}>Açıklama</th>
+                                    <th style={{width: '20%'}}>Değer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {tableData.map((row, index) => (
+                                    <tr key={index}>
+                                        <td>{row.description}</td>
+                                        <td>{row.value}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
         // <div className='fullscreen-div'>
