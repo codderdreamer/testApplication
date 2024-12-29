@@ -1,7 +1,7 @@
 import React, {useRef, createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from 'react';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 
-interface Item {
+export interface Item {
   message: string;
   isSuccess: boolean | null;
   type: string | null;
@@ -36,7 +36,7 @@ interface MessageContextType {
   setSelectedUSB: (selectedUSB: string) => void;
 
   items: Item[];
-  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  setItems: (items: Item[] | ((prevItems: Item[]) => Item[])) => void;
 
   containerRef: React.RefObject<HTMLDivElement>;
 

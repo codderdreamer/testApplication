@@ -5,7 +5,6 @@ import RouteList from "./Routes";
 import "./i18n/i18n";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import WebSocketComponent from './Components/WebSocketComponent';
 import { MessageProvider } from "./Components/MessageContext";
 
 
@@ -24,7 +23,6 @@ function App() {
   return (
       <MessageProvider>
         <RouteList />
-        <WebSocketComponent />
         <ToastContainer
           position="top-right"
           autoClose={3000}

@@ -13,7 +13,11 @@ interface Item {
 
 type BarcodeType = "seriNo" | "chargePointId";
 
-const WebSocketComponent = () => {
+interface WebSocketComponentProps {
+    handleAddItem: (message: string, isSuccess: boolean | null, type?: string | null, step?: number) => void;
+}
+
+const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }) => {
   const [isConnecting, setIsConnecting] = useState(true);
   const navigate = useNavigate();
   const [waitingForBarcode, setWaitingForBarcode] = useState(false);
@@ -52,7 +56,7 @@ const WebSocketComponent = () => {
     LOADBANK_V3, setLOADBANK_V3,
     LOADBANK_P1, setLOADBANK_P1,
     LOADBANK_P2, setLOADBANK_P2,
-    LOADBANK_P3, setLOADBANK_P3
+    LOADBANK_P3, setLOADBANK_P3,
   } = useMessage();
 
   useEffect(() => {
@@ -75,19 +79,6 @@ const WebSocketComponent = () => {
       toast.error("Server'a bağlanılamıyor!");
     }
   }
-
-  const handleAddItem = (message: string, isSuccess: boolean | null, type: string | null = null) => {
-    setItems((prevItems: Item[]) => [
-      ...prevItems,
-      { message, isSuccess, type },
-    ]);
-
-    if (containerRef.current) {
-      setTimeout(() => {
-        containerRef.current!.scrollTop = containerRef.current!.scrollHeight;
-      }, 0);
-    }
-  };
 
   const handleBarcodeInput = (event: KeyboardEvent) => {
     // console.log("event.key", event.key, "expectedBarcodeType", expectedBarcodeType)
@@ -220,12 +211,11 @@ const WebSocketComponent = () => {
                 setUSBList(jsonData.Data)
                 break
               case "Config":
-                handleAddItem("SMART FONKSIYON ve BAĞLANTI TESTLERİ", null, "header");
+                //handleAddItem("SMART FONKSIYON ve BAĞLANTI TESTLERİ", null, "header", 1);
                 if (jsonData.Data) {
                   const newSelectedUSB = jsonData.Data.selectedUSB || "";
                   console.log("Config'den gelen USB:", newSelectedUSB);
                   setSelectedUSB(newSelectedUSB);
-                  
                   setwifiSSID(jsonData.Data.wifiSSID || "");
                   setwifiPassword(jsonData.Data.wifiPassword || "");
                   setfourG_apn(jsonData.Data.fourG_apn || "");
@@ -371,7 +361,7 @@ const WebSocketComponent = () => {
                 }
                 break
               case "ChargeTest":
-                handleAddItem("ŞARJ TESTİ", null,"header")
+                handleAddItem("ŞARJ TESTİ BAŞLADI", null, "header", 2);
                 handleAddItem("Lütfen kablonun takılı olduğundan emin olunuz!", null)
                 break
               case "DeviceB":

@@ -4,9 +4,10 @@ import { useTranslation } from "react-i18next";
 // import "./home.css";
 import "./home2.css";
 import { toast } from "react-toastify";
-import { useMessage } from '../../Components/MessageContext';
+import { useMessage, Item } from '../../Components/MessageContext';
 import Settings from '../../Components/Settings';
 import DeviceInfo from '../../Components/DeviceInfo';
+import WebSocketComponent from '../../Components/WebSocketComponent';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -30,6 +31,8 @@ const Home = () => {
     const [serialNumbers, setSerialNumbers] = useState([]);
     const [activeButton, setActiveButton] = useState<number | null>(null);
     const [tableData, setTableData] = useState<{description: string, value: string}[]>([]);
+    const [messages, setMessages] = useState<Array<{text: string, step: number}>>([]);
+    const [activePage, setActivePage] = useState(1);
 
     const {
         socket,
@@ -238,8 +241,28 @@ const Home = () => {
         }
     }, [selectedUSB]);
 
+    const handleAddItem = (message: string, isSuccess: boolean | null, type: string | null = null, step?: number) => {
+        console.log(message, isSuccess, type, step);
+        if (step) {
+            setMessages(prev => [...prev, {text: message, step}]);
+            setActivePage(step);
+        }
+
+        setItems((prevItems: Item[]) => [
+            ...prevItems,
+            { message, isSuccess, type },
+        ]);
+
+        if (containerRef.current) {
+            setTimeout(() => {
+                containerRef.current!.scrollTop = containerRef.current!.scrollHeight;
+            }, 0);
+        }
+    };
+
     return (
         <div className="full-screen">
+            <WebSocketComponent handleAddItem={handleAddItem} />
             <div className="navbar">
                 <div className={`section ${activeSection === 'settings' ? 'active' : ''}`} onClick={() => handleSectionClick('settings')}>Ayarlar</div>
                 <div className={`section ${activeSection === 'newdevice' ? 'active' : ''}`} onClick={() => handleSectionClick('newdevice')}>Yeni Cihaz Ekle</div>
@@ -268,7 +291,12 @@ const Home = () => {
                 />
             </div>
             <div id="newdevice" className={`container ${activeSection != 'newdevice' ? 'hide' : ''}`}>
-                <DeviceInfo completedSteps={completedSteps} />
+                <DeviceInfo 
+                    completedSteps={completedSteps} 
+                    activePage={activePage}
+                    setActivePage={setActivePage}
+                    messages={messages}
+                />
             </div>
             <div id="updatedevice" className={`container ${activeSection != 'updatedevice' ? 'hide' : ''}`}>
             <div className="device-info">
@@ -287,7 +315,7 @@ const Home = () => {
                         <div
                             key={i}
                             className={`test-step ${completedSteps[i] ? 'test-success' : ''}`}
-                            style={{ left: `${0 + (i * 28)}px` }}
+                            style={{ left: `${15 + (i * 28)}px` }}
                         >
                             {i + 1}
                         </div>
