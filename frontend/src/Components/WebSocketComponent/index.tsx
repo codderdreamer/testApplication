@@ -14,7 +14,7 @@ interface Item {
 type BarcodeType = "seriNo" | "chargePointId";
 
 interface WebSocketComponentProps {
-    handleAddItem: (message: string, isSuccess: boolean | null, type?: string | null, step?: number) => void;
+    handleAddItem: (message: string, isSuccess: boolean | null, type?: string | null, step?: number, fontSize?: string) => void;
 }
 
 const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }) => {
@@ -57,6 +57,14 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }
     LOADBANK_P1, setLOADBANK_P1,
     LOADBANK_P2, setLOADBANK_P2,
     LOADBANK_P3, setLOADBANK_P3,
+    isStep1Complete, setIsStep1Complete,
+    isStep2Complete, setIsStep2Complete,
+    isStep3Complete, setIsStep3Complete,
+    isStep4Complete, setIsStep4Complete,
+    isStep5Complete, setIsStep5Complete,
+    isStep6Complete, setIsStep6Complete,
+    isStep7Complete, setIsStep7Complete,
+    isStep8Complete, setIsStep8Complete,
   } = useMessage();
 
   useEffect(() => {
@@ -121,23 +129,24 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }
   };
 
   const processBarcode = () => {
-    // console.log("processBarcode aşaması")
-    // console.log("barcode", barcode)
     if (barcode.trim() === "") {
       handleAddItem("Barkod girilmedi. Hata!", false);
     } else if (expectedBarcodeType === "seriNo") {
-      handleAddItem(`Cihaz Seri No: ${barcode}`, true);
+      handleAddItem(`Cihaz Seri No: ${barcode}`, true, null, 1);
+      setIsStep1Complete(true)
       sendBarcode("SeriNoBarcode");
-      handleAddItem("Cihazın Model Idsi sorgulanıyor...", null);
+      handleAddItem("Cihazın Model Idsi sorgulanıyor...", null, null, 2);
+      setBarcode("");
     } else if (expectedBarcodeType === "chargePointId") {
       if (barcode.startsWith("HCAC") && barcode.length === 10) {
-        handleAddItem(`Charge Point ID: ${barcode}`, true);
+        handleAddItem(`Charge Point ID: ${barcode}`, true, null, 3);
+        setIsStep3Complete(true)
         sendBarcode("ChargePointIdBarcode");
+        setBarcode("");
       } else {
-        handleAddItem(`Geçersiz barkod: ${barcode}  -->  Barkod HCAC ile başlamalı ve 10 haneli olmalıdır.`,false);
-        setBarcode("")
-        setExpectedBarcodeType("chargePointId")
-        handleAddItem("Lütfen cihazın Charge Point Id barkodunu okutunuz!", null);
+        toast.error(`Geçersiz barkod! : ${barcode}`)
+        handleAddItem("Lütfen cihazın Charge Point Id barkodunu okutunuz!", null, null, 3);
+        setBarcode("");
         setWaitingForBarcode(true);
       }
     }
@@ -226,61 +235,70 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }
                 break
               case "USBControl":
                 if (jsonData.Data) {
-                  handleAddItem("Test cihazına bağlandı.", true)
+                  toast.success("Test cihazına bağlandı.")
                   setExpectedBarcodeType("seriNo")
                 }
                 else {
-                  handleAddItem("Test cihazına bağlanamadı!.", false)
+                  toast.error("Test cihazına bağlanamadı!")
                 }
                 break
               case "SeriNoRequest":
-                handleAddItem("Lütfen cihazın seri numara barkodunu okutunuz!", null);
+                handleAddItem("Lütfen cihazın seri numara barkodunu okutunuz!", null, null, 1);
                 setWaitingForBarcode(true);
                 break
               case "SeriNoBarcodeResult":
                 if (jsonData.Data) {
                   if (jsonData.Data.result) {
-                    handleAddItem(`ItemCode: ${jsonData.Data.ItemCode}`, null);
-                    handleAddItem(`emergencyButton: ${jsonData.Data.emergencyButton}`, null);
-                    handleAddItem(`midMeter: ${jsonData.Data.midMeter}`, null);
-                    handleAddItem(`system: ${jsonData.Data.system}`, null);
-                    handleAddItem(`bodyColor: ${jsonData.Data.bodyColor}`, null);
-                    handleAddItem(`connectorType: ${jsonData.Data.connectorType}`, null);
-                    handleAddItem(`caseType: ${jsonData.Data.caseType}`, null);
+                    const deviceInfo = [
+                      `ItemCode: ${jsonData.Data.ItemCode}\n`,
+                      `emergencyButton: ${jsonData.Data.emergencyButton}\n`,
+                      `midMeter: ${jsonData.Data.midMeter}\n`,
+                      `system: ${jsonData.Data.system}\n`,
+                      `bodyColor: ${jsonData.Data.bodyColor}\n`,
+                      `connectorType: ${jsonData.Data.connectorType}\n`,
+                      `caseType: ${jsonData.Data.caseType}\n`
+                    ].join('');
+                    handleAddItem(deviceInfo, null, null, 2, "20px");
+                    setIsStep2Complete(true)
                   }
                   else {
-                    handleAddItem("SAP sisteminde bir sorun oluştu!", false)
+                    toast.error("SAP sisteminde bir sorun oluştu!")
+                    //handleAddItem("SAP sisteminde bir sorun oluştu!", false, null, null, "14px");
                   }
                 }
                 break
               case "ChargePointIdRequest":
                 setBarcode("")
                 setExpectedBarcodeType("chargePointId")
-                handleAddItem("Lütfen cihazın Charge Point Id barkodunu okutunuz!", null);
+                handleAddItem("Lütfen cihazın Charge Point Id barkodunu okutunuz!", null, null, 3);
                 setWaitingForBarcode(true);
                 break
               case "WaitDevice":
-                handleAddItem("Test cihazının hazır olması bekleniyor...", null)
+                handleAddItem("Test cihazının hazır olması bekleniyor...", null, null, 4);
                 break
               case "WaitDeviceResult":
-                handleAddItem("Test cihazı hazır.", true)
+                handleAddItem("Test cihazı hazır.", true, null, 4);
+                setIsStep4Complete(true)
                 send_ac_charger_connect_request(newSocket)
-                handleAddItem("AC Charger'a bağlanılıyor...", null)
+                handleAddItem("AC Charger'a bağlanılıyor...", null, null, 5);
                 break
               case "ACChargerConnectResult":
                 if(jsonData.Data){
-                  handleAddItem("AC Charger'a bağlandı.", true)
+                  handleAddItem("AC Charger'a bağlandı.", true, null, 5);
+                  setIsStep5Complete(true)
+                } else {
+                  handleAddItem("AC Charger'a bağlanılamadı!", false, null, 5);
                 }
                 break
               case "MasterCardRequest":
-                handleAddItem("Lütfen master katı cihaza okutunuz!", null)
+                handleAddItem("Lütfen master katı cihaza okutunuz!", null, null, 6);
                 break
               case "MasterCardResult":
                 if (jsonData.Data == "" || jsonData.Data == null){
-                  handleAddItem("Master kart alınamadı " + jsonData.Data, false)
+                  handleAddItem("Master kart alınamadı " + jsonData.Data, false, null, 6);
                 }
                 else{
-                  handleAddItem("Master kart kayıt edildi:" + jsonData.Data, true)
+                  handleAddItem("Master kart kayıt edildi:" + jsonData.Data, true, null, 6);
                 }
                 break
               case "User1CardRequest":

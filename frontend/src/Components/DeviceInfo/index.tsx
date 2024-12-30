@@ -1,19 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import './deviceInfo.css';
+import { useMessage } from '../../Components/MessageContext';
 
 interface DeviceInfoProps {
   completedSteps: (boolean | null)[];
+  setCompletedSteps: (steps: (boolean | null)[]) => void;
   activePage: number;
   setActivePage: (page: number) => void;
-  messages: Array<{text: string, step: number}>;
+  messages: Array<{
+    text: string, 
+    step: number,
+    fontSize?: string
+  }>;
+  startTest: () => void;
+  cancelTest: () => void;
+  isDisabled: boolean;
 }
 
 const DeviceInfo: React.FC<DeviceInfoProps> = ({ 
   completedSteps, 
+  setCompletedSteps,
   activePage, 
   setActivePage,
-  messages 
+  messages,
+  startTest,
+  cancelTest,
+  isDisabled
 }) => {
+  const [isBlue, setIsBlue] = useState(true);
+  const {
+    isStep1Complete,
+    isStep2Complete,
+    isStep3Complete,
+    isStep4Complete,
+    isStep5Complete,
+    isStep6Complete,
+    isStep7Complete,
+    isStep8Complete,
+  } = useMessage();
+
+  // Renk değişimi için interval
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsBlue(prev => !prev);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Her sayfa için son mesajı al
+  const getLastMessage = (step: number) => {
+    const pageMessages = messages.filter(msg => msg.step === step);
+    return pageMessages[pageMessages.length - 1];
+  };
+
   // Aktif adımı bul (son false olan veya ilk null olan)
   useEffect(() => {
     const currentStep = completedSteps.findIndex((step, index) => {
@@ -31,6 +70,47 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
     setActivePage(stepNumber);
   };
 
+  // Her sayfa için mesajı göster
+  const renderPageMessage = (step: number) => {
+    const lastMessage = getLastMessage(step);
+    if (!lastMessage) return null;
+
+    const isActiveAndLatest = activePage === step && step === Math.max(...messages.map(m => m.step));
+    
+    return (
+      <div 
+        className={`test-message ${isActiveAndLatest ? (isBlue ? 'blue-text' : 'red-text') : ''}`}
+        style={{ fontSize: lastMessage.fontSize || '40px' }}
+      >
+        {lastMessage.text}
+      </div>
+    );
+  };
+
+  // Step durumlarını takip et
+  useEffect(() => {
+    const newCompletedSteps = [...completedSteps];
+    if (isStep1Complete !== null) newCompletedSteps[0] = isStep1Complete;
+    if (isStep2Complete !== null) newCompletedSteps[1] = isStep2Complete;
+    if (isStep3Complete !== null) newCompletedSteps[2] = isStep3Complete;
+    if (isStep4Complete !== null) newCompletedSteps[3] = isStep4Complete;
+    if (isStep5Complete !== null) newCompletedSteps[4] = isStep5Complete;
+    if (isStep6Complete !== null) newCompletedSteps[5] = isStep6Complete;
+    if (isStep7Complete !== null) newCompletedSteps[6] = isStep7Complete;
+    if (isStep8Complete !== null) newCompletedSteps[7] = isStep8Complete;
+    
+    setCompletedSteps(newCompletedSteps);
+  }, [
+    isStep1Complete,
+    isStep2Complete,
+    isStep3Complete,
+    isStep4Complete,
+    isStep5Complete,
+    isStep6Complete,
+    isStep7Complete,
+    isStep8Complete
+  ]);
+
   return (
     <>
       <div className="device-info">
@@ -40,76 +120,92 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
         <p>Ayarlar bölümünden USB seçeneğini kontrol ediniz.</p>
         <p>Lütfen bilgisayara Ethernet kablosunun bağlı olduğundan emin olunuz...</p>
       </div>
-      <button className="test-button">Teste Başla</button>
+      <button 
+        className={`test-button ${isDisabled ? 'cancel-test' : ''}`} 
+        onClick={isDisabled ? cancelTest : startTest}
+      >
+        {isDisabled ? 'Testi Bitir' : 'Teste Başla'}
+      </button>
       <div className="test-container">
         <div id='test-page-1' className={`test-page ${activePage === 1 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 1</div>
-          {messages.filter(msg => msg.step === 1).map((msg, index) => (
-            <div key={index} className="test-message">{msg.text}</div>
-          ))}
+          {renderPageMessage(1)}
         </div>
         <div id='test-page-2' className={`test-page ${activePage === 2 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 2</div>
-          {messages.filter(msg => msg.step === 2).map((msg, index) => (
-            <div key={index} className="test-message">{msg.text}</div>
-          ))}
+          {renderPageMessage(2)}
         </div>
         <div id='test-page-3' className={`test-page ${activePage === 3 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 3</div>
-          {messages.filter(msg => msg.step === 3).map((msg, index) => (
-            <div key={index} className="test-message">{msg.text}</div>
-          ))}
+          {renderPageMessage(3)}
         </div>
         <div id='test-page-4' className={`test-page ${activePage === 4 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 4</div>
+          {renderPageMessage(4)}
         </div>
         <div id='test-page-5' className={`test-page ${activePage === 5 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 5</div>
+          {renderPageMessage(5)}
         </div>
         <div id='test-page-6' className={`test-page ${activePage === 6 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 6</div>
+          {renderPageMessage(6)}
         </div>
         <div id='test-page-7' className={`test-page ${activePage === 7 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 7</div>
+          {renderPageMessage(7)}
         </div>
         <div id='test-page-8' className={`test-page ${activePage === 8 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 8</div>
+          {renderPageMessage(8)}
         </div>
         <div id='test-page-9' className={`test-page ${activePage === 9 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 9</div>
+          {renderPageMessage(9)}
         </div>
         <div id='test-page-10' className={`test-page ${activePage === 10 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 10</div>
+          {renderPageMessage(10)}
         </div>
         <div id='test-page-11' className={`test-page ${activePage === 11 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 11</div>
+          {renderPageMessage(11)}
         </div>
         <div id='test-page-12' className={`test-page ${activePage === 12 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 12</div>
+          {renderPageMessage(12)}
         </div>
         <div id='test-page-13' className={`test-page ${activePage === 13 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 13</div>
+          {renderPageMessage(13)}
         </div>
         <div id='test-page-14' className={`test-page ${activePage === 14 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 14</div>
+          {renderPageMessage(14)}
         </div>
         <div id='test-page-15' className={`test-page ${activePage === 15 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 15</div>
+          {renderPageMessage(15)}
         </div>
         <div id='test-page-16' className={`test-page ${activePage === 16 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 16</div>
+          {renderPageMessage(16)}
         </div>
         <div id='test-page-17' className={`test-page ${activePage === 17 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 17</div>
+          {renderPageMessage(17)}
         </div>
         <div id='test-page-18' className={`test-page ${activePage === 18 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 18</div>
+          {renderPageMessage(18)}
         </div>
         <div id='test-page-19' className={`test-page ${activePage === 19 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 19</div>
+          {renderPageMessage(19)}
         </div>
         <div id='test-page-20' className={`test-page ${activePage === 20 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 20</div>
+          {renderPageMessage(20)}
         </div>
         
         <div className="test-steps">
@@ -119,7 +215,8 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
               className={`test-step 
                 ${completedSteps[i] === true ? 'test-success' : ''} 
                 ${completedSteps[i] === false ? 'test-error' : ''}
-                ${completedSteps[i] === null ? 'test-waiting' : ''}`
+                ${completedSteps[i] === null ? 'test-waiting' : ''}
+                ${messages.some(m => m.step === i + 1) && i + 1 === Math.max(...messages.map(m => m.step)) ? 'test-active' : ''}`
               }
               onClick={() => handleStepClick(i + 1)}
               style={{ left: `${15 + (i * 28)}px` }}

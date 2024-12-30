@@ -516,7 +516,6 @@ class FrontendWebsocketModule():
         try:
             if self.application.simu_test:
                 self.application.deviceModel.find("HC022304312")
-            
             if result:
                 self.websocket.send_message_to_all(json.dumps({
                         "Command": "SeriNoBarcodeResult",

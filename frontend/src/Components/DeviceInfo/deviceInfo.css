@@ -20,11 +20,15 @@ html, body {
 .test-button {
   margin: 20px;
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #076b0a;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.test-button:hover {
+  background-color: #065c09;
 }
 
 .test-container {
@@ -91,4 +95,34 @@ html, body {
 .test-waiting {
   background-color: #e9ecef;
   color: black;
+  border: 1px solid #ccc;
+}
+
+.test-button.cancel-test {
+  background-color: #dc3545;
+}
+
+.test-button.cancel-test:hover {
+  background-color: #bb2d3b;
 } 
+
+.test-message{
+    padding: 20px;
+    font-size: 40px;
+    font-weight: 700;
+    white-space: pre-line;
+    line-height: 1.5;
+}
+
+.blue-text {
+    color: #13029f;
+}
+
+.red-text {
+    color: #dc3545;
+}
+
+.test-step.test-active {
+  background-color: #13029f;
+  color: white;
+}

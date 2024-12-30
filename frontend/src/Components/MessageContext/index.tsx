@@ -77,6 +77,23 @@ interface MessageContextType {
   
   deviceConnected: boolean;
   setDeviceConnected: (deviceConnected: boolean) => void;
+
+  isStep1Complete: boolean | null;
+  setIsStep1Complete: (value: boolean | null) => void;
+  isStep2Complete: boolean | null;
+  setIsStep2Complete: (value: boolean | null) => void;
+  isStep3Complete: boolean | null;
+  setIsStep3Complete: (value: boolean | null) => void;
+  isStep4Complete: boolean | null;
+  setIsStep4Complete: (value: boolean | null) => void;
+  isStep5Complete: boolean | null;
+  setIsStep5Complete: (value: boolean | null) => void;
+  isStep6Complete: boolean | null;
+  setIsStep6Complete: (value: boolean | null) => void;
+  isStep7Complete: boolean | null;
+  setIsStep7Complete: (value: boolean | null) => void;
+  isStep8Complete: boolean | null;
+  setIsStep8Complete: (value: boolean | null) => void;
 }
 
 const MessageContext = createContext<MessageContextType | undefined>(undefined);
@@ -108,6 +125,14 @@ export const MessageProvider: React.FC<MessageProviderProps> = ({ children }) =>
   const [LOADBANK_P2, setLOADBANK_P2] = useState<string>("");
   const [LOADBANK_P3, setLOADBANK_P3] = useState<string>("");
   const [deviceConnected, setDeviceConnected] = useState(false);
+  const [isStep1Complete, setIsStep1Complete] = useState<boolean | null>(null);
+  const [isStep2Complete, setIsStep2Complete] = useState<boolean | null>(null);
+  const [isStep3Complete, setIsStep3Complete] = useState<boolean | null>(null);
+  const [isStep4Complete, setIsStep4Complete] = useState<boolean | null>(null);
+  const [isStep5Complete, setIsStep5Complete] = useState<boolean | null>(null);
+  const [isStep6Complete, setIsStep6Complete] = useState<boolean | null>(null);
+  const [isStep7Complete, setIsStep7Complete] = useState<boolean | null>(null);
+  const [isStep8Complete, setIsStep8Complete] = useState<boolean | null>(null);
 
   // const [networkjsonString, setNetworkPriority] = useState<string | null>(null);
   
@@ -135,7 +160,15 @@ export const MessageProvider: React.FC<MessageProviderProps> = ({ children }) =>
                                     LOADBANK_P2, setLOADBANK_P2,
                                     LOADBANK_P3, setLOADBANK_P3,
                                     deviceConnected,
-                                    setDeviceConnected
+                                    setDeviceConnected,
+                                    isStep1Complete, setIsStep1Complete,
+                                    isStep2Complete, setIsStep2Complete,
+                                    isStep3Complete, setIsStep3Complete,
+                                    isStep4Complete, setIsStep4Complete,
+                                    isStep5Complete, setIsStep5Complete,
+                                    isStep6Complete, setIsStep6Complete,
+                                    isStep7Complete, setIsStep7Complete,
+                                    isStep8Complete, setIsStep8Complete,
     }}>
       {children}
     </MessageContext.Provider>

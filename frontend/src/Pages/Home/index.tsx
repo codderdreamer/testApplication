@@ -14,7 +14,6 @@ const Home = () => {
     const [activeInputIndex, setActiveInputIndex] = useState(0); // Aktif inputun indeksini tutar
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
     const [isDisabled, setIsDisabled] = useState(false);
-    const [selectedUSB, setSelectedUSB] = useState('');
     const [highlightIndex, setHighlightIndex] = useState<number | null>(null);
     const [isHighlightRed, setIsHighlightRed] = useState(true);
     const [activeSection, setActiveSection] = useState('settings');
@@ -53,6 +52,7 @@ const Home = () => {
         setfourG_pin,
         items,
         setItems,
+        selectedUSB, setSelectedUSB,
         containerRef,timeoutId, setTimeoutId,
         LOADBANK_I1, setLOADBANK_I1,
         LOADBANK_I2, setLOADBANK_I2,
@@ -110,7 +110,7 @@ const Home = () => {
                             "sap": true
                         }
                     }));
-                    setIsDisabled(true);
+                    toast.success("Ayarlar başarıyla kaydedildi!");
                 }
                 else {
                     toast.error("Server'a bağlanılamıyor!");
@@ -122,6 +122,26 @@ const Home = () => {
 
         }
 
+    }
+
+    function startTest() {
+        if (verifyInputs()) {
+            if (socket) {
+                if (socket.readyState === socket.OPEN) {
+                    socket.send(JSON.stringify({
+                        "Command": "StartTest",
+                        "Data": ""
+                    }));
+                    setIsDisabled(true);
+                }
+                else {
+                    toast.error("Server'a bağlanılamıyor!");
+                }
+            }
+            else {
+                toast.error("Server'a bağlanılamıyor!");
+            }
+        }
     }
 
     function fakeTestStart() {
@@ -241,10 +261,13 @@ const Home = () => {
         }
     }, [selectedUSB]);
 
-    const handleAddItem = (message: string, isSuccess: boolean | null, type: string | null = null, step?: number) => {
-        console.log(message, isSuccess, type, step);
+    const handleAddItem = (message: string, isSuccess: boolean | null, type: string | null = null, step?: number, fontSize?: string) => {
         if (step) {
-            setMessages(prev => [...prev, {text: message, step}]);
+            setMessages(prev => [...prev, {
+                text: message, 
+                step,
+                fontSize
+            }]);
             setActivePage(step);
         }
 
@@ -293,9 +316,13 @@ const Home = () => {
             <div id="newdevice" className={`container ${activeSection != 'newdevice' ? 'hide' : ''}`}>
                 <DeviceInfo 
                     completedSteps={completedSteps} 
+                    setCompletedSteps={setCompletedSteps}
                     activePage={activePage}
                     setActivePage={setActivePage}
                     messages={messages}
+                    startTest={startTest}
+                    cancelTest={cancelTest}
+                    isDisabled={isDisabled}
                 />
             </div>
             <div id="updatedevice" className={`container ${activeSection != 'updatedevice' ? 'hide' : ''}`}>
