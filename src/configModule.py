@@ -1,5 +1,7 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import pandas as pd
+from pathlib import Path
 
 
 class Config():
@@ -20,6 +22,10 @@ class Config():
         self.fourG_user = ""
         self.fourG_password = ""
         self.fourG_pin = ""
+
+        self.bluetooth_key = None
+        self.bluetooth_iv_key = None
+        self.bluetooth_password = None
 
         self.selectedUSB = ""
 
@@ -43,6 +49,8 @@ class Config():
 
         # Tablo kontrolü ve oluşturma
         self.create_config_table()
+        self.create_product_info_table()
+        self.create_test_log_table()
 
         # Config'i oku
         self.read_config()
@@ -145,3 +153,145 @@ class Config():
                 conn.rollback()
             finally:
                 conn.close()
+
+    def create_product_info_table(self):
+        conn = self.get_db_connection()
+        if conn:
+            try:
+                with conn.cursor() as cur:
+                    # Tablo oluştur
+                    cur.execute("""
+                        CREATE TABLE IF NOT EXISTS product_info (
+                            id SERIAL PRIMARY KEY,
+                            serial_number VARCHAR(100),
+                            product_code VARCHAR(100),
+                            charge_point_id VARCHAR(100),
+                            ethernet_mac VARCHAR(100),
+                            bluetooth_mac VARCHAR(100),
+                            four_g_imei VARCHAR(100),
+                            master_card_rfid VARCHAR(100),
+                            slave_1_card_rfid VARCHAR(100),
+                            slave_2_card_rfid VARCHAR(100),
+                            product_description VARCHAR(500),
+                            bluetooth_key VARCHAR(100),
+                            bluetooth_iv_key VARCHAR(100),
+                            bluetooth_password VARCHAR(100),
+                            location VARCHAR(100)
+                        )
+                    """)
+                    
+                    # Tablo boş mu kontrol et
+                    cur.execute("SELECT COUNT(*) FROM product_info")
+                    count = cur.fetchone()[0]
+                    
+                    if count == 0:
+                        # Excel dosyasını oku
+                        excel_path = Path("HeraChargePack.xlsx")
+                        if excel_path.exists():
+                            df = pd.read_excel(excel_path)
+                            
+                            # Her satır için insert işlemi yap
+                            for _, row in df.iterrows():
+                                cur.execute("""
+                                    INSERT INTO product_info (
+                                        serial_number, product_code, charge_point_id,
+                                        ethernet_mac, bluetooth_mac, four_g_imei,
+                                        master_card_rfid, slave_1_card_rfid, slave_2_card_rfid,
+                                        product_description, bluetooth_key, bluetooth_iv_key,
+                                        bluetooth_password, location
+                                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                """, (
+                                    row.get('Serial Number', ''),
+                                    row.get('Product Code', ''),
+                                    row.get('CPID', ''),
+                                    row.get('Ethernet MAC', ''),
+                                    row.get('BT MAC', ''),
+                                    row.get('4G IMEI', ''),
+                                    row.get('Master Card RFID', ''),
+                                    row.get('Slave Kart RFID1', ''),
+                                    row.get('Slave Kart RFID2', ''),
+                                    row.get('Product Descriptions', ''),
+                                    row.get('Aes Key', ''),
+                                    row.get('Aes IV', ''),
+                                    row.get('BLE Auth Passcode', ''),
+                                    row.get('Location', '')
+                                ))
+                            print("Excel verileri başarıyla içe aktarıldı.")
+                        else:
+                            print("HeraChargePack.xlsx dosyası bulunamadı.")
+                    
+                    conn.commit()
+            except Exception as e:
+                print(f"product_info tablosu oluşturma hatası: {e}")
+                conn.rollback()
+            finally:
+                conn.close()
+
+    def create_test_log_table(self):
+        """Test log tablosunu oluştur"""
+        conn = self.get_db_connection()
+        if conn:
+            try:
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        CREATE TABLE IF NOT EXISTS test_logs (
+                            id SERIAL PRIMARY KEY,
+                            seri_no VARCHAR(100),
+                            test_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                            step2 BOOLEAN,
+                            step3 BOOLEAN,
+                            step4 BOOLEAN,
+                            step5 BOOLEAN,
+                            step6 BOOLEAN,
+                            step7 BOOLEAN,
+                            step8 BOOLEAN,
+                            step9 BOOLEAN,
+                            step10 BOOLEAN,
+                            step11 BOOLEAN,
+                            step12 BOOLEAN,
+                            step13 BOOLEAN,
+                            step14 BOOLEAN,
+                            step15 BOOLEAN,
+                            step16 BOOLEAN,
+                            step17 BOOLEAN,
+                            step18 BOOLEAN,
+                            step19 BOOLEAN,
+                            step20 BOOLEAN,
+                            step21 BOOLEAN,
+                            step22 BOOLEAN,
+                            step23 BOOLEAN,
+                            step24 BOOLEAN
+                        )
+                    """)
+                    conn.commit()
+            except Exception as e:
+                print(f"Test log tablosu oluşturma hatası: {e}")
+                conn.rollback()
+            finally:
+                conn.close()
+
+    def save_test_log(self, test_step, test_result):
+        pass
+
+    def get_product_info(self):
+        """Tüm ürün bilgilerini getir"""
+        conn = self.get_db_connection()
+        if conn:
+            try:
+                with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                    cur.execute("""
+                        SELECT serial_number, product_code, charge_point_id,
+                               ethernet_mac, bluetooth_mac, four_g_imei, 
+                               master_card_rfid, slave_1_card_rfid, slave_2_card_rfid,
+                               product_description, bluetooth_key, bluetooth_iv_key,
+                               bluetooth_password, location 
+                        FROM product_info
+                    """)
+                    return cur.fetchall()
+            except Exception as e:
+                print(f"Ürün bilgileri getirme hatası: {e}")
+                return []
+            finally:
+                conn.close()
+        return []
+

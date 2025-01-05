@@ -12,9 +12,11 @@ interface DeviceInfoProps {
     step: number,
     fontSize?: string
   }>;
+  setMessages: (messages: Array<{text: string, step: number, fontSize?: string}>) => void;
   startTest: () => void;
   cancelTest: () => void;
   isDisabled: boolean;
+  setIsDisabled: (value: boolean) => void;
 }
 
 const DeviceInfo: React.FC<DeviceInfoProps> = ({ 
@@ -23,9 +25,11 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
   activePage, 
   setActivePage,
   messages,
+  setMessages,
   startTest,
   cancelTest,
-  isDisabled
+  isDisabled,
+  setIsDisabled
 }) => {
   const [isBlue, setIsBlue] = useState(true);
   const {
@@ -97,7 +101,9 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
     return (
       <div 
         className={`test-message ${
-          isActiveAndLatest && !isStepFailed ? (isBlue ? 'blue-text' : 'red-text') : ''
+          isActiveAndLatest ? (
+            isStepFailed ? 'red-text' : (isBlue ? 'blue-text' : 'red-text')
+          ) : ''
         } ${isStepFailed ? 'red-text' : ''}`}
         style={{ fontSize: lastMessage.fontSize || '40px' }}
       >
@@ -162,6 +168,14 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
     isStep24Complete
   ]);
 
+  const handleCancelTest = () => {
+    // Reset all states
+    setCompletedSteps(new Array(24).fill(null));
+    setActivePage(1);
+    setMessages([]);
+    cancelTest();
+  };
+
   return (
     <>
       <div className="device-info">
@@ -173,7 +187,7 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
       </div>
       <button 
         className={`test-button ${isDisabled ? 'cancel-test' : ''}`} 
-        onClick={isDisabled ? cancelTest : startTest}
+        onClick={isDisabled ? handleCancelTest : startTest}
       >
         {isDisabled ? 'Testi Bitir' : 'Teste Başla'}
       </button>
@@ -267,7 +281,8 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
                 ${completedSteps[i] === true ? 'test-success' : ''} 
                 ${completedSteps[i] === false ? 'test-error' : ''}
                 ${completedSteps[i] === null ? 'test-waiting' : ''}
-                ${messages.some(m => m.step === i + 1) && i + 1 === Math.max(...messages.map(m => m.step)) ? 'test-active' : ''}`
+                ${messages.some(m => m.step === i + 1) && i + 1 === Math.max(...messages.map(m => m.step)) ? 
+                  (completedSteps[i] === false ? 'test-error' : 'test-active') : ''}`
               }
               onClick={() => handleStepClick(i + 1)}
               style={{ left: `${0 + (i * 24)}px` }}

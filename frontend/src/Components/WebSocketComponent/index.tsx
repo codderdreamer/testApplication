@@ -13,11 +13,31 @@ interface Item {
 
 type BarcodeType = "seriNo" | "chargePointId";
 
-interface WebSocketComponentProps {
-    handleAddItem: (message: string, isSuccess: boolean | null, type?: string | null, step?: number, fontSize?: string) => void;
+interface ProductInfo {
+    serial_number: string;
+    product_code: string;
+    charge_point_id: string;
+    ethernet_mac: string;
+    bluetooth_mac: string;
+    four_g_imei: string;
+    master_card_rfid: string;
+    slave_1_card_rfid: string;
+    slave_2_card_rfid: string;
+    product_description: string;
+    bluetooth_key: string;
+    bluetooth_iv_key: string;
+    bluetooth_password: string;
+    location: string;
 }
 
-const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }) => {
+interface WebSocketComponentProps {
+    handleAddItem: (message: string, isSuccess: boolean | null, type?: string | null, step?: number, fontSize?: string) => void;
+    isDisabled: boolean;
+    setIsDisabled: (value: boolean) => void;
+    setProductInfoList: (data: ProductInfo[]) => void;
+}
+
+const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem, isDisabled, setIsDisabled, setProductInfoList }) => {
   const [isConnecting, setIsConnecting] = useState(true);
   const navigate = useNavigate();
   const [waitingForBarcode, setWaitingForBarcode] = useState(false);
@@ -59,14 +79,28 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }
     LOADBANK_P3, setLOADBANK_P3,
     isStep1Complete, setIsStep1Complete,
     isStep2Complete, setIsStep2Complete,
-    setIsStep3Complete,
-    setIsStep4Complete,
-    setIsStep5Complete,
-    setIsStep6Complete,
-    setIsStep7Complete,
-    setIsStep8Complete,
-    setIsStep9Complete,
-    setIsStep10Complete,
+    isStep3Complete, setIsStep3Complete,
+    isStep4Complete, setIsStep4Complete,
+    isStep5Complete, setIsStep5Complete,
+    isStep6Complete, setIsStep6Complete,
+    isStep7Complete, setIsStep7Complete,
+    isStep8Complete, setIsStep8Complete,
+    isStep9Complete, setIsStep9Complete,
+    isStep10Complete, setIsStep10Complete,
+    isStep11Complete, setIsStep11Complete,
+    isStep12Complete, setIsStep12Complete,
+    isStep13Complete, setIsStep13Complete,
+    isStep14Complete, setIsStep14Complete,
+    isStep15Complete, setIsStep15Complete,
+    isStep16Complete, setIsStep16Complete,
+    isStep17Complete, setIsStep17Complete,
+    isStep18Complete, setIsStep18Complete,
+    isStep19Complete, setIsStep19Complete,
+    isStep20Complete, setIsStep20Complete,
+    isStep21Complete, setIsStep21Complete,
+    isStep22Complete, setIsStep22Complete,
+    isStep23Complete, setIsStep23Complete,
+    isStep24Complete, setIsStep24Complete,
   } = useMessage();
 
   useEffect(() => {
@@ -292,6 +326,19 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }
                   handleAddItem("AC Charger'a bağlanılamadı!", false, null, 5);
                 }
                 break
+              case "MCUFirmwareUpdateRequest":
+                handleAddItem("MCU firmware güncelleniyor...", null, null, 6);
+                break
+              case "MCUFirmwareUpdateResult":
+                if(jsonData.Data){
+                  handleAddItem("MCU firmware güncellendi.", true, null, 6);
+                  setIsStep6Complete(true)
+                } else {
+                  handleAddItem("MCU firmware güncellenemedi!", false, null, 6);
+                  setIsStep6Complete(false)
+                }
+
+                break
               case "MasterCardRequest":
                 handleAddItem("Lütfen master katı cihaza okutunuz!", null, null, 7);
                 break
@@ -403,28 +450,47 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }
                 handleAddItem(results.join('\n'), allTestsPassed, null, 10, "15px");
                 setIsStep10Complete(allTestsPassed);
                 break
+              case "BluetoothKeyRequest":
+                handleAddItem("Bluetooth key üretiliyor...", null, null, 11);
+                break
+              case "BluetoothKeyResult":
+                if (jsonData.Data) {
+                  const bluetoothInfo = [
+                    `✓ Bluetooth Key: ${jsonData.Data.bluetooth_key}`,
+                    `✓ Bluetooth IV Key: ${jsonData.Data.bluetooth_iv_key}`,
+                    `✓ Bluetooth Password: ${jsonData.Data.bluetooth_password}`
+                  ].join('\n');
+                  handleAddItem(bluetoothInfo, true, null, 11, "15px");
+                  setIsStep11Complete(true);
+                } else {
+                  handleAddItem("Bluetooth key üretilemedi!", false, null, 11);
+                  setIsStep11Complete(false);
+                }
+                break
               case "ChargeTest":
                 //handleAddItem("ŞARJ TESTİ BAŞLADI", null, "header");
-                //handleAddItem("Lütfen kablonun takılı olduğundan emin olunuz!", null)
+                handleAddItem("Lütfen kablonun takılı olduğundan emin olunuz!", null, null, 12)
                 break
               case "DeviceB":
                 if(jsonData.Data){
                   handleAddItem("Şarj cihazı B konumuna getirildi", true, null, 12)
+                  setIsStep12Complete(true)
                 } else{
-                  handleAddItem("Şarj cihazı B konumuna getirilemedi", true, null, 12)
+                  handleAddItem("Şarj cihazı B konumuna getirilemedi", false, null, 12)
+                  setIsStep12Complete(false)
                 }
                 break
               case "WaitUser1CardRequest":
-                handleAddItem("Lütfen birinci kullanıcı RFID kartını okutunuz!", null)
+                handleAddItem("Lütfen birinci kullanıcı RFID kartını okutunuz!", null, null, 13)
                 break
               case "AgainTest":
                 handleAddItem("Test işleminde hata var lütfen kontrol edip tekrar test ediniz!", false)
                 break
               case "WaitUser1CardResult":
                 if(jsonData.Data){
-                  handleAddItem("Birinci kullanıcı kartı okutuldu", true)
+                  handleAddItem("Birinci kullanıcı kartı okutuldu", true, null, 13)
                 } else{
-                  handleAddItem("Birinci kullanıcı kartı okutulamadı!", false)
+                  handleAddItem("Birinci kullanıcı kartı okutulamadı!", false, null, 13)
                 }
                 break
               case "WaitUser2CardResult":
@@ -435,11 +501,11 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }
                 }
                 break
               case "WaitRelayOnRequest":
-                handleAddItem("Rölenin On olması bekleniyor...", null)
+                handleAddItem("Rölenin On olması bekleniyor...", null, null, 14)
                 break
               case "WaitRelayOnResult":
                 if(jsonData.Data){
-                  handleAddItem("Röle On oldu. Yük bankası devrede.",true)
+                  handleAddItem("Röle On oldu. Yük bankası devrede.",true, null, 14)
                 } else{
                   handleAddItem("Röle On olmadı!",false)
                 }
@@ -549,6 +615,11 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }
                   handleAddItem("Şarj cihazı SAP sistemine başarılı kayıt edilemedi!",false)
                 }
                 break
+              case "ProductInfoList":
+                if (jsonData.Data) {
+                    setProductInfoList(jsonData.Data);
+                }
+                break
       
                 // Diğer case'ler...
             }
@@ -581,6 +652,50 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }
         }
     };
   }, []);
+
+  const cancelTest = () => {
+    if (socket) {
+      if (socket.readyState === socket.OPEN) {
+        socket.send(JSON.stringify({
+          "Command": "CancelTest",
+          "Data": {}
+        }));
+        setIsDisabled(false);
+        setItems([]);
+        // Reset all step states
+        setIsStep1Complete(null);
+        setIsStep2Complete(null);
+        setIsStep3Complete(null);
+        setIsStep4Complete(null);
+        setIsStep5Complete(null);
+        setIsStep6Complete(null);
+        setIsStep7Complete(null);
+        setIsStep8Complete(null);
+        setIsStep9Complete(null);
+        setIsStep10Complete(null);
+        setIsStep11Complete(null);
+        setIsStep12Complete(null);
+        setIsStep13Complete(null);
+        setIsStep14Complete(null);
+        setIsStep15Complete(null);
+        setIsStep16Complete(null);
+        setIsStep17Complete(null);
+        setIsStep18Complete(null);
+        setIsStep19Complete(null);
+        setIsStep20Complete(null);
+        setIsStep21Complete(null);
+        setIsStep22Complete(null);
+        setIsStep23Complete(null);
+        setIsStep24Complete(null);
+        
+        if (timeoutId) clearTimeout(timeoutId);
+      } else {
+        toast.error("Server'a bağlanılamıyor!");
+      }
+    } else {
+      toast.error("Server'a bağlanılamıyor!");
+    }
+  };
 
   return <div></div>;
 };

@@ -1,4 +1,3 @@
-
 import time
 from src.flaskServer import *
 from src.modbusModule import *
@@ -8,6 +7,8 @@ from src.deviceModel import *
 from src.frontendWebsocketModule import *
 from src.acdeviceWebsocketModule import *
 from src.configModule import *
+import secrets
+import string
 
 class Application():
     def __init__(self):
@@ -29,7 +30,10 @@ class Application():
     def run(self):
         pass
 
-    
+    def create_bluetooth_key(self):
+        self.config.bluetooth_key = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(32))
+        self.config.bluetooth_iv_key = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(16))
+        self.config.bluetooth_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
 
 if __name__ == "__main__":
     try:

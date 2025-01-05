@@ -35,7 +35,6 @@ class AcdeviceWebsocketModule():
             Command = sjon["Command"]
             Data = sjon["Data"]
             if Command == "MasterCardResult":
-                self.save_config_result_json_data = None
                 self.application.config.master_card = None
                 self.application.config.user_1_card = None
                 self.application.config.user_2_card = None
@@ -125,6 +124,15 @@ class AcdeviceWebsocketModule():
                     self.application.modbusModule.write_load_control(0)
                     self.application.modbusModule.write_cable_control(0)
                     self.application.modbusModule.write_is_test_complete(-1)
+            elif Command == "MCUFirmwareUpdateResult":
+                self.application.frontendWebsocket.websocket.send_message_to_all(message)
+                if Data:
+                    self.application.frontendWebsocket.master_card_request()
+                    self.master_card_request()
+                else:
+                    self.application.modbusModule.write_load_control(0)
+                    self.application.modbusModule.write_cable_control(0)
+                    self.application.modbusModule.write_is_test_complete(-1)
 
         except Exception as e:
             print("on_message Exception:",e)
@@ -183,6 +191,7 @@ class AcdeviceWebsocketModule():
 
             if time.time() - time_start > 5:
                 self.application.frontendWebsocket.send_device_B(False)
+                self.application.modbusModule.write_is_test_complete(-1)
                 return False
 
             time.sleep(1)
@@ -257,6 +266,7 @@ class AcdeviceWebsocketModule():
     def wait_save_config_result(self):
         time_start = time.time()
         while True:
+            print("save_config_result_json_data:",self.save_config_result_json_data)
             if self.save_config_result_json_data != None:
                 self.application.config.bluetooth_mac = self.save_config_result_json_data["bluetooth_mac"]
                 self.application.config.eth_mac = self.save_config_result_json_data["eth_mac"]
@@ -273,17 +283,42 @@ class AcdeviceWebsocketModule():
                     self.application.modbusModule.write_is_test_complete(-1)
                     self.application.frontendWebsocket.again_test()
                 else:
+                    print("Bluetooth key üretiliyor...")
+                    self.application.frontendWebsocket.send_bluetooth_key_request()
+                    self.application.create_bluetooth_key()
+                    self.application.frontendWebsocket.send_bluetooth_key_result()
+                    self.send_bluetooth_key_result()
+
                     print("start_charge_test")
                     self.application.modbusModule.write_cable_control(1)
                     self.application.frontendWebsocket.start_charge_test()
-                    self.wait_cable_control_b_state()
-                    self.application.frontendWebsocket.wait_user_1_card_request()
-                    self.wait_user_1_card_request()
+                    result = self.wait_cable_control_b_state()
+                    if result:
+                        self.application.frontendWebsocket.wait_user_1_card_request()
+                        self.wait_user_1_card_request()
+                    else:
+                        self.application.modbusModule.write_cable_control(0)
+                        self.application.modbusModule.write_is_test_complete(-1)
+                        break
                 break
             if time.time() - time_start > 120:
                 self.application.frontendWebsocket.send_ac_charger_not_connected()
                 break
             time.sleep(3)
+
+    def send_bluetooth_key_result(self):
+        try:
+            message = {
+                    "Command": "BluetoothKeyResult",
+                    "Data": {
+                        "bluetooth_key" : self.application.config.bluetooth_key,
+                        "bluetooth_iv_key" : self.application.config.bluetooth_iv_key,
+                        "bluetooth_password" : self.application.config.bluetooth_password
+                    }
+                }
+            self.websocket.send(json.dumps(message))
+        except Exception as e:
+            print("send_bluetooth_key_result Exception:",e)
 
     def is_there_error_in_config(self,Data):
         error = False
@@ -589,18 +624,29 @@ class AcdeviceWebsocketModule():
                 if self.connection:
                     print("Connection var")
                     self.application.frontendWebsocket.send_ac_charger_connect_result(True)
-                    self.application.frontendWebsocket.master_card_request()
-                    self.master_card_request()
+                    self.application.frontendWebsocket.send_mcu_firmware_update()
+                    self.send_mcu_firmware_update()
                     break
                 if self.application.simu_test:
                     print("self.application.simu_test",self.application.simu_test)
                     self.application.frontendWebsocket.send_ac_charger_connect_result(True)
-                    self.application.frontendWebsocket.master_card_request()
-                    self.master_card_request()
+                    self.application.frontendWebsocket.send_mcu_firmware_update()
+                    self.send_mcu_firmware_update()
                     break
             except Exception as e:
                 print("wait_ac_charger_connection Exception:",e)
             time.sleep(3)
+
+    def send_mcu_firmware_update(self):
+        try:
+            message = {
+                    "Command": "MCUFirmwareUpdateRequest",
+                    "Data": ""
+                }
+            self.websocket.send(json.dumps(message))
+            print("sended ac:",message)
+        except Exception as e:
+            print("send_mcu_firmware_update Exception:",e)
 
     def send_save_config(self):
         while True:

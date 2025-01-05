@@ -1,13 +1,33 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
-// import "./home.css";
 import "./home2.css";
 import { toast } from "react-toastify";
 import { useMessage, Item } from '../../Components/MessageContext';
 import Settings from '../../Components/Settings';
 import DeviceInfo from '../../Components/DeviceInfo';
 import WebSocketComponent from '../../Components/WebSocketComponent';
+
+interface ProductInfo {
+    serial_number: string;
+    product_code: string;
+    charge_point_id: string;
+    ethernet_mac: string;
+    bluetooth_mac: string;
+    four_g_imei: string;
+    master_card_rfid: string;
+    slave_1_card_rfid: string;
+    slave_2_card_rfid: string;
+    product_description: string;
+    bluetooth_key: string;
+    bluetooth_iv_key: string;
+    bluetooth_password: string;
+    location: string;
+}
+
+interface FilterState {
+    [key: string]: string;
+}
 
 const Home = () => {
     const navigate = useNavigate();
@@ -22,8 +42,25 @@ const Home = () => {
     const [serialNumbers, setSerialNumbers] = useState([]);
     const [activeButton, setActiveButton] = useState<number | null>(null);
     const [tableData, setTableData] = useState<{description: string, value: string}[]>([]);
-    const [messages, setMessages] = useState<Array<{text: string, step: number}>>([]);
+    const [messages, setMessages] = useState<Array<{text: string, step: number, fontSize?: string}>>([]);
     const [activePage, setActivePage] = useState(1);
+    const [productInfoList, setProductInfoList] = useState<ProductInfo[]>([]);
+    const [filters, setFilters] = useState<FilterState>({
+        serial_number: '',
+        product_code: '',
+        charge_point_id: '',
+        ethernet_mac: '',
+        bluetooth_mac: '',
+        four_g_imei: '',
+        master_card_rfid: '',
+        slave_1_card_rfid: '',
+        slave_2_card_rfid: '',
+        product_description: '',
+        bluetooth_key: '',
+        bluetooth_iv_key: '',
+        bluetooth_password: '',
+        location: ''
+    });
 
     const {
         socket,
@@ -224,7 +261,6 @@ const Home = () => {
     
     const handleButtonClick = (index: number) => {
         setActiveButton(index);
-        // Her butona ait farklı veriler
         switch(index) {
             case 0:
                 setTableData([
@@ -238,17 +274,13 @@ const Home = () => {
                     { description: "Test 2 sonucu", value: "Devam ediyor" }
                 ]);
                 break;
-            // Diğer butonlar için case'ler...
         }
     };
 
     useEffect(() => {
         console.log("selectedUSB değişti:", selectedUSB);
         if (selectedUSB) {
-            // Settings'te USB seçildiğinde
             setActiveSection('settings');
-            
-            // USB seçimi yapıldığında form alanlarını etkinleştir
             setIsDisabled(false);
         }
     }, [selectedUSB]);
@@ -275,14 +307,35 @@ const Home = () => {
         }
     };
 
+    const handleFilterChange = (column: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFilters(prev => ({
+            ...prev,
+            [column]: event.target.value
+        }));
+    };
+
+    const filteredProductList = productInfoList.filter(product => {
+        return Object.keys(filters).every(key => {
+            const filterValue = filters[key].toLowerCase();
+            const productValue = String(product[key as keyof ProductInfo]).toLowerCase();
+            return productValue.includes(filterValue);
+        });
+    });
+
     return (
         <div className="full-screen">
-            <WebSocketComponent handleAddItem={handleAddItem} />
+            <WebSocketComponent 
+                handleAddItem={handleAddItem} 
+                isDisabled={isDisabled}
+                setIsDisabled={setIsDisabled}
+                setProductInfoList={setProductInfoList}
+            />
             <div className="navbar">
                 <div className={`section ${activeSection === 'settings' ? 'active' : ''}`} onClick={() => handleSectionClick('settings')}>Ayarlar</div>
                 <div className={`section ${activeSection === 'newdevice' ? 'active' : ''}`} onClick={() => handleSectionClick('newdevice')}>Yeni Cihaz Ekle</div>
                 <div className={`section ${activeSection === 'updatedevice' ? 'active' : ''}`} onClick={() => handleSectionClick('updatedevice')}>Cihaz Güncelle</div>
                 <div className={`section ${activeSection === 'knowledgedevice' ? 'active' : ''}`} onClick={() => handleSectionClick('knowledgedevice')}>Cihaz Bilgileri Sorgulama</div>
+                <div className={`section ${activeSection === 'productinfo' ? 'active' : ''}`} onClick={() => handleSectionClick('productinfo')}>Ürün Bilgileri</div>
             </div>
             <div id="settings" className={`container ${activeSection != 'settings' ? 'hide' : ''}`}>
                 <Settings 
@@ -312,9 +365,11 @@ const Home = () => {
                     activePage={activePage}
                     setActivePage={setActivePage}
                     messages={messages}
+                    setMessages={setMessages}
                     startTest={startTest}
                     cancelTest={cancelTest}
                     isDisabled={isDisabled}
+                    setIsDisabled={setIsDisabled}
                 />
             </div>
             <div id="updatedevice" className={`container ${activeSection != 'updatedevice' ? 'hide' : ''}`}>
@@ -385,146 +440,169 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+            <div id="productinfo" className={`container ${activeSection !== 'productinfo' ? 'hide' : ''}`}>
+                <div className="product-info-container">
+                    <table className="product-info-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div>#</div>
+                                </th>
+                                <th>
+                                    <div>Seri No</div>
+                                    <input
+                                        type="text"
+                                        value={filters.serial_number}
+                                        onChange={handleFilterChange('serial_number')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>Ürün Kodu</div>
+                                    <input
+                                        type="text"
+                                        value={filters.product_code}
+                                        onChange={handleFilterChange('product_code')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>CPID</div>
+                                    <input
+                                        type="text"
+                                        value={filters.charge_point_id}
+                                        onChange={handleFilterChange('charge_point_id')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>Ethernet MAC</div>
+                                    <input
+                                        type="text"
+                                        value={filters.ethernet_mac}
+                                        onChange={handleFilterChange('ethernet_mac')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>Bluetooth MAC</div>
+                                    <input
+                                        type="text"
+                                        value={filters.bluetooth_mac}
+                                        onChange={handleFilterChange('bluetooth_mac')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>4G IMEI</div>
+                                    <input
+                                        type="text"
+                                        value={filters.four_g_imei}
+                                        onChange={handleFilterChange('four_g_imei')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>Master Kart RFID</div>
+                                    <input
+                                        type="text"
+                                        value={filters.master_card_rfid}
+                                        onChange={handleFilterChange('master_card_rfid')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>Slave 1 Kart RFID</div>
+                                    <input
+                                        type="text"
+                                        value={filters.slave_1_card_rfid}
+                                        onChange={handleFilterChange('slave_1_card_rfid')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>Slave 2 Kart RFID</div>
+                                    <input
+                                        type="text"
+                                        value={filters.slave_2_card_rfid}
+                                        onChange={handleFilterChange('slave_2_card_rfid')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>Ürün Açıklaması</div>
+                                    <input
+                                        type="text"
+                                        value={filters.product_description}
+                                        onChange={handleFilterChange('product_description')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>Bluetooth Key</div>
+                                    <input
+                                        type="text"
+                                        value={filters.bluetooth_key}
+                                        onChange={handleFilterChange('bluetooth_key')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>Bluetooth IV Key</div>
+                                    <input
+                                        type="text"
+                                        value={filters.bluetooth_iv_key}
+                                        onChange={handleFilterChange('bluetooth_iv_key')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>Bluetooth Şifre</div>
+                                    <input
+                                        type="text"
+                                        value={filters.bluetooth_password}
+                                        onChange={handleFilterChange('bluetooth_password')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                                <th>
+                                    <div>Konum</div>
+                                    <input
+                                        type="text"
+                                        value={filters.location}
+                                        onChange={handleFilterChange('location')}
+                                        placeholder="Filtrele..."
+                                    />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="scrollable-body">
+                            {filteredProductList.map((info, index) => (
+                                <tr key={index}>
+                                    <td>{index + 1}</td>
+                                    <td>{info.serial_number}</td>
+                                    <td>{info.product_code}</td>
+                                    <td>{info.charge_point_id}</td>
+                                    <td>{info.ethernet_mac}</td>
+                                    <td>{info.bluetooth_mac}</td>
+                                    <td>{info.four_g_imei}</td>
+                                    <td>{info.master_card_rfid}</td>
+                                    <td>{info.slave_1_card_rfid}</td>
+                                    <td>{info.slave_2_card_rfid}</td>
+                                    <td>{info.product_description}</td>
+                                    <td>{info.bluetooth_key}</td>
+                                    <td>{info.bluetooth_iv_key}</td>
+                                    <td>{info.bluetooth_password}</td>
+                                    <td>{info.location}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        // <div className='fullscreen-div'>
-        //     <div className="screen-1">
-        //         <div className='header'>Hera Test Uygulaması</div>
-        //         <div className='text1'>Lütfen bigisyara USB ve Ethernet kablosunu takınız...</div>
-        //         <div>
-        //             <span className='text2'>Bağlı USB Kablosu:</span>
-        //             <select className="text2" value={selectedUSB} onChange={handleUSBChange}>
-        //                 <option value="" disabled>
-        //                     USB Seçiniz
-        //                 </option>
-        //                 {USBList.map((usb, index) => (
-        //                     <option key={index} value={usb}>
-        //                         {usb}
-        //                     </option>
-        //                 ))}
-        //             </select>
-        //         </div>
-        //         <div>
-        //             <span className='text2'>Bağlanacak cihazın Ethernet IP'si:</span>
-        //             <span className='text2'>172.16.0.104</span>
-        //         </div>
-        //         <div className='text1'>Cihazın bağlanacağı wifi adresi ve şifresini giriniz...</div>
-        //         <div>
-        //             <span className='text2'>Wifi SSID:</span>
-        //             <span className='text2'><input className="input" type="text" value={wifiSSID} onChange={handlewifiSSIDChange} /></span>
-        //         </div>
-        //         <div>
-        //             <span className='text2'>Wifi Password:</span>
-        //             <span className='text2'><input className="input" type="text" value={wifiPassword} onChange={handlewifiPasswordChange} /></span>
-        //         </div>
-        //         <div>
-        //             <span className='text2'>4G APN Adresi:</span>
-        //             <span className='text2'><input className="input" type="text" value={fourG_apn} onChange={handlefourG_apnChange} /></span>
-        //         </div>
-        //         <div>
-        //             <span className='text2'>4G User:</span>
-        //             <span className='text2'><input className="input" type="text" value={fourG_user} onChange={handlefourG_userChange} /></span>
-        //         </div>
-        //         <div>
-        //             <span className='text2'>4G Password:</span>
-        //             <span className='text2'><input className="input" type="text" value={fourG_password} onChange={handlefourG_passwordChange} /></span>
-        //         </div>
-        //         <div>
-        //             <span className='text2'>4G Pin:</span>
-        //             <span className='text2'><input className="input" type="text" value={fourG_pin} onChange={handlefourG_pinChange} /></span>
-        //         </div>
-
-        //         <button className='start' onClick={save} disabled={isDisabled}>Teste Başla</button>
-        //         <button className='fakestart' onClick={fakeTestStart} disabled={isDisabled}>Fake Teste Başla</button>
-        //         <button className='cancelTest' onClick={cancelTest} >Testi İptal Et</button>
-
-        //     </div>
-
-        //     <div className="screen-2" ref={containerRef}>
-        //         {items.map((item, index) => {
-        //             if (item.type === "header") {
-        //             return (
-        //                 <div
-        //                 key={index}
-        //                 className="textlog"
-        //                 style={{
-        //                     margin: "10px 0",
-        //                     fontWeight: 900,
-        //                     color: "#6dff28",
-        //                     background: "#0b091e",
-        //                 }}
-        //                 >
-        //                 {item.message}
-        //                 </div>
-        //             );
-        //             } else {
-        //             return (
-        //                 <div
-        //                 className="textlog"
-        //                 key={index}
-        //                 style={{
-        //                     margin: "10px 0",
-        //                     color: item.isSuccess === false ? "red" : "inherit",
-        //                     background:
-        //                     index === highlightIndex
-        //                         ? isHighlightRed
-        //                         ? "blue"
-        //                         : "green"
-        //                         : "inherit",
-        //                 }}
-        //                 >
-        //                 {item.message}
-        //                 {item.isSuccess === true && (
-        //                     <img className="tick" src="/assets/img/tik.png" alt="" />
-        //                 )}
-        //                 </div>
-        //             );
-        //             }
-        //         })}
-        //     </div>
-            
-        //     <div className="screen-3">
-        //         <span className="loads">LOADBANK_I1</span>
-        //         <span className="loads">: {LOADBANK_I1}</span>
-        //         <span className="loads">LOADBANK_I2</span>
-        //         <span className="loads">: {LOADBANK_I2}</span>
-        //         <span className="loads">LOADBANK_I3</span>
-        //         <span className="loads">: {LOADBANK_I3}</span>
-        //         <span className="loads">LOADBANK_V1</span>
-        //         <span className="loads">: {LOADBANK_V1}</span>
-        //         <span className="loads">LOADBANK_V2</span>
-        //         <span className="loads">: {LOADBANK_V2}</span>
-        //         <span className="loads">LOADBANK_V3</span>
-        //         <span className="loads">: {LOADBANK_V3}</span>
-        //         <span className="loads">LOADBANK_P1</span>
-        //         <span className="loads">: {LOADBANK_P1}</span>
-        //         <span className="loads">LOADBANK_P2</span>
-        //         <span className="loads">: {LOADBANK_P2}</span>
-        //         <span className="loads">LOADBANK_P3</span>
-        //         <span className="loads">: {LOADBANK_P3}</span>
-
-        //     </div>
-        // </div>
+       
     );
 };
 
 export default Home;
-
-
-// {items.map((item, index) => (
-                    
-//     <div
-//         className="textlog"
-//         key={index}
-//         style={{
-//             margin: "10px 0",
-//             color: item.isSuccess === false ? "red" : "inherit",
-//         }}
-//     >
-//         {item.message}
-//         {item.isSuccess === true && (
-//             <img className="tick" src="/assets/img/tik.png" alt="" />
-//         )}
-//     </div>
-
-
-// ))}

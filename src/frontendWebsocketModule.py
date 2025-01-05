@@ -1,4 +1,3 @@
-
 import websocket_server
 from threading import Thread
 import json
@@ -405,6 +404,7 @@ class FrontendWebsocketModule():
                 }
                 print(message)
                 self.websocket.send_message_to_all(json.dumps(message))
+                self.send_product_info()
             except Exception as e:
                 print(f"could not get New Client id: {e}")
                 sys.stdout.flush()
@@ -431,6 +431,7 @@ class FrontendWebsocketModule():
                 if Command == "Save":
                     self.save_config(Data)
                 elif Command == "StartTest":
+                    self.application.acdeviceWebsocket.save_config_result_json_data = None
                     if self.application.simu_test == False:
                         usb_connected = self.application.modbusModule.connect_modbus(self.application.config.selectedUSB)
                         print("usb_connected",usb_connected)
@@ -465,6 +466,40 @@ class FrontendWebsocketModule():
                     self.application.config.cancel_test = True
         except Exception as e:
             print("MessageReceivedws Exception",e)
+
+    def send_bluetooth_key_result(self):
+        try:
+            message = {
+                    "Command": "BluetoothKeyResult",
+                    "Data": {
+                        "bluetooth_key" : self.application.config.bluetooth_key,
+                        "bluetooth_iv_key" : self.application.config.bluetooth_iv_key,
+                        "bluetooth_password" : self.application.config.bluetooth_password
+                    }
+                }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("send_bluetooth_key_result Exception:",e)
+
+    def send_bluetooth_key_request(self):
+        try:
+            message = {
+                    "Command": "BluetoothKeyRequest",
+                    "Data": ""
+                }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("send_bluetooth_key_request Exception:",e)
+
+    def send_mcu_firmware_update(self):
+        try:
+            message = {
+                    "Command": "MCUFirmwareUpdateRequest",
+                    "Data": ""
+                }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("send_mcu_firmware_update_result Exception:",e)
 
     def send_ac_charger_connect_result(self,result):
         try:
@@ -559,3 +594,16 @@ class FrontendWebsocketModule():
                 }))
         except Exception as e:
             print("send_frontend_wait_device Exception:",e)
+
+    def send_product_info(self):
+        """Product info tablosundaki verileri getir ve websocket üzerinden gönder"""
+        try:
+            product_info_list = self.application.config.get_product_info()
+
+            self.websocket.send_message_to_all(json.dumps({
+                "Command": "ProductInfoList",
+                "Data": product_info_list
+                }))
+
+        except Exception as e:
+            print(f"Product info gönderme hatası: {e}")
