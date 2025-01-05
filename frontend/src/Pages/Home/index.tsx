@@ -17,15 +17,7 @@ const Home = () => {
     const [highlightIndex, setHighlightIndex] = useState<number | null>(null);
     const [isHighlightRed, setIsHighlightRed] = useState(true);
     const [activeSection, setActiveSection] = useState('settings');
-    const [isStep1Complete, setIsStep1Complete] = useState(false);
-    const [isStep2Complete, setIsStep2Complete] = useState(false);
-    const [isStep3Complete, setIsStep3Complete] = useState(false);
-    const [isStep4Complete, setIsStep4Complete] = useState(false);
-    const [isStep5Complete, setIsStep5Complete] = useState(false);
-    const [isStep6Complete, setIsStep6Complete] = useState(false);
-    const [isStep7Complete, setIsStep7Complete] = useState(false);
-    const [isStep8Complete, setIsStep8Complete] = useState(false);
-    const [completedSteps, setCompletedSteps] = useState<(boolean | null)[]>(new Array(20).fill(null));
+    const [steps, setSteps] = useState<(boolean | null)[]>(new Array(23).fill(null));
     const [selectedSerial, setSelectedSerial] = useState('');
     const [serialNumbers, setSerialNumbers] = useState([]);
     const [activeButton, setActiveButton] = useState<number | null>(null);
@@ -315,8 +307,8 @@ const Home = () => {
             </div>
             <div id="newdevice" className={`container ${activeSection != 'newdevice' ? 'hide' : ''}`}>
                 <DeviceInfo 
-                    completedSteps={completedSteps} 
-                    setCompletedSteps={setCompletedSteps}
+                    completedSteps={steps} 
+                    setCompletedSteps={setSteps}
                     activePage={activePage}
                     setActivePage={setActivePage}
                     messages={messages}
@@ -341,7 +333,7 @@ const Home = () => {
                     {Array.from({ length: 20 }, (_, i) => (
                         <div
                             key={i}
-                            className={`test-step ${completedSteps[i] ? 'test-success' : ''}`}
+                            className={`test-step ${steps[i] ? 'test-success' : ''}`}
                             style={{ left: `${15 + (i * 28)}px` }}
                         >
                             {i + 1}

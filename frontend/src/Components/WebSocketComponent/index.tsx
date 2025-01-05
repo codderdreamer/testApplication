@@ -59,12 +59,14 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }
     LOADBANK_P3, setLOADBANK_P3,
     isStep1Complete, setIsStep1Complete,
     isStep2Complete, setIsStep2Complete,
-    isStep3Complete, setIsStep3Complete,
-    isStep4Complete, setIsStep4Complete,
-    isStep5Complete, setIsStep5Complete,
-    isStep6Complete, setIsStep6Complete,
-    isStep7Complete, setIsStep7Complete,
-    isStep8Complete, setIsStep8Complete,
+    setIsStep3Complete,
+    setIsStep4Complete,
+    setIsStep5Complete,
+    setIsStep6Complete,
+    setIsStep7Complete,
+    setIsStep8Complete,
+    setIsStep9Complete,
+    setIsStep10Complete,
   } = useMessage();
 
   useEffect(() => {
@@ -291,102 +293,125 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem }
                 }
                 break
               case "MasterCardRequest":
-                handleAddItem("Lütfen master katı cihaza okutunuz!", null, null, 6);
+                handleAddItem("Lütfen master katı cihaza okutunuz!", null, null, 7);
                 break
               case "MasterCardResult":
                 if (jsonData.Data == "" || jsonData.Data == null){
-                  handleAddItem("Master kart alınamadı " + jsonData.Data, false, null, 6);
+                  handleAddItem("Master kart alınamadı " + jsonData.Data, false, null, 7);
+                  setIsStep7Complete(false)
                 }
                 else{
-                  handleAddItem("Master kart kayıt edildi:" + jsonData.Data, true, null, 6);
+                  handleAddItem("Master kart kayıt edildi:" + jsonData.Data, true, null, 7);
+                  setIsStep7Complete(true)
                 }
                 break
               case "User1CardRequest":
-                handleAddItem("Lütfen birinci kullanıcı katını cihaza okutunuz!", null)
+                handleAddItem("Lütfen birinci kullanıcı katını cihaza okutunuz!", null, null, 8)
                 break
               case "User2CardRequest":
-                handleAddItem("Lütfen ikinci kullanıcı katını cihaza okutunuz!", null)
+                handleAddItem("Lütfen ikinci kullanıcı katını cihaza okutunuz!", null, null, 9)
                 break
               case "User1CardResult":
                 if (jsonData.Data == "Same"){
-                  handleAddItem("Aynı kartı okuttunuz!", false)
+                  handleAddItem("Aynı kartı okuttunuz!", false, null, 8)
                 }
                 else if (jsonData.Data == "" || jsonData.Data == null){
-                  handleAddItem("Birinci kullanıcı kart alınamadı " + jsonData.Data, false)
+                  handleAddItem("Birinci kullanıcı kart alınamadı " + jsonData.Data, false, null, 8)
+                  setIsStep8Complete(false)
                 }
                 else{
-                  handleAddItem("Birinci kullanıcı kayıt edildi:" + jsonData.Data, true)
+                  handleAddItem("Birinci kullanıcı kayıt edildi:" + jsonData.Data, true, null, 8)
+                  setIsStep8Complete(true)
                 }
                 break
               case "User2CardResult":
                 if (jsonData.Data == "Same"){
-                  handleAddItem("Aynı kartı okuttunuz!", false)
+                  handleAddItem("Aynı kartı okuttunuz!", false, null, 9)
                 }
                 else if (jsonData.Data == "" || jsonData.Data == null){
-                  handleAddItem("İkinci kullanıcı kart alınamadı " + jsonData.Data, false)
+                  handleAddItem("İkinci kullanıcı kart alınamadı " + jsonData.Data, false, null, 9)
+                  setIsStep9Complete(false)
                 }
                 else{
-                  handleAddItem("İkinci kullanıcı kayıt edildi: " + jsonData.Data, true)
+                  handleAddItem("İkinci kullanıcı kayıt edildi: " + jsonData.Data, true, null , 9)
+                  setIsStep9Complete(true)
                 }
                 break
               case "WaitConfigResult":
-                handleAddItem("AC Şarj cihazının 4G'li model ise 4G'ye bağlanması bekleniyor...", null)
-                handleAddItem("AC Şarj cihazının Wifiye bağlanması bekleniyor...",null)
-                handleAddItem("AC Şarj cihazının Bluetooth adı charge point id ile değiştiriliyor...",null)
-                handleAddItem("AC Şarj cihazının Ethernet MAC Adresi alınıyor...",null)
-                handleAddItem("AC Şarj cihazının MCU hata durumu sorgulanıyor...",null)
-                handleAddItem("AC Şarj cihazının 4G'li model ise 4G imei numarası alınıyor...", null)
+                const waitconfig = [
+                  `AC Şarj cihazının 4G'li model ise 4G'ye bağlanması bekleniyor...\n`,
+                  `AC Şarj cihazının Wifiye bağlanması bekleniyor...\n`,
+                  `AC Şarj cihazının Bluetooth adı charge point id ile değiştiriliyor...\n`,
+                  `AC Şarj cihazının Ethernet MAC Adresi alınıyor...\n`,
+                  `AC Şarj cihazının MCU hata durumu sorgulanıyor...\n`,
+                  `AC Şarj cihazının 4G'li model ise 4G imei numarası alınıyor...\n`
+                ].join('');
+                handleAddItem(waitconfig, null, null, 10, "15px");
                 break
               case "ACChargerNotConnected":
                 handleAddItem("AC Şarj cihazından cevap alınamadı!", false)
                 break
               case "SaveConfigResult":
-                if (jsonData.Data.bluetooth_mac == "" || jsonData.Data.bluetooth_mac == null){
-                  handleAddItem("Bluetooth mac adresi alınamadı!", false)
+                const results = [];
+                
+                // Bluetooth MAC kontrolü
+                if (jsonData.Data.bluetooth_mac) {
+                  results.push(`✓ Bluetooth mac adresi: ${jsonData.Data.bluetooth_mac}`);
                 } else {
-                  handleAddItem("Bluetooth mac adresi alındı: " + jsonData.Data.bluetooth_mac, true)
+                  results.push(`✗ Bluetooth mac adresi alınamadı!`);
                 }
-                if (jsonData.Data.eth_mac == "" || jsonData.Data.eth_mac == null){
-                  handleAddItem("Ethernet mac adresi alınamadı!", false)
+
+                // Ethernet MAC kontrolü
+                if (jsonData.Data.eth_mac) {
+                  results.push(`✓ Ethernet mac adresi: ${jsonData.Data.eth_mac}`);
                 } else {
-                  handleAddItem("Ethernet mac adresi alındı: " + jsonData.Data.eth_mac, true)
+                  results.push(`✗ Ethernet mac adresi alınamadı!`);
                 }
-                if (jsonData.Data.mcu_error.length != 0){
-                  setmcu_error("")
-                  jsonData.Data.mcu_error.forEach((error: string, index: number) => {
-                    handleAddItem("MCU'da hata var! " + error, false)
-                  });
-                  
+
+                // MCU hata kontrolü
+                if (jsonData.Data.mcu_error.length === 0) {
+                  results.push(`✓ MCU'da hata yok`);
                 } else {
-                  handleAddItem("MCU'da hata yok.", true)
+                  results.push(`✗ MCU hataları: ${jsonData.Data.mcu_error.join(', ')}`);
                 }
-                if (jsonData.Data.mcu_connection == false) {
-                  handleAddItem("MCU bağlı değil!", false)
+
+                // MCU bağlantı kontrolü
+                if (jsonData.Data.mcu_connection) {
+                  results.push(`✓ MCU bağlı`);
                 } else {
-                  handleAddItem("MCU bağlı.", true)
+                  results.push(`✗ MCU bağlı değil!`);
                 }
-                if (jsonData.Data.fourg == true) {
-                  if (jsonData.Data.imei_4g == "" || jsonData.Data.imei_4g == null){
-                    handleAddItem("4G imei adresi alınamadı!", false)
+
+                // 4G kontrolü
+                if (jsonData.Data.fourg) {
+                  if (jsonData.Data.imei_4g) {
+                    results.push(`✓ 4G imei adresi: ${jsonData.Data.imei_4g}`);
                   } else {
-                    handleAddItem("4G imei adresi alındı: " + jsonData.Data.imei_4g , true)
+                    results.push(`✗ 4G imei adresi alınamadı!`);
                   }
                 }
-                if (jsonData.Data.wlan0_connection == false) {
-                  handleAddItem("Wifi'ye bağlanamadı!", false)
+
+                // WiFi bağlantı kontrolü
+                if (jsonData.Data.wlan0_connection) {
+                  results.push(`✓ Wifi bağlantısı başarılı`);
                 } else {
-                  handleAddItem("Wifi'ye bağlandı.", true)
+                  results.push(`✗ Wifi'ye bağlanamadı!`);
                 }
+
+                // Tüm sonuçları tek mesajda göster
+                const allTestsPassed = !results.some(result => result.startsWith('✗'));
+                handleAddItem(results.join('\n'), allTestsPassed, null, 10, "15px");
+                setIsStep10Complete(allTestsPassed);
                 break
               case "ChargeTest":
-                handleAddItem("ŞARJ TESTİ BAŞLADI", null, "header", 2);
-                handleAddItem("Lütfen kablonun takılı olduğundan emin olunuz!", null)
+                //handleAddItem("ŞARJ TESTİ BAŞLADI", null, "header");
+                //handleAddItem("Lütfen kablonun takılı olduğundan emin olunuz!", null)
                 break
               case "DeviceB":
                 if(jsonData.Data){
-                  handleAddItem("Şarj cihazı B konumuna getirildi", true)
+                  handleAddItem("Şarj cihazı B konumuna getirildi", true, null, 12)
                 } else{
-                  handleAddItem("Şarj cihazı B konumuna getirilemedi", true)
+                  handleAddItem("Şarj cihazı B konumuna getirilemedi", true, null, 12)
                 }
                 break
               case "WaitUser1CardRequest":

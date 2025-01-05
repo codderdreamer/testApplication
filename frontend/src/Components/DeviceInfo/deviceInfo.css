@@ -66,16 +66,15 @@ html, body {
 }
 
 .test-step {
-  width: 30px;
-  height: 30px;
-  border: 1px solid #ccc;
-  display: flex;
   align-items: center;
-  justify-content: center;
+  border: 1px solid #ccc;
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background-color: #e9ecef;
+  display: flex;
+  height: 25px;
+  justify-content: center;
+  transition: all .3s ease;
+  width: 25px;
 }
 
 .test-step:hover {

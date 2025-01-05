@@ -37,6 +37,22 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
     isStep6Complete,
     isStep7Complete,
     isStep8Complete,
+    isStep9Complete,
+    isStep10Complete,
+    isStep11Complete,
+    isStep12Complete,
+    isStep13Complete,
+    isStep14Complete,
+    isStep15Complete,
+    isStep16Complete,
+    isStep17Complete,
+    isStep18Complete,
+    isStep19Complete,
+    isStep20Complete,
+    isStep21Complete,
+    isStep22Complete,
+    isStep23Complete,
+    isStep24Complete,
   } = useMessage();
 
   // Renk değişimi için interval
@@ -76,10 +92,13 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
     if (!lastMessage) return null;
 
     const isActiveAndLatest = activePage === step && step === Math.max(...messages.map(m => m.step));
+    const isStepFailed = completedSteps[step - 1] === false;
     
     return (
       <div 
-        className={`test-message ${isActiveAndLatest ? (isBlue ? 'blue-text' : 'red-text') : ''}`}
+        className={`test-message ${
+          isActiveAndLatest && !isStepFailed ? (isBlue ? 'blue-text' : 'red-text') : ''
+        } ${isStepFailed ? 'red-text' : ''}`}
         style={{ fontSize: lastMessage.fontSize || '40px' }}
       >
         {lastMessage.text}
@@ -98,6 +117,22 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
     if (isStep6Complete !== null) newCompletedSteps[5] = isStep6Complete;
     if (isStep7Complete !== null) newCompletedSteps[6] = isStep7Complete;
     if (isStep8Complete !== null) newCompletedSteps[7] = isStep8Complete;
+    if (isStep9Complete !== null) newCompletedSteps[8] = isStep9Complete;
+    if (isStep10Complete !== null) newCompletedSteps[9] = isStep10Complete;
+    if (isStep11Complete !== null) newCompletedSteps[10] = isStep11Complete;
+    if (isStep12Complete !== null) newCompletedSteps[11] = isStep12Complete;
+    if (isStep13Complete !== null) newCompletedSteps[12] = isStep13Complete;
+    if (isStep14Complete !== null) newCompletedSteps[13] = isStep14Complete;
+    if (isStep15Complete !== null) newCompletedSteps[14] = isStep15Complete;
+    if (isStep16Complete !== null) newCompletedSteps[15] = isStep16Complete;
+    if (isStep17Complete !== null) newCompletedSteps[16] = isStep17Complete;
+    if (isStep18Complete !== null) newCompletedSteps[17] = isStep18Complete;
+    if (isStep19Complete !== null) newCompletedSteps[18] = isStep19Complete;
+    if (isStep20Complete !== null) newCompletedSteps[19] = isStep20Complete;
+    if (isStep21Complete !== null) newCompletedSteps[20] = isStep21Complete;
+    if (isStep22Complete !== null) newCompletedSteps[21] = isStep22Complete;
+    if (isStep23Complete !== null) newCompletedSteps[22] = isStep23Complete;
+    if (isStep24Complete !== null) newCompletedSteps[23] = isStep24Complete;
     
     setCompletedSteps(newCompletedSteps);
   }, [
@@ -108,7 +143,23 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
     isStep5Complete,
     isStep6Complete,
     isStep7Complete,
-    isStep8Complete
+    isStep8Complete,
+    isStep9Complete,
+    isStep10Complete,
+    isStep11Complete,
+    isStep12Complete,
+    isStep13Complete,
+    isStep14Complete,
+    isStep15Complete,
+    isStep16Complete,
+    isStep17Complete,
+    isStep18Complete,
+    isStep19Complete,
+    isStep20Complete,
+    isStep21Complete,
+    isStep22Complete,
+    isStep23Complete,
+    isStep24Complete
   ]);
 
   return (
@@ -209,7 +260,7 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
         </div>
         
         <div className="test-steps">
-          {Array.from({ length: 20 }, (_, i) => (
+          {Array.from({ length: 24 }, (_, i) => (
             <div
               key={i}
               className={`test-step 
@@ -219,7 +270,7 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
                 ${messages.some(m => m.step === i + 1) && i + 1 === Math.max(...messages.map(m => m.step)) ? 'test-active' : ''}`
               }
               onClick={() => handleStepClick(i + 1)}
-              style={{ left: `${15 + (i * 28)}px` }}
+              style={{ left: `${0 + (i * 24)}px` }}
             >
               {i + 1}
             </div>

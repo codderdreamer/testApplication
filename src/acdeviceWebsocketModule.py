@@ -16,7 +16,7 @@ class AcdeviceWebsocketModule():
         self.voltage_L1 = None
         self.voltage_L2 = None
         self.voltage_L3 = None
-        # Thread(target=self.websocket_thread,daemon=True).start()
+        Thread(target=self.websocket_thread,daemon=True).start()
         self.save_config_result_json_data = None
 
     @property
@@ -240,7 +240,7 @@ class AcdeviceWebsocketModule():
                     )
                 else:
                     self.websocket = websocket.WebSocketApp(
-                        "ws://100.103.66.88:9000",
+                        "ws://127.0.0.1:9000",
                         on_message=self.on_message,
                         on_error=self.on_error,
                         on_close=self.on_close,
