@@ -47,6 +47,8 @@ class Config():
         self.ac_device_ip = ""
         self.ac_device_port = "9000"  # Varsayılan port
 
+        self.inserted_id = None
+
         # Tablo kontrolü ve oluşturma
         self.create_config_table()
         self.create_product_info_table()
@@ -270,8 +272,48 @@ class Config():
             finally:
                 conn.close()
 
-    def save_test_log(self, test_step, test_result):
-        pass
+    def save_test_log(self, seri_no):
+        conn = self.get_db_connection()
+        inserted_id = None
+        if conn:
+            try:
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        INSERT INTO test_logs (seri_no, test_date)
+                        VALUES (%s, CURRENT_TIMESTAMP)
+                        RETURNING id
+                    """, (seri_no,))
+                    self.inserted_id = cur.fetchone()[0]
+                    conn.commit()
+            except Exception as e:
+                print(f"Test log kaydı eklenirken hata oluştu: {e}")
+            finally:
+                conn.close()
+        return inserted_id
+
+    def update_test_log(self, test_step, test_result):
+        """
+        Test adımının sonucunu veritabanına kaydet
+        
+        Args:
+            test_step (int): Test adım numarası (2-24 arası)
+            test_result (bool): Test sonucu (True/False)
+            log_id (int): Güncellenecek kaydın ID'si
+        """
+        conn = self.get_db_connection()
+        if conn:
+            try:
+                with conn.cursor() as cur:
+                    cur.execute(f"""
+                        UPDATE test_logs 
+                        SET step{test_step} = %s
+                        WHERE id = %s
+                    """, (test_result, self.inserted_id))
+                    conn.commit()
+            except Exception as e:
+                print(f"Test log güncellenirken hata oluştu: {e}")
+            finally:
+                conn.close()
 
     def get_product_info(self):
         """Tüm ürün bilgilerini getir"""

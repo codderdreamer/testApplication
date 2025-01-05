@@ -334,8 +334,8 @@ const Home = () => {
                 <div className={`section ${activeSection === 'settings' ? 'active' : ''}`} onClick={() => handleSectionClick('settings')}>Ayarlar</div>
                 <div className={`section ${activeSection === 'newdevice' ? 'active' : ''}`} onClick={() => handleSectionClick('newdevice')}>Yeni Cihaz Ekle</div>
                 <div className={`section ${activeSection === 'updatedevice' ? 'active' : ''}`} onClick={() => handleSectionClick('updatedevice')}>Cihaz Güncelle</div>
-                <div className={`section ${activeSection === 'knowledgedevice' ? 'active' : ''}`} onClick={() => handleSectionClick('knowledgedevice')}>Cihaz Bilgileri Sorgulama</div>
-                <div className={`section ${activeSection === 'productinfo' ? 'active' : ''}`} onClick={() => handleSectionClick('productinfo')}>Ürün Bilgileri</div>
+                <div className={`section ${activeSection === 'knowledgedevice' ? 'active' : ''}`} onClick={() => handleSectionClick('knowledgedevice')}>Cihaz Test Logları</div>
+                <div className={`section ${activeSection === 'productinfo' ? 'active' : ''}`} onClick={() => handleSectionClick('productinfo')}>Cihaz Bilgileri</div>
             </div>
             <div id="settings" className={`container ${activeSection != 'settings' ? 'hide' : ''}`}>
                 <Settings 

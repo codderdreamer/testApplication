@@ -443,6 +443,7 @@ class FrontendWebsocketModule():
                         self.send_seri_no_request()
                 elif Command == "SeriNoBarcode":
                     self.application.config.seriNo = Data
+                    self.application.config.save_test_log(self.application.config.seriNo)
                     if self.application.simu_test == False:
                         result = self.application.sap.get_serialNumberDetails(self.application.config.seriNo)
                     else:
