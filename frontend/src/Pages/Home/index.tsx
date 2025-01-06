@@ -198,25 +198,7 @@ const Home = () => {
         }
     }
 
-    function cancelTest() {
-        if (socket) {
-            if (socket.readyState === socket.OPEN) {
-                socket.send(JSON.stringify({
-                    "Command": "CancelTest",
-                    "Data": {}
-                }));
-                setIsDisabled(false);
-                setItems([])
-                if (timeoutId) clearTimeout(timeoutId);
-            }
-            else {
-                toast.error("Server'a bağlanılamıyor!");
-            }
-        }
-        else {
-            toast.error("Server'a bağlanılamıyor!");
-        }
-    }
+    
 
     const handleUSBChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedUSB(event.target.value);
@@ -329,6 +311,7 @@ const Home = () => {
                 isDisabled={isDisabled}
                 setIsDisabled={setIsDisabled}
                 setProductInfoList={setProductInfoList}
+                setActivePage={setActivePage}
             />
             <div className="navbar">
                 <div className={`section ${activeSection === 'settings' ? 'active' : ''}`} onClick={() => handleSectionClick('settings')}>Ayarlar</div>
@@ -367,7 +350,6 @@ const Home = () => {
                     messages={messages}
                     setMessages={setMessages}
                     startTest={startTest}
-                    cancelTest={cancelTest}
                     isDisabled={isDisabled}
                     setIsDisabled={setIsDisabled}
                 />

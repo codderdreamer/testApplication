@@ -35,9 +35,10 @@ interface WebSocketComponentProps {
     isDisabled: boolean;
     setIsDisabled: (value: boolean) => void;
     setProductInfoList: (data: ProductInfo[]) => void;
+    setActivePage: (page: number) => void;
 }
 
-const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem, isDisabled, setIsDisabled, setProductInfoList }) => {
+const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem, isDisabled, setIsDisabled, setProductInfoList, setActivePage }) => {
   const [isConnecting, setIsConnecting] = useState(true);
   const navigate = useNavigate();
   const [waitingForBarcode, setWaitingForBarcode] = useState(false);
@@ -489,8 +490,10 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem, 
               case "WaitUser1CardResult":
                 if(jsonData.Data){
                   handleAddItem("Birinci kullanıcı kartı okutuldu", true, null, 13)
+                  setIsStep13Complete(true)
                 } else{
                   handleAddItem("Birinci kullanıcı kartı okutulamadı!", false, null, 13)
+                  setIsStep13Complete(false)
                 }
                 break
               case "WaitUser2CardResult":
@@ -506,85 +509,111 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem, 
               case "WaitRelayOnResult":
                 if(jsonData.Data){
                   handleAddItem("Röle On oldu. Yük bankası devrede.",true, null, 14)
+                  setIsStep14Complete(true)
                 } else{
-                  handleAddItem("Röle On olmadı!",false)
+                  handleAddItem("Röle On olmadı!",false, null, 14)
+                  setIsStep14Complete(false)
                 }
                 break
-              case "ControlVoltageRequest":
-                handleAddItem("Voltaj değerleri 5 saniye boyunca kontrol ediliyor...",null)
+              case "ControlVoltageChargeTestRequest":
+                handleAddItem("Voltaj değerleri 5 saniye boyunca kontrol ediliyor...",null, null, 15)
                 break
-              case "ControlVoltage":
+              case "ControlVoltageChargeTestResult":
                 if(jsonData.Data){
-                  handleAddItem("Voltaj değerleri kontrol edildi doğrulandı.",true)
+                  handleAddItem("Voltaj değerleri kontrol edildi doğrulandı.",true, null, 15)
+                  setIsStep15Complete(true)
                 } else{
-                  handleAddItem("Voltaj değerleri sınırı aşmıştır! Test durduruldu.",false)
+                  handleAddItem("Voltaj değerleri sınırı aşmıştır! Test durduruldu.",false, null, 15)
+                  setIsStep15Complete(false)
+                }
+                break
+              case "ControlVoltageRCDRequest":
+                handleAddItem("Voltaj değerleri 5 saniye boyunca kontrol ediliyor...",null, null, 20)
+                break
+              case "ControlVoltageRCDResult":
+                if(jsonData.Data){
+                  handleAddItem("Voltaj değerleri kontrol edildi doğrulandı.",true, null, 20)
+                  setIsStep20Complete(true)
+                } else{
+                  handleAddItem("Voltaj değerleri sınırı aşmıştır! Test durduruldu.",false, null, 20)
+                  setIsStep20Complete(false)
                 }
                 break
               case "ControlCurrentRequest":
-                handleAddItem("Akım değerleri 5 saniye boyunca kontrol ediliyor...",null)
+                handleAddItem("Akım değerleri 5 saniye boyunca kontrol ediliyor...",null, null, 16)
                 break
               case "ControlCurrent":
                 if(jsonData.Data){
-                  handleAddItem("Akım değerleri kontrol edildi doğrulandı.",true)
+                  handleAddItem("Akım değerleri kontrol edildi doğrulandı.",true, null, 16)
+                  setIsStep16Complete(true)
                 } else{
-                  handleAddItem("Akım değerleri sınırı aşmıştır! Test durduruldu.",false)
+                  handleAddItem("Akım değerleri sınırı aşmıştır! Test durduruldu.",false, null, 16)
+                  setIsStep16Complete(false)
                 }
                 break
               case "ControlAllValues30sn":
-                handleAddItem("30 sn içerisinde de test cihazının ve şarj cihazının okuduğu akım, gerilim ve güç değerleri karşılaştırılır...",null)
+                handleAddItem("30 sn içerisinde de test cihazının ve şarj cihazının okuduğu akım, gerilim ve güç değerleri karşılaştırılır...",null, null, 17, "30px")
                 break
               case "ControlAllValues30snResult":
                 if(jsonData.Data){
-                  handleAddItem("Akım, Voltaj ve Güç değerleri kontrol edildi doğrulandı.",true)
+                  handleAddItem("Akım, Voltaj ve Güç değerleri kontrol edildi doğrulandı.",true, null, 17)
+                  setIsStep17Complete(true)
                 } else{
-                  handleAddItem("Akım, Voltaj ve Güç değerleri sınırı aşmıştır! Test durduruldu.",false)
+                  handleAddItem("Akım, Voltaj ve Güç değerleri sınırı aşmıştır! Test durduruldu.",false, null, 17)
+                  setIsStep17Complete(false)
                 }
                 break
               case "OverCurrentTest":
-                handleAddItem("AŞIRI AKIM TESTİ", null, "header")
+                handleAddItem("Aşırı akım testi başlatılıyor...", null, null, 18)
                 break
               case "OverCurrentTestResult":
                 setmcu_error("")
                 if (jsonData.Data.length != 0){
-                  jsonData.Data.forEach((error: string, index: number) => {
-                    handleAddItem("MCU'da hata: " + error, true)
-                  });
+                  const messageMCU = "Aşırı akım testi sırasında MCU'da hata: " + jsonData.Data.join(", ");
+                  handleAddItem(messageMCU, true, null, 18);
+                  setIsStep18Complete(true)
                 }
                 else{
-                  handleAddItem("MCU'da hata yok!" , false)
+                  handleAddItem("Aşırı akım testi sırasında MCU'da hata yok!" , false, null, 18)
+                  setIsStep18Complete(false)
                 }
                 break
               case "RCDLeakageCurrentSet":
-                handleAddItem("Şarj Cihazının RCD hatasına geçmesi bekleniyor..." , null)
+                handleAddItem("Şarj Cihazının RCD hatasına geçmesi bekleniyor..." , null, null, 21)
                 break
               case "RCDLeakageCurrentTestResult":
                 if (jsonData.Data.length != 0){
-                  jsonData.Data.forEach((error: string, index: number) => {
-                    handleAddItem("MCU'da hata: " + error, true)
-                  });
+                  const messageRCD = "RCD kaçak akım testi sırasında MCU'da hata: " + jsonData.Data.join(", ");
+                  handleAddItem(messageRCD, true, null, 21);
+                  setIsStep21Complete(true)
                 }
                 else{
-                  handleAddItem("MCU'da hata yok!" , false)
+                  handleAddItem("RCD kaçak akım testi sırasında MCU'da hata yok!" , false, null, 21)
+                  setIsStep21Complete(false)
                 }
                 break
               case "WaitAState":
-                handleAddItem("Şarj cihazının 5 sn içerisinde A state'ine geçmesi bekleniyor..." , null)
+                handleAddItem("Şarj cihazının 5 sn içerisinde A state'ine geçmesi bekleniyor..." , null, null, 22)
                 break
               case "WaitAStateResult":
                 if(jsonData.Data){
-                  handleAddItem("Şarj cihazı A state'ine geçti.",true)
+                  handleAddItem("Şarj cihazı A state'ine geçti.",true, null, 22)
+                  setIsStep22Complete(true)
                 } else{
-                  handleAddItem("Şarj cihazı 5 sn içerisinde A statine geçemedi!",false)
+                  handleAddItem("Şarj cihazı 5 sn içerisinde A statine geçemedi!",false, null, 22)
+                  setIsStep22Complete(false)
                 }
                 break
               case "WaitCState":
-                handleAddItem("Şarj cihazının 40 sn içerisinde C state'ine geçmesi bekleniyor..." , null)
+                handleAddItem("Şarj cihazının 40 sn içerisinde C state'ine geçmesi bekleniyor..." , null, null, 19)
                 break
               case "WaitCStateResult":
                 if(jsonData.Data){
-                  handleAddItem("Şarj cihazı tekrar C state'ine geçti.",true)
+                  handleAddItem("Şarj cihazı tekrar C state'ine geçti.",true, null, 19)
+                  setIsStep19Complete(true)
                 } else{
-                  handleAddItem("Şarj cihazı 40 sn içerisinde C statine geçemedi!",false)
+                  handleAddItem("Şarj cihazı 40 sn içerisinde C statine geçemedi!",false, null, 19)
+                  setIsStep19Complete(false)
                 }
                 break
               case "RCDLeakageCurrentTest":
@@ -610,9 +639,13 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem, 
                 break
               case "SapResult":
                 if(jsonData.Data){
-                  handleAddItem("Şarj cihazı SAP sistemine başarılı kayıt edildi.",true)
+                  handleAddItem("Şarj cihazı SAP sistemine başarılı kayıt edildi.",true, null, 23)
+                  setIsStep23Complete(true)
+                  setActivePage(24)
                 } else{
-                  handleAddItem("Şarj cihazı SAP sistemine başarılı kayıt edilemedi!",false)
+                  handleAddItem("Şarj cihazı SAP sistemine başarılı kayıt edilemedi!",false, null, 23)
+                  setIsStep23Complete(false)
+                  setActivePage(24)
                 }
                 break
               case "ProductInfoList":
@@ -653,49 +686,7 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem, 
     };
   }, []);
 
-  const cancelTest = () => {
-    if (socket) {
-      if (socket.readyState === socket.OPEN) {
-        socket.send(JSON.stringify({
-          "Command": "CancelTest",
-          "Data": {}
-        }));
-        setIsDisabled(false);
-        setItems([]);
-        // Reset all step states
-        setIsStep1Complete(null);
-        setIsStep2Complete(null);
-        setIsStep3Complete(null);
-        setIsStep4Complete(null);
-        setIsStep5Complete(null);
-        setIsStep6Complete(null);
-        setIsStep7Complete(null);
-        setIsStep8Complete(null);
-        setIsStep9Complete(null);
-        setIsStep10Complete(null);
-        setIsStep11Complete(null);
-        setIsStep12Complete(null);
-        setIsStep13Complete(null);
-        setIsStep14Complete(null);
-        setIsStep15Complete(null);
-        setIsStep16Complete(null);
-        setIsStep17Complete(null);
-        setIsStep18Complete(null);
-        setIsStep19Complete(null);
-        setIsStep20Complete(null);
-        setIsStep21Complete(null);
-        setIsStep22Complete(null);
-        setIsStep23Complete(null);
-        setIsStep24Complete(null);
-        
-        if (timeoutId) clearTimeout(timeoutId);
-      } else {
-        toast.error("Server'a bağlanılamıyor!");
-      }
-    } else {
-      toast.error("Server'a bağlanılamıyor!");
-    }
-  };
+
 
   return <div></div>;
 };

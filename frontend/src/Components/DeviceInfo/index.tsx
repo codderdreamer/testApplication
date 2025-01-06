@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './deviceInfo.css';
+import './deviceInfoButtons.css';
 import { useMessage } from '../../Components/MessageContext';
+import { toast } from 'react-toastify';
 
 interface DeviceInfoProps {
   completedSteps: (boolean | null)[];
@@ -14,7 +16,6 @@ interface DeviceInfoProps {
   }>;
   setMessages: (messages: Array<{text: string, step: number, fontSize?: string}>) => void;
   startTest: () => void;
-  cancelTest: () => void;
   isDisabled: boolean;
   setIsDisabled: (value: boolean) => void;
 }
@@ -27,36 +28,38 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
   messages,
   setMessages,
   startTest,
-  cancelTest,
   isDisabled,
   setIsDisabled
 }) => {
   const [isBlue, setIsBlue] = useState(true);
   const {
-    isStep1Complete,
-    isStep2Complete,
-    isStep3Complete,
-    isStep4Complete,
-    isStep5Complete,
-    isStep6Complete,
-    isStep7Complete,
-    isStep8Complete,
-    isStep9Complete,
-    isStep10Complete,
-    isStep11Complete,
-    isStep12Complete,
-    isStep13Complete,
-    isStep14Complete,
-    isStep15Complete,
-    isStep16Complete,
-    isStep17Complete,
-    isStep18Complete,
-    isStep19Complete,
-    isStep20Complete,
-    isStep21Complete,
-    isStep22Complete,
-    isStep23Complete,
-    isStep24Complete,
+    socket,
+    isStep1Complete, setIsStep1Complete,
+    isStep2Complete, setIsStep2Complete,
+    isStep3Complete, setIsStep3Complete,
+    isStep4Complete, setIsStep4Complete,
+    isStep5Complete, setIsStep5Complete,
+    isStep6Complete, setIsStep6Complete,
+    isStep7Complete, setIsStep7Complete,
+    isStep8Complete, setIsStep8Complete,
+    isStep9Complete, setIsStep9Complete,
+    isStep10Complete, setIsStep10Complete,
+    isStep11Complete, setIsStep11Complete,
+    isStep12Complete, setIsStep12Complete,
+    isStep13Complete, setIsStep13Complete,
+    isStep14Complete, setIsStep14Complete,
+    isStep15Complete, setIsStep15Complete,
+    isStep16Complete, setIsStep16Complete,
+    isStep17Complete, setIsStep17Complete,
+    isStep18Complete, setIsStep18Complete,
+    isStep19Complete, setIsStep19Complete,
+    isStep20Complete, setIsStep20Complete,
+    isStep21Complete, setIsStep21Complete,
+    isStep22Complete, setIsStep22Complete,
+    isStep23Complete, setIsStep23Complete,
+    isStep24Complete, setIsStep24Complete,
+    timeoutId,
+    setItems,
   } = useMessage();
 
   // Renk değişimi için interval
@@ -168,12 +171,71 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
     isStep24Complete
   ]);
 
+  const cancelTest = () => {
+    if (socket) {
+      if (socket.readyState === socket.OPEN) {
+        socket.send(JSON.stringify({
+          "Command": "CancelTest",
+          "Data": {}
+        }));
+        setIsDisabled(false);
+        setItems([]);
+        
+        // Reset all step states
+        setIsStep1Complete(null);
+        setIsStep2Complete(null);
+        setIsStep3Complete(null);
+        setIsStep4Complete(null);
+        setIsStep5Complete(null);
+        setIsStep6Complete(null);
+        setIsStep7Complete(null);
+        setIsStep8Complete(null);
+        setIsStep9Complete(null);
+        setIsStep10Complete(null);
+        setIsStep11Complete(null);
+        setIsStep12Complete(null);
+        setIsStep13Complete(null);
+        setIsStep14Complete(null);
+        setIsStep15Complete(null);
+        setIsStep16Complete(null);
+        setIsStep17Complete(null);
+        setIsStep18Complete(null);
+        setIsStep19Complete(null);
+        setIsStep20Complete(null);
+        setIsStep21Complete(null);
+        setIsStep22Complete(null);
+        setIsStep23Complete(null);
+        setIsStep24Complete(null);
+        
+        // Clear timeout
+        if (timeoutId) clearTimeout(timeoutId);
+    
+        
+      } else {
+        toast.error("Server'a bağlanılamıyor!");
+      }
+    } else {
+      toast.error("Server'a bağlanılamıyor!");
+    }
+  };
+
   const handleCancelTest = () => {
     // Reset all states
-    setCompletedSteps(new Array(24).fill(null));
+    const newCompletedSteps = new Array(24).fill(null);
+    setCompletedSteps(newCompletedSteps);
     setActivePage(1);
     setMessages([]);
     cancelTest();
+  };
+
+  const handleSAPSubmit = () => {
+    // SAP'ye gönderme işlemi
+    console.log("SAP'ye gönderiliyor...");
+  };
+
+  const handlePrint = () => {
+    // Yazdırma işlemi
+    console.log("Yazdırılıyor...");
   };
 
   return (
@@ -272,6 +334,38 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
           <div className='test-page-title'>TEST ADIM 20</div>
           {renderPageMessage(20)}
         </div>
+        <div id='test-page-21' className={`test-page ${activePage === 21 ? 'active-test' : 'hidden'}`}>
+          <div className='test-page-title'>TEST ADIM 21</div>
+          {renderPageMessage(21)}
+        </div>
+        <div id='test-page-22' className={`test-page ${activePage === 22 ? 'active-test' : 'hidden'}`}>
+          <div className='test-page-title'>TEST ADIM 22</div>
+          {renderPageMessage(22)}
+        </div>
+        <div id='test-page-23' className={`test-page ${activePage === 23 ? 'active-test' : 'hidden'}`}>
+          <div className='test-page-title'>TEST ADIM 23</div>
+          {renderPageMessage(23)}
+        </div>
+        <div id='test-page-24' className={`test-page ${activePage === 24 ? 'active-test' : 'hidden'}`}>
+          <div className='test-page-title'>TEST ADIM 24</div>
+          {renderPageMessage(24)}
+          <div className="button-container">
+            <button 
+              className="action-button"
+              onClick={handleSAPSubmit}
+              disabled={isStep23Complete ?? false}
+            >
+              SAP'ye Gönder
+            </button>
+            <button 
+              className="action-button"
+              onClick={handlePrint}
+            >
+              Print
+            </button>
+          </div>
+        </div>
+        
         
         <div className="test-steps">
           {Array.from({ length: 24 }, (_, i) => (
@@ -281,8 +375,7 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
                 ${completedSteps[i] === true ? 'test-success' : ''} 
                 ${completedSteps[i] === false ? 'test-error' : ''}
                 ${completedSteps[i] === null ? 'test-waiting' : ''}
-                ${messages.some(m => m.step === i + 1) && i + 1 === Math.max(...messages.map(m => m.step)) ? 
-                  (completedSteps[i] === false ? 'test-error' : 'test-active') : ''}`
+                ${activePage === i + 1 ? 'test-active' : ''}`
               }
               onClick={() => handleStepClick(i + 1)}
               style={{ left: `${0 + (i * 24)}px` }}

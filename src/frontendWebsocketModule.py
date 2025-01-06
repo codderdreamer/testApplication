@@ -202,11 +202,21 @@ class FrontendWebsocketModule():
         except Exception as e:
             print("wait_state_a Exception",e)
 
+    def send_control_voltage_charge_test_request(self):
+        try:
+            message = {
+                "Command": "ControlVoltageChargeTestRequest",
+                "Data": ""
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("send_control_voltage_charge_test_request Exception",e)
 
     def send_control_voltage_request(self):
         try:
             message = {
-                "Command": "ControlVoltageRequest",
+                "Command": "ControlVoltageRCDRequest",
                 "Data": ""
             }
             self.websocket.send_message_to_all(json.dumps(message))
@@ -225,10 +235,21 @@ class FrontendWebsocketModule():
         except Exception as e:
             print("send_control_current_request Exception",e)
 
+    def send_control_voltage_charge_test_result(self,value):
+        try:
+            message = {
+                "Command": "ControlVoltageChargeTestResult",
+                "Data": value
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+            print("frontend send:",message)
+        except Exception as e:
+            print("wait_config_result Exception",e)
+
     def send_control_voltage(self,value):
         try:
             message = {
-                "Command": "ControlVoltage",
+                "Command": "ControlVoltageRCDResult",
                 "Data": value
             }
             self.websocket.send_message_to_all(json.dumps(message))
@@ -431,6 +452,7 @@ class FrontendWebsocketModule():
                 if Command == "Save":
                     self.save_config(Data)
                 elif Command == "StartTest":
+                    self.application.config.cancel_test = False
                     self.application.acdeviceWebsocket.save_config_result_json_data = None
                     if self.application.simu_test == False:
                         usb_connected = self.application.modbusModule.connect_modbus(self.application.config.selectedUSB)
@@ -464,6 +486,7 @@ class FrontendWebsocketModule():
                 elif Command == "CancelTest":
                     self.application.acdeviceWebsocket.cancel_test()
                     self.application.modbusModule.write_cable_control(0)
+                    self.application.modbusModule.write_load_control(0)
                     self.application.config.cancel_test = True
         except Exception as e:
             print("MessageReceivedws Exception",e)
