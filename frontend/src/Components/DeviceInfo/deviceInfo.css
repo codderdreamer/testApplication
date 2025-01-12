@@ -14,21 +14,35 @@ html, body {
 
 .device-info {
   padding: 20px;
-  font-size: 14px;
+  font-size: 1.4vw;
 }
 
 .test-button {
-  margin: 20px;
-  padding: 10px 20px;
   background-color: #076b0a;
-  color: white;
   border: none;
   border-radius: 5px;
+  color: #fff;
   cursor: pointer;
+  font-size: 18px;
+  height: 50px;
+  line-height: 50px;
+  margin: 0 auto;
+  outline: none;
+  width: 200px;
 }
 
 .test-button:hover {
   background-color: #065c09;
+}
+
+.test-button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.test-button:active {
+  background-color: #054508;
+  transform: translateY(1px);
 }
 
 .test-container {
@@ -103,7 +117,17 @@ html, body {
 
 .test-button.cancel-test:hover {
   background-color: #bb2d3b;
-} 
+}
+
+.test-button.cancel-test:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.test-button.cancel-test:active {
+  background-color: #a52834;
+  transform: translateY(1px);
+}
 
 .test-message{
     padding: 20px;

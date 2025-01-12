@@ -7,8 +7,10 @@ import { useMessage, Item } from '../../Components/MessageContext';
 import Settings from '../../Components/Settings';
 import DeviceInfo from '../../Components/DeviceInfo';
 import WebSocketComponent from '../../Components/WebSocketComponent';
+import ProductInfoComponent from '../../Components/ProductInfo';
+import KnowledgeDevice from '../../Components/KnowledgeDevice';
 
-interface ProductInfo {
+export interface ProductInfo {
     serial_number: string;
     product_code: string;
     charge_point_id: string;
@@ -22,7 +24,6 @@ interface ProductInfo {
     bluetooth_key: string;
     bluetooth_iv_key: string;
     bluetooth_password: string;
-    location: string;
 }
 
 interface FilterState {
@@ -39,9 +40,10 @@ const Home = () => {
     const [activeSection, setActiveSection] = useState('settings');
     const [steps, setSteps] = useState<(boolean | null)[]>(new Array(23).fill(null));
     const [selectedSerial, setSelectedSerial] = useState('');
-    const [serialNumbers, setSerialNumbers] = useState([]);
+    const [serialNumbers, setSerialNumbers] = useState<string[]>([]);
+    const [testTimes, setTestTimes] = useState<string[]>([]);
     const [activeButton, setActiveButton] = useState<number | null>(null);
-    const [tableData, setTableData] = useState<{description: string, value: string}[]>([]);
+    const [tableData, setTableData] = useState<{testNo: string, description: string, value: string}[]>([]);
     const [messages, setMessages] = useState<Array<{text: string, step: number, fontSize?: string}>>([]);
     const [activePage, setActivePage] = useState(1);
     const [productInfoList, setProductInfoList] = useState<ProductInfo[]>([]);
@@ -58,8 +60,7 @@ const Home = () => {
         product_description: '',
         bluetooth_key: '',
         bluetooth_iv_key: '',
-        bluetooth_password: '',
-        location: ''
+        bluetooth_password: ''
     });
 
     const {
@@ -238,24 +239,28 @@ const Home = () => {
     };
 
     const handleSerialChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedSerial(event.target.value);
+        const selectedValue = event.target.value;
+        setSelectedSerial(selectedValue);
+        
+        // Seçilen seri numarası için logları iste
+        if (socket && socket.readyState === socket.OPEN) {
+            socket.send(JSON.stringify({
+                Command: "SelectedSeriNoLog",
+                Data: selectedValue
+            }));
+        }
     };
     
     const handleButtonClick = (index: number) => {
         setActiveButton(index);
-        switch(index) {
-            case 0:
-                setTableData([
-                    { description: "Test 1 verisi", value: "42" },
-                    { description: "Test 1 sonucu", value: "Başarılı" }
-                ]);
-                break;
-            case 1:
-                setTableData([
-                    { description: "Test 2 verisi", value: "123" },
-                    { description: "Test 2 sonucu", value: "Devam ediyor" }
-                ]);
-                break;
+        if (socket && socket.readyState === socket.OPEN) {
+            socket.send(JSON.stringify({
+                Command: "SelectedSeriNoLog",
+                Data: {
+                    seriNo: selectedSerial,
+                    testTime: testTimes[index]
+                }
+            }));
         }
     };
 
@@ -312,14 +317,19 @@ const Home = () => {
                 setIsDisabled={setIsDisabled}
                 setProductInfoList={setProductInfoList}
                 setActivePage={setActivePage}
+                setSerialNumbers={setSerialNumbers}
+                setTableData={setTableData}
+                setTestTimes={setTestTimes}
+                selectedTestTime={activeButton !== null ? testTimes[activeButton] : null}
             />
+            
             <div className="navbar">
                 <div className={`section ${activeSection === 'settings' ? 'active' : ''}`} onClick={() => handleSectionClick('settings')}>Ayarlar</div>
                 <div className={`section ${activeSection === 'newdevice' ? 'active' : ''}`} onClick={() => handleSectionClick('newdevice')}>Yeni Cihaz Ekle</div>
-                <div className={`section ${activeSection === 'updatedevice' ? 'active' : ''}`} onClick={() => handleSectionClick('updatedevice')}>Cihaz Güncelle</div>
                 <div className={`section ${activeSection === 'knowledgedevice' ? 'active' : ''}`} onClick={() => handleSectionClick('knowledgedevice')}>Cihaz Test Logları</div>
                 <div className={`section ${activeSection === 'productinfo' ? 'active' : ''}`} onClick={() => handleSectionClick('productinfo')}>Cihaz Bilgileri</div>
             </div>
+
             <div id="settings" className={`container ${activeSection != 'settings' ? 'hide' : ''}`}>
                 <Settings 
                     wifiSSID={wifiSSID}
@@ -341,6 +351,7 @@ const Home = () => {
                     handleUSBChange={handleUSBChange}
                 />
             </div>
+
             <div id="newdevice" className={`container ${activeSection != 'newdevice' ? 'hide' : ''}`}>
                 <DeviceInfo 
                     completedSteps={steps} 
@@ -354,233 +365,25 @@ const Home = () => {
                     setIsDisabled={setIsDisabled}
                 />
             </div>
-            <div id="updatedevice" className={`container ${activeSection != 'updatedevice' ? 'hide' : ''}`}>
-            <div className="device-info">
-                    <p>
-                        Lütfen bilgisayara USB kablosunun bağlı olduğundan emin olunuz...
-                        {/* <div className={`connection-status ${deviceConnected ? 'connected' : 'disconnected'}`}>
-                            {deviceConnected ? 'Bağlı' : 'Bağlı Değil'}
-                        </div> */}
-                    </p>
-                    <p>Ayarlar bölümünden USB seçeneğini kontrol ediniz.</p>
-                    <p>Lütfen bilgisayara Ethernet kablosunun bağlı olduğundan emin olunuz...</p>
-                </div>
-                <button className="test-button">Teste Başla</button>
-                <div className="test-container">
-                    {Array.from({ length: 20 }, (_, i) => (
-                        <div
-                            key={i}
-                            className={`test-step ${steps[i] ? 'test-success' : ''}`}
-                            style={{ left: `${15 + (i * 28)}px` }}
-                        >
-                            {i + 1}
-                        </div>
-                    ))}
-                </div>
-            </div>
+
             <div id="knowledgedevice" className={`container ${activeSection != 'knowledgedevice' ? 'hide' : ''}`}>
-                <div className="serial-select-container">
-                    <span>Cihaz Seri No:</span>
-                    <select value={selectedSerial} onChange={handleSerialChange}>
-                        <option value="" disabled>Seri No Seçiniz</option>
-                        {serialNumbers.map((serial, index) => (
-                            <option key={index} value={serial}>{serial}</option>
-                        ))}
-                    </select>
-                </div>
-                
-                <div className="knowledge-content">
-                    <div className="button-panel">
-                        {["14:30", "15:45", "16:20", "17:10", "18:00"].map((time, index) => (
-                            <button 
-                                key={index}
-                                className={`knowledge-button ${activeButton === index ? 'active' : ''}`}
-                                onClick={() => handleButtonClick(index)}
-                            >
-                                <span className="button-time">12.03.2024 {time}</span>
-                            </button>
-                        ))}
-                    </div>
-                    
-                    <div className="table-container">
-                        <table className="knowledge-table">
-                            <thead>
-                                <tr>
-                                    <th style={{width: '80%'}}>Açıklama</th>
-                                    <th style={{width: '20%'}}>Değer</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {tableData.map((row, index) => (
-                                    <tr key={index}>
-                                        <td>{row.description}</td>
-                                        <td>{row.value}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <KnowledgeDevice
+                    selectedSerial={selectedSerial}
+                    handleSerialChange={handleSerialChange}
+                    serialNumbers={serialNumbers}
+                    activeButton={activeButton}
+                    handleButtonClick={handleButtonClick}
+                    tableData={tableData}
+                    testTimes={testTimes}
+                />
             </div>
+            
             <div id="productinfo" className={`container ${activeSection !== 'productinfo' ? 'hide' : ''}`}>
-                <div className="product-info-container">
-                    <table className="product-info-table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <div>#</div>
-                                </th>
-                                <th>
-                                    <div>Seri No</div>
-                                    <input
-                                        type="text"
-                                        value={filters.serial_number}
-                                        onChange={handleFilterChange('serial_number')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>Ürün Kodu</div>
-                                    <input
-                                        type="text"
-                                        value={filters.product_code}
-                                        onChange={handleFilterChange('product_code')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>CPID</div>
-                                    <input
-                                        type="text"
-                                        value={filters.charge_point_id}
-                                        onChange={handleFilterChange('charge_point_id')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>Ethernet MAC</div>
-                                    <input
-                                        type="text"
-                                        value={filters.ethernet_mac}
-                                        onChange={handleFilterChange('ethernet_mac')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>Bluetooth MAC</div>
-                                    <input
-                                        type="text"
-                                        value={filters.bluetooth_mac}
-                                        onChange={handleFilterChange('bluetooth_mac')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>4G IMEI</div>
-                                    <input
-                                        type="text"
-                                        value={filters.four_g_imei}
-                                        onChange={handleFilterChange('four_g_imei')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>Master Kart RFID</div>
-                                    <input
-                                        type="text"
-                                        value={filters.master_card_rfid}
-                                        onChange={handleFilterChange('master_card_rfid')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>Slave 1 Kart RFID</div>
-                                    <input
-                                        type="text"
-                                        value={filters.slave_1_card_rfid}
-                                        onChange={handleFilterChange('slave_1_card_rfid')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>Slave 2 Kart RFID</div>
-                                    <input
-                                        type="text"
-                                        value={filters.slave_2_card_rfid}
-                                        onChange={handleFilterChange('slave_2_card_rfid')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>Ürün Açıklaması</div>
-                                    <input
-                                        type="text"
-                                        value={filters.product_description}
-                                        onChange={handleFilterChange('product_description')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>Bluetooth Key</div>
-                                    <input
-                                        type="text"
-                                        value={filters.bluetooth_key}
-                                        onChange={handleFilterChange('bluetooth_key')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>Bluetooth IV Key</div>
-                                    <input
-                                        type="text"
-                                        value={filters.bluetooth_iv_key}
-                                        onChange={handleFilterChange('bluetooth_iv_key')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>Bluetooth Şifre</div>
-                                    <input
-                                        type="text"
-                                        value={filters.bluetooth_password}
-                                        onChange={handleFilterChange('bluetooth_password')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                                <th>
-                                    <div>Konum</div>
-                                    <input
-                                        type="text"
-                                        value={filters.location}
-                                        onChange={handleFilterChange('location')}
-                                        placeholder="Filtrele..."
-                                    />
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="scrollable-body">
-                            {filteredProductList.map((info, index) => (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{info.serial_number}</td>
-                                    <td>{info.product_code}</td>
-                                    <td>{info.charge_point_id}</td>
-                                    <td>{info.ethernet_mac}</td>
-                                    <td>{info.bluetooth_mac}</td>
-                                    <td>{info.four_g_imei}</td>
-                                    <td>{info.master_card_rfid}</td>
-                                    <td>{info.slave_1_card_rfid}</td>
-                                    <td>{info.slave_2_card_rfid}</td>
-                                    <td>{info.product_description}</td>
-                                    <td>{info.bluetooth_key}</td>
-                                    <td>{info.bluetooth_iv_key}</td>
-                                    <td>{info.bluetooth_password}</td>
-                                    <td>{info.location}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <ProductInfoComponent
+                    filters={filters}
+                    handleFilterChange={handleFilterChange}
+                    filteredProductList={filteredProductList}
+                />
             </div>
         </div>
        

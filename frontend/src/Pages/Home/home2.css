@@ -174,28 +174,6 @@ html, body {
     color: white;
 }
 
-.test-button {
-    padding: 12px 24px;
-    background-color: #00875A;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin: 20px 0;
-}
-
-.test-button:hover {
-    background-color: #006c48;
-}
-
-.test-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-
 /* Seri no seçim alanı */
 .serial-select-container {
     background-color: #f8f9fa;

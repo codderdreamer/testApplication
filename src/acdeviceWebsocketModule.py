@@ -165,6 +165,8 @@ class AcdeviceWebsocketModule():
                 result = self.application.sap.update_serialNumberDetails()
                 self.application.frontendWebsocket.send_sap_result(result)
                 if result:
+                    self.application.config.insert_product_info()
+                    self.application.frontendWebsocket.send_product_info()
                     self.application.modbusModule.write_is_test_complete(1)
                 else:
                     self.application.modbusModule.write_is_test_complete(-1)
@@ -345,8 +347,9 @@ class AcdeviceWebsocketModule():
             error = True
         if Data["mcu_connection"] == False:
             error = True
-        if Data["imei_4g"] == "" or Data["imei_4g"] == None:
-            error = True
+        if Data["fourg"]:
+            if Data["imei_4g"] == "" or Data["imei_4g"] == None:
+                error = True
         if Data["wlan0_connection"] == False:
             error = True
         return error

@@ -18,7 +18,6 @@ class Application():
         self.modbus_connected = False           # Modbus bağlantısı
 
         self.config = Config()
-        self.serialNo = None
         self.deviceModel = DeviceModel(self)
         self.flaskServer = FlaskServer(self)
         self.modbusModule = ModbusModule(self)
@@ -31,9 +30,23 @@ class Application():
         pass
 
     def create_bluetooth_key(self):
-        self.config.bluetooth_key = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(32))
-        self.config.bluetooth_iv_key = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(16))
-        self.config.bluetooth_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+        # Generate and verify bluetooth key
+        while True:
+            self.config.bluetooth_key = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(32))
+            if not self.sap.check_bluetooth_key_exists(self.config.bluetooth_key):
+                break
+
+        # Generate and verify bluetooth IV key
+        while True:
+            self.config.bluetooth_iv_key = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(16))
+            if not self.sap.check_bluetooth_iv_exists(self.config.bluetooth_iv_key):
+                break
+
+        # Generate and verify bluetooth password
+        while True:
+            self.config.bluetooth_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(12))
+            if not self.sap.check_bluetooth_password_exists(self.config.bluetooth_password):
+                break
 
 if __name__ == "__main__":
     try:

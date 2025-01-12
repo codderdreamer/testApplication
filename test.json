@@ -1,0 +1,56 @@
+{
+    "Command": "SeriNoLogsResult",
+    "Data" : [ {
+        "testNo": "1",
+        "seriNo": "6554",
+        "testTime": "12.03.2024 14:30",
+        "testSteps": {
+            "1" :{
+                "description": "Cihaz Seri No: 6554",
+                "value": true
+            },
+            "2a" : {
+                "description": "ItemCode: HC022304212",
+                "value": true
+            },
+            "2b" : {
+                "description": "emergencyButton: No",
+                "value": true
+            }
+        }
+        
+    } ,
+    {
+        "testNo": "2",
+        "seriNo": "6554",
+        "testTime": "12.03.2024 14:30",
+        "testSteps": {
+            "1" :{
+                "description": "Cihaz Seri No: 6554",
+                "value": true
+            },
+            "2a" : {
+                "description": "ItemCode: HC022304212",
+                "value": true
+            },
+            "2b" : {
+                "description": "emergencyButton: No",
+                "value": true
+            }
+            
+        }
+    }
+
+]
+}
+
+{
+    "Command": "SeriNoLogs",
+    "Data" : ["6554", "64664"]
+}
+
+
+
+
+
+

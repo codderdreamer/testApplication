@@ -247,12 +247,13 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({
         <p>Ayarlar bölümünden USB seçeneğini kontrol ediniz.</p>
         <p>Lütfen bilgisayara Ethernet kablosunun bağlı olduğundan emin olunuz...</p>
       </div>
-      <button 
+      <div 
         className={`test-button ${isDisabled ? 'cancel-test' : ''}`} 
         onClick={isDisabled ? handleCancelTest : startTest}
+        
       >
         {isDisabled ? 'Testi Bitir' : 'Teste Başla'}
-      </button>
+      </div>
       <div className="test-container">
         <div id='test-page-1' className={`test-page ${activePage === 1 ? 'active-test' : 'hidden'}`}>
           <div className='test-page-title'>TEST ADIM 1</div>

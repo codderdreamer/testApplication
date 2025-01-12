@@ -89,7 +89,10 @@ class SAP():
                 "U_CPID": self.application.config.chargePointId,
                 "U_MRFID": self.application.config.master_card,
                 "U_KRFID": self.application.config.user_1_card,
-                "U_KRFID1": self.application.config.user_2_card
+                "U_KRFID1": self.application.config.user_2_card,
+                "U_AESKey": self.application.config.bluetooth_key,
+                "U_AESIV": self.application.config.bluetooth_iv_key,
+                "U_BLE_A_P": self.application.config.bluetooth_password
             }
 
             response = requests.patch(url, headers=headers, json=update_data, verify=False)
@@ -104,4 +107,73 @@ class SAP():
                 return False
         except Exception as e:
             print("update_serialNumberDetails Exception:", e)
+            return False
+
+    def check_bluetooth_key_exists(self, key):
+        if not self.login():
+            print("Unable to authenticate. Cannot check bluetooth key.")
+            return False
+        try:
+            params = {
+                "$select": "U_AESKey",
+                "$filter": f"U_AESKey eq '{key}'"
+            }
+            headers = {
+                "Content-Type": "application/json",
+                "Cookie": f"B1SESSION={self.session_id}"
+            }
+            
+            response = requests.get(self.serialNumberDetails_url, headers=headers, params=params, verify=False)
+            if response.status_code == 200:
+                data = response.json()
+                return len(data.get("value", [])) > 0
+            return False
+        except Exception as e:
+            print("check_bluetooth_key_exists Exception:", e)
+            return False
+
+    def check_bluetooth_iv_exists(self, iv_key):
+        if not self.login():
+            print("Unable to authenticate. Cannot check bluetooth IV.")
+            return False
+        try:
+            params = {
+                "$select": "U_AESIV",
+                "$filter": f"U_AESIV eq '{iv_key}'"
+            }
+            headers = {
+                "Content-Type": "application/json",
+                "Cookie": f"B1SESSION={self.session_id}"
+            }
+            
+            response = requests.get(self.serialNumberDetails_url, headers=headers, params=params, verify=False)
+            if response.status_code == 200:
+                data = response.json()
+                return len(data.get("value", [])) > 0
+            return False
+        except Exception as e:
+            print("check_bluetooth_iv_exists Exception:", e)
+            return False
+
+    def check_bluetooth_password_exists(self, password):
+        if not self.login():
+            print("Unable to authenticate. Cannot check bluetooth password.")
+            return False
+        try:
+            params = {
+                "$select": "U_BLE_A_P",
+                "$filter": f"U_BLE_A_P eq '{password}'"
+            }
+            headers = {
+                "Content-Type": "application/json",
+                "Cookie": f"B1SESSION={self.session_id}"
+            }
+            
+            response = requests.get(self.serialNumberDetails_url, headers=headers, params=params, verify=False)
+            if response.status_code == 200:
+                data = response.json()
+                return len(data.get("value", [])) > 0
+            return False
+        except Exception as e:
+            print("check_bluetooth_password_exists Exception:", e)
             return False

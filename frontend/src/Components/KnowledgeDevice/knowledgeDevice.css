@@ -1,0 +1,107 @@
+/* Seri no seçim alanı */
+.serial-select-container {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+}
+
+.serial-select-container span {
+    color: #00875A;
+    font-size: 16px;
+}
+
+.serial-select-container select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    height: 35px;
+    background-color: white;
+    cursor: pointer;
+}
+
+/* İçerik düzeni */
+.knowledge-content {
+    display: flex;
+    gap: 20px;
+    height: calc(100% - 60px);
+}
+
+/* Sol panel - butonlar */
+.button-panel {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.knowledge-button {
+    padding: 8px;
+    background-color: #808080;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    justify-content: center;
+}
+
+.knowledge-button:hover {
+    background-color: #666666;
+}
+
+.knowledge-button.active {
+    background-color: #00875A;
+    border: 2px solid #006c48;
+    box-shadow: 0 0 5px rgba(0, 135, 90, 0.3);
+}
+
+.button-time {
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+}
+
+/* Sağ panel - tablo */
+.table-container {
+    width: 80%;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    overflow: auto;
+}
+
+.knowledge-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.knowledge-table th,
+.knowledge-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.knowledge-table th {
+    background-color: #00875A;
+    color: white;
+    font-weight: 500;
+}
+
+.knowledge-table tr:hover {
+    background-color: #f1f1f1;
+} 

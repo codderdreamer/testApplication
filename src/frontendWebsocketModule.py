@@ -426,9 +426,71 @@ class FrontendWebsocketModule():
                 print(message)
                 self.websocket.send_message_to_all(json.dumps(message))
                 self.send_product_info()
+                self.test_send_seri_no_logs()
             except Exception as e:
                 print(f"could not get New Client id: {e}")
                 sys.stdout.flush()
+
+
+    def test_send_seri_no_logs(self):
+        try:
+            # Database'den sadece benzersiz seri numaralarını al
+            seri_numbers = self.application.config.get_unique_serial_numbers()
+            
+            message = {
+                "Command": "SeriNoLogs",
+                "Data": seri_numbers
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("test_send_seri_no_logs Exception", e)
+
+    def send_test_times(self, seri_no):
+        try:
+            # Seçili seri numarasına ait test zamanlarını al
+            test_logs = self.application.config.get_test_logs(seri_no)
+            test_times = [log['test_date'].strftime("%Y-%m-%d %H:%M:%S") for log in test_logs]
+            
+            message = {
+                "Command": "TestTimes",
+                "Data": test_times
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print(f"send_test_times Exception: {e}")
+
+    def test_send_seri_no_logs_result(self, data):
+        try:
+            if isinstance(data, dict):
+                # Tarih seçildiğinde
+                selected_seri_no = data["seriNo"]
+                selected_time = data["testTime"]
+                
+                # Sadece seçili zamana ait test sonucunu al
+                test_logs = self.application.config.get_test_logs(selected_seri_no)
+                filtered_logs = [log for log in test_logs 
+                               if log['test_date'].strftime("%Y-%m-%d %H:%M:%S") == selected_time]
+            else:
+                # Sadece seri no seçildiğinde
+                selected_seri_no = data
+                # Test zamanlarını gönder
+                self.send_test_times(selected_seri_no)
+                return
+
+            message = {
+                "Command": "SeriNoLogsResult",
+                "Data": [{
+                    "testNo": str(log['id']),
+                    "seriNo": log['seri_no'],
+                    "testTime": log['test_date'].strftime("%Y-%m-%d %H:%M:%S"),
+                    "testSteps": log['testSteps']
+                } for log in filtered_logs]
+            }
+            print(message)
+            self.websocket.send_message_to_all(json.dumps(message))
+
+        except Exception as e:
+            print(f"test_send_seri_no_logs_result Exception: {e}")
 
     def ClientLeftws(self, client, server):
         try:
@@ -455,7 +517,7 @@ class FrontendWebsocketModule():
                     self.application.config.cancel_test = False
                     self.application.acdeviceWebsocket.save_config_result_json_data = None
                     if self.application.simu_test == False:
-                        usb_connected = self.application.modbusModule.connect_modbus(self.application.config.selectedUSB)
+                        usb_connected = self.application.modbusModule.connect_modbus()
                         print("usb_connected",usb_connected)
                     else:
                         usb_connected = True
@@ -465,7 +527,13 @@ class FrontendWebsocketModule():
                         self.send_seri_no_request()
                 elif Command == "SeriNoBarcode":
                     self.application.config.seriNo = Data
-                    self.application.config.save_test_log(self.application.config.seriNo)
+                    test_step = {
+                        1: {
+                            "description": f"Cihaz Seri No: {Data}",
+                            "value": True
+                        }
+                    }
+                    self.application.config.save_test_log(self.application.config.seriNo, test_step)
                     if self.application.simu_test == False:
                         result = self.application.sap.get_serialNumberDetails(self.application.config.seriNo)
                     else:
@@ -474,6 +542,44 @@ class FrontendWebsocketModule():
                     self.send_frontend_charge_point_id_request(result)
                     if result == False:
                         self.application.modbusModule.write_is_test_complete(-1)
+                    else:
+                        test_step = {
+                            2: {
+                                "description": f"SAP Seri No Bilgileri",
+                                "value": True,
+                                "sub_steps": {
+                                    1: {
+                                        "description": f"ItemCode: {self.application.deviceModel.ItemCode}",
+                                        "value": True
+                                    },
+                                    2: {
+                                        "description": f"Emergency Button: {self.application.deviceModel.emergencyButton}",
+                                        "value": True
+                                    },
+                                    3: {
+                                        "description": f"MID Meter: {self.application.deviceModel.midMeter}",
+                                        "value": True
+                                    },
+                                    4: {
+                                        "description": f"System: {self.application.deviceModel.system}",
+                                        "value": True
+                                    },
+                                    5: {
+                                        "description": f"Body Color: {self.application.deviceModel.bodyColor}",
+                                        "value": True
+                                    },
+                                    6: {
+                                        "description": f"Connector Type: {self.application.deviceModel.connectorType}",
+                                        "value": True
+                                    },
+                                    7: {
+                                        "description": f"Case Type: {self.application.deviceModel.caseType}",
+                                        "value": True
+                                    }
+                                }
+                            }
+                        }
+                        self.application.config.save_test_log(self.application.config.seriNo, test_step)
                 elif Command == "ChargePointIdBarcode":
                     self.application.config.chargePointId = Data
                     self.send_frontend_wait_device()
@@ -488,6 +594,14 @@ class FrontendWebsocketModule():
                     self.application.modbusModule.write_cable_control(0)
                     self.application.modbusModule.write_load_control(0)
                     self.application.config.cancel_test = True
+                elif Command == "SelectedSeriNoLog":
+                    if isinstance(Data, dict):
+                        # Tarih seçildiğinde
+                        self.test_send_seri_no_logs_result(Data)
+                    else:
+                        # Sadece seri no seçildiğinde
+                        selected_seri_no = Data
+                        self.test_send_seri_no_logs_result(selected_seri_no)
         except Exception as e:
             print("MessageReceivedws Exception",e)
 
@@ -574,7 +688,7 @@ class FrontendWebsocketModule():
     def send_frontend_sap_seri_no_knowledge(self,result):
         try:
             if self.application.simu_test:
-                self.application.deviceModel.find("HC022304312")
+                self.application.deviceModel.find("HC022304212")
             if result:
                 self.websocket.send_message_to_all(json.dumps({
                         "Command": "SeriNoBarcodeResult",
@@ -631,3 +745,21 @@ class FrontendWebsocketModule():
 
         except Exception as e:
             print(f"Product info gönderme hatası: {e}")
+
+    def send_test_results(self, seriNo, testTime):
+        try:
+            # Burada veritabanından veya başka bir kaynaktan test sonuçlarını alabilirsiniz
+            message = {
+                "Command": "SeriNoLogsResult",
+                "Data": [{
+                    "testNo": "1",
+                    "seriNo": seriNo,
+                    "testTime": testTime,
+                    "testSteps": {
+                        # ... test adımları
+                    }
+                }]
+            }
+            self.websocket.send_message_to_all(json.dumps(message))
+        except Exception as e:
+            print("send_test_results Exception:", e)

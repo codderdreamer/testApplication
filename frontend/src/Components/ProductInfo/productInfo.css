@@ -1,0 +1,100 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+.product-info-container {
+    padding: 20px;
+    width: 90%;
+    height: 80%;
+    overflow: auto;
+    font-size: 12px;
+    margin-left: 30px;
+    margin-top: 20px;
+    
+    /* Scroll styling */
+    scrollbar-width: thin; /* Firefox için */
+    scrollbar-color: #888 #f1f1f1; /* Firefox için thumb ve track rengi */
+}
+
+/* Webkit (Chrome, Safari, Edge) için scroll styling */
+.product-info-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.product-info-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.product-info-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.product-info-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Scroll corner'ı düzeltme */
+.product-info-container::-webkit-scrollbar-corner {
+    background: #f1f1f1;
+}
+
+.product-info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    min-width: 1200px;
+}
+
+.product-info-table thead {
+    position: sticky;
+    top: 0;
+    background-color: #f4f4f4;
+    z-index: 1;
+}
+
+.product-info-table th,
+.product-info-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.product-info-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    padding: 2px 8px;
+    height: 24px;
+    line-height: 1;
+}
+
+.product-info-table td {
+    border: 1px solid #ddd;
+    padding: 2px 8px;
+    text-align: left;
+    height: 20px;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-info-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.product-info-table tr:hover {
+    background-color: #f5f5f5;
+}

@@ -27,7 +27,6 @@ interface ProductInfo {
     bluetooth_key: string;
     bluetooth_iv_key: string;
     bluetooth_password: string;
-    location: string;
 }
 
 interface WebSocketComponentProps {
@@ -36,9 +35,13 @@ interface WebSocketComponentProps {
     setIsDisabled: (value: boolean) => void;
     setProductInfoList: (data: ProductInfo[]) => void;
     setActivePage: (page: number) => void;
+    setSerialNumbers: (serials: string[]) => void;
+    setTableData: (data: Array<{testNo: string, description: string, value: string}>) => void;
+    setTestTimes: (times: string[]) => void;
+    selectedTestTime: string | null;
 }
 
-const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem, isDisabled, setIsDisabled, setProductInfoList, setActivePage }) => {
+const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem, isDisabled, setIsDisabled, setProductInfoList, setActivePage, setSerialNumbers, setTableData, setTestTimes, selectedTestTime }) => {
   const [isConnecting, setIsConnecting] = useState(true);
   const navigate = useNavigate();
   const [waitingForBarcode, setWaitingForBarcode] = useState(false);
@@ -354,10 +357,10 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem, 
                 }
                 break
               case "User1CardRequest":
-                handleAddItem("Lütfen birinci kullanıcı katını cihaza okutunuz!", null, null, 8)
+                handleAddItem("Lütfen birinci kullanıcı kartını cihaza okutunuz!", null, null, 8)
                 break
               case "User2CardRequest":
-                handleAddItem("Lütfen ikinci kullanıcı katını cihaza okutunuz!", null, null, 9)
+                handleAddItem("Lütfen ikinci kullanıcı kartını cihaza okutunuz!", null, null, 9)
                 break
               case "User1CardResult":
                 if (jsonData.Data == "Same"){
@@ -651,6 +654,68 @@ const WebSocketComponent: React.FC<WebSocketComponentProps> = ({ handleAddItem, 
               case "ProductInfoList":
                 if (jsonData.Data) {
                     setProductInfoList(jsonData.Data);
+                }
+                break
+              case "SeriNoLogs":
+                if (jsonData.Data && Array.isArray(jsonData.Data)) {
+                    setSerialNumbers(jsonData.Data);
+                }
+                break;
+                
+              case "SeriNoLogsResult":
+                if (jsonData.Data && Array.isArray(jsonData.Data)) {
+                  console.log("Gelen veri:", jsonData.Data);
+
+                  // Recursive function to handle nested steps
+                  const flattenSteps = (steps: any, parentNo: string = ''): Array<{testNo: string, description: string, value: string}> => {
+                    const result: Array<{testNo: string, description: string, value: string}> = [];
+                    
+                    Object.entries(steps).forEach(([key, value]: [string, any]) => {
+                      const currentNo = parentNo ? `${parentNo}.${key}` : key;
+                      
+                      result.push({
+                        testNo: currentNo,
+                        description: value.description,
+                        value: String(value.value)
+                      });
+
+                      // If there are sub_steps, process them recursively
+                      if (value.sub_steps) {
+                        result.push(...flattenSteps(value.sub_steps, currentNo));
+                      }
+                    });
+
+                    return result;
+                  };
+
+                  // Compare function for test numbers (handles both simple and dotted numbers)
+                  const compareTestNo = (a: string, b: string) => {
+                    const aParts = a.split('.').map(Number);
+                    const bParts = b.split('.').map(Number);
+                    
+                    for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+                      const aVal = aParts[i] || 0;
+                      const bVal = bParts[i] || 0;
+                      if (aVal !== bVal) {
+                        return aVal - bVal;
+                      }
+                    }
+                    return 0;
+                  };
+
+                  const formattedData = jsonData.Data.flatMap((test: any) => 
+                    flattenSteps(test.testSteps)
+                  ).sort((a: {testNo: string}, b: {testNo: string}) => compareTestNo(a.testNo, b.testNo));
+
+                  console.log("Formatlanmış veri:", formattedData);
+                  setTableData(formattedData);
+                }
+                break
+              case "TestTimes":
+                if (jsonData.Data && Array.isArray(jsonData.Data)) {
+                    // Extract unique test times and set them
+                    const testTimes = [...new Set(jsonData.Data)] as string[];
+                    setTestTimes(testTimes);
                 }
                 break
       
