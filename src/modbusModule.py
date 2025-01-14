@@ -146,6 +146,7 @@ class ModbusModule():
                             "Data": True
                         }))
                     print("Cihaz teste hazır.")
+                    self.application.testStep.save_test_log_4(True)
                     break
                 else:
                     print("self.IS_DEVICE_READY",self.IS_DEVICE_READY)

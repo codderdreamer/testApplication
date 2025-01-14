@@ -7,8 +7,10 @@ from src.deviceModel import *
 from src.frontendWebsocketModule import *
 from src.acdeviceWebsocketModule import *
 from src.configModule import *
+from src.testStep import *
 import secrets
 import string
+
 
 class Application():
     def __init__(self):
@@ -24,6 +26,7 @@ class Application():
         self.findEthernet = FindEthernet(self)
         self.frontendWebsocket = FrontendWebsocketModule(self)
         self.acdeviceWebsocket = AcdeviceWebsocketModule(self)
+        self.testStep = TestStep(self)
         self.sap = SAP(self)
 
     def run(self):

@@ -44,6 +44,7 @@ class FrontendWebsocketModule():
                 "Data": value
             }
             self.websocket.send_message_to_all(json.dumps(message))
+            self.application.testStep.save_test_log_19(value)
             print("frontend send:",message)
         except Exception as e:
             print("wait_c_state Exception",e)
@@ -153,6 +154,7 @@ class FrontendWebsocketModule():
                 "Command": "WaitAStateResult",
                 "Data": value
             }
+            self.application.testStep.save_test_log_22(value)
             self.websocket.send_message_to_all(json.dumps(message))
             print("frontend send:",message)
         except Exception as e:
@@ -186,6 +188,7 @@ class FrontendWebsocketModule():
                 "Command": "SapResult",
                 "Data": value
             }
+            self.application.testStep.save_test_log_23(value)
             self.websocket.send_message_to_all(json.dumps(message))
             print("frontend send:",message)
         except Exception as e:
@@ -253,6 +256,7 @@ class FrontendWebsocketModule():
                 "Data": value
             }
             self.websocket.send_message_to_all(json.dumps(message))
+            self.application.testStep.save_test_log_20(value)
             print("frontend send:",message)
         except Exception as e:
             print("wait_config_result Exception",e)
@@ -344,6 +348,7 @@ class FrontendWebsocketModule():
                     "Command": "DeviceB",
                     "Data": value
                 }
+            self.application.testStep.save_test_log_12(value)
             self.websocket.send_message_to_all(json.dumps(message))
             print("frontend send:",message)
         except Exception as e:
@@ -527,13 +532,7 @@ class FrontendWebsocketModule():
                         self.send_seri_no_request()
                 elif Command == "SeriNoBarcode":
                     self.application.config.seriNo = Data
-                    test_step = {
-                        1: {
-                            "description": f"Cihaz Seri No: {Data}",
-                            "value": True
-                        }
-                    }
-                    self.application.config.save_test_log(self.application.config.seriNo, test_step)
+                    self.application.testStep.save_test_log_1()
                     if self.application.simu_test == False:
                         result = self.application.sap.get_serialNumberDetails(self.application.config.seriNo)
                     else:
@@ -541,47 +540,13 @@ class FrontendWebsocketModule():
                     self.send_frontend_sap_seri_no_knowledge(result)
                     self.send_frontend_charge_point_id_request(result)
                     if result == False:
+                        self.application.testStep.save_test_log_2(False)
                         self.application.modbusModule.write_is_test_complete(-1)
                     else:
-                        test_step = {
-                            2: {
-                                "description": f"SAP Seri No Bilgileri",
-                                "value": True,
-                                "sub_steps": {
-                                    1: {
-                                        "description": f"ItemCode: {self.application.deviceModel.ItemCode}",
-                                        "value": True
-                                    },
-                                    2: {
-                                        "description": f"Emergency Button: {self.application.deviceModel.emergencyButton}",
-                                        "value": True
-                                    },
-                                    3: {
-                                        "description": f"MID Meter: {self.application.deviceModel.midMeter}",
-                                        "value": True
-                                    },
-                                    4: {
-                                        "description": f"System: {self.application.deviceModel.system}",
-                                        "value": True
-                                    },
-                                    5: {
-                                        "description": f"Body Color: {self.application.deviceModel.bodyColor}",
-                                        "value": True
-                                    },
-                                    6: {
-                                        "description": f"Connector Type: {self.application.deviceModel.connectorType}",
-                                        "value": True
-                                    },
-                                    7: {
-                                        "description": f"Case Type: {self.application.deviceModel.caseType}",
-                                        "value": True
-                                    }
-                                }
-                            }
-                        }
-                        self.application.config.save_test_log(self.application.config.seriNo, test_step)
+                        self.application.testStep.save_test_log_2(True)
                 elif Command == "ChargePointIdBarcode":
                     self.application.config.chargePointId = Data
+                    self.application.testStep.save_test_log_3()
                     self.send_frontend_wait_device()
                     Thread(target=self.application.modbusModule.wait_test_device,daemon=True).start()
                     if self.application.simu_test:

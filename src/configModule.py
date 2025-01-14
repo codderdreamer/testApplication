@@ -2,6 +2,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import pandas as pd
 from pathlib import Path
+from datetime import datetime
 
 
 class Config():
@@ -59,6 +60,8 @@ class Config():
         self.read_config()
 
         self.cancel_test = False
+
+        self.test_start_date = None  # Test başlangıç tarihini tutacak değişken
 
     def get_db_connection(self):
         """PostgreSQL bağlantısı oluştur"""
@@ -287,12 +290,16 @@ class Config():
         if conn:
             try:
                 with conn.cursor() as cur:
+                    # İlk test adımı ise yeni tarih oluştur
+                    if not self.test_start_date:
+                        self.test_start_date = datetime.now()
+                    
                     # Ana test kaydını oluştur
                     cur.execute("""
                         INSERT INTO test_logs (seri_no, test_date)
-                        VALUES (%s, CURRENT_TIMESTAMP)
+                        VALUES (%s, %s)
                         RETURNING id
-                    """, (seri_no,))
+                    """, (seri_no, self.test_start_date))
                     test_log_id = cur.fetchone()[0]
                     self.inserted_id = test_log_id
 
@@ -445,4 +452,9 @@ class Config():
             finally:
                 conn.close()
         return []
+
+    # Test sürecini sıfırlamak için yeni method
+    def reset_test(self):
+        """Test sürecini sıfırla ve test_start_date'i temizle"""
+        self.test_start_date = None
 
